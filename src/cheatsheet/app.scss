@@ -5,6 +5,8 @@
 // PERMITIDO: consumir variables Bootstrap genericas solo como fallback estructural.
 // Los overrides de color y apariencia deben vivir en _semantic-light.scss o
 // _semantic-dark.scss del theme activo y permanecer aislados por sus selectores.
+// VALIDACION: las apariencias deben comprobarse en navegador con el theme activo;
+// un build exitoso no demuestra que el stylesheet inline haya sido aplicado.
 
 @import "bootstrap/scss/bootstrap";
 

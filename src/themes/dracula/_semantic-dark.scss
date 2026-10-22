@@ -534,7 +534,7 @@ $btn-close-filter-dark: invert(1) grayscale(100%) brightness(200%);
   --bs-nav-link-color: rgba($dracula-foreground-muted, .46);
   color: rgba($dracula-foreground-muted, .46);
   cursor: not-allowed;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 [data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-link.disabled {
