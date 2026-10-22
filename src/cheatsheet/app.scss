@@ -36,6 +36,20 @@ body {
   min-height: 4rem;
 }
 
+.bd-header.bd-header-primary {
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+}
+
+.bd-header.bd-header-alternative {
+  background-color: var(--bs-primary);
+  color: var(--bs-white);
+}
+
+.bd-header-alternative .text-body {
+  color: inherit !important;
+}
+
 // Contenido principal.
 .bd-cheatsheet {
   max-width: none;

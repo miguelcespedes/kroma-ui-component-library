@@ -520,10 +520,22 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
   box-shadow: 0 0 0 .25rem rgba($blue-300, .25);
 }
 
-[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .bd-header {
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .bd-header:not(.bd-header-primary):not(.bd-header-alternative) {
   background-color: var(--bs-header-bg);
   color: var(--bs-header-color);
   border-color: var(--bs-header-border);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .bd-header.bd-header-primary {
+  background-color: $surface-default-dark !important;
+  color: $content-primary-dark;
+  border-color: $border-default-dark;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .bd-header.bd-header-alternative {
+  background-color: $blue-dark-700 !important;
+  color: $white;
+  border-color: $blue-dark-700;
 }
 
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .bd-header [data-theme-selector] {

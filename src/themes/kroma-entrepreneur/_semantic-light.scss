@@ -181,10 +181,22 @@ $toast-box-shadow: 0 0.5rem 1rem rgba(11, 10, 43, 0.12);
   background-color: $primary !important;
 }
 
-[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header {
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header:not(.bd-header-primary):not(.bd-header-alternative) {
   background-color: var(--bs-header-bg);
   color: var(--bs-header-color);
   border-color: var(--bs-header-border);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header.bd-header-primary {
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+  border-color: var(--bs-border-color);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header.bd-header-alternative {
+  background-color: var(--bs-primary);
+  color: var(--bs-white);
+  border-color: var(--bs-primary);
 }
 
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header [data-theme-selector] {

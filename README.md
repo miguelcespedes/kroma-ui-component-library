@@ -143,6 +143,25 @@ Antes de declarar terminado un theme, revisa como mínimo:
 
 Si una celda no aplica, indícalo en la revisión; no la omitas accidentalmente.
 
+### Variantes Del Header
+
+El header global ofrece dos variantes seleccionables mediante clases. La clase se cambia en el HTML según la superficie que necesite la plantilla:
+
+```html
+<header class="bd-header bd-header-primary ...">
+```
+
+```html
+<header class="bd-header bd-header-alternative ...">
+```
+
+- `bd-header-primary`: superficie neutral basada en `--bs-tertiary-bg`.
+- `bd-header-alternative`: superficie de marca basada en `--bs-primary`.
+
+No conviertas `.bd-header` en `.navbar`. El header global tiene layout propio; añadir `.navbar` altera su geometría. Las capas semánticas de cada theme deben excluir ambas variantes de la regla base de `.bd-header` y definirlas explícitamente en light y dark. Si el theme tiene una regla global de fondo con mayor prioridad, usa la misma estrategia que sus navbars para que la variante seleccionada gane la cascada.
+
+`Primary navbar` y `Alternative navbar` son nombres de variantes visuales. El header debe implementar la misma decisión mediante `bd-header-primary` o `bd-header-alternative`; no se debe resolver añadiendo la clase Bootstrap `.navbar` al header.
+
 ### Criterios De Aceptación
 
 Un theme está terminado solo si cumple todo lo siguiente:
