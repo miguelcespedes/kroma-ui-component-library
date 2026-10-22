@@ -18535,7 +18535,7 @@ textarea.form-control-lg {
 }`;
 const theme1 = `@charset "UTF-8";
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] {
-  --bs-body-bg: #ffffff;
+  --bs-body-bg: #f8f9fa;
   --bs-body-color: #212529;
   --bs-heading-color: #212529;
   --bs-border-color: #dee2e6;
@@ -18543,9 +18543,19 @@ const theme1 = `@charset "UTF-8";
   --bs-link-hover-color: #0c3493;
   --bs-header-bg: #020617;
   --bs-header-color: #ffffff;
-  --bs-header-border: #64748b;
+  --bs-header-border: #0c3493;
+  --bs-header-control-bg: #123064;
+  --bs-header-control-color: #e8effc;
+  --bs-header-control-border: #285092;
+  --bs-header-control-hover-color: #ffffff;
+  --bs-header-control-hover-bg: #285092;
+  --bs-header-control-hover-border: #8eb5ff;
   --bs-secondary-color: #6c757d;
   --bs-tertiary-bg: #f8f9fa;
+  --bs-navbar-bg: #ffffff;
+  --bs-navbar-color: #212529;
+  --bs-navbar-hover-color: #0c3493;
+  --bs-navbar-border: #dee2e6;
   --bs-card-bg: #ffffff;
   --bs-card-cap-bg: #f8f9fa;
   --bs-dropdown-bg: #ffffff;
@@ -18565,6 +18575,70 @@ const theme1 = `@charset "UTF-8";
   --bs-table-active-bg: rgba(var(--bs-emphasis-color-rgb), 0.1);
   --bs-table-hover-color: var(--bs-emphasis-color);
   --bs-table-hover-bg: rgba(var(--bs-emphasis-color-rgb), 0.075);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .bd-header {
+  background-color: var(--bs-header-bg);
+  color: var(--bs-header-color);
+  border-color: var(--bs-header-border);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .bd-header [data-theme-selector] {
+  --bs-btn-color: var(--bs-header-control-color);
+  --bs-btn-border-color: var(--bs-header-control-border);
+  --bs-btn-hover-color: var(--bs-header-control-hover-color);
+  --bs-btn-hover-bg: var(--bs-header-control-hover-bg);
+  --bs-btn-hover-border-color: var(--bs-header-control-hover-border);
+  background-color: var(--bs-header-control-bg);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-body-tertiary {
+  --bs-navbar-color: #212529;
+  --bs-navbar-hover-color: #0c3493;
+  --bs-navbar-disabled-color: rgba($gray-800, .46);
+  --bs-navbar-brand-color: #212529;
+  --bs-navbar-brand-hover-color: #0c3493;
+  background-color: #ffffff !important;
+  border: 1px solid #dee2e6;
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-body-tertiary .navbar-brand,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-body-tertiary .nav-link {
+  color: var(--bs-navbar-color);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-body-tertiary .nav-link:hover,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-body-tertiary .nav-link:focus,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-body-tertiary .navbar-brand:hover {
+  color: var(--bs-navbar-hover-color);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-primary {
+  --bs-navbar-color: #ffffff;
+  --bs-navbar-hover-color: #ffffff;
+  --bs-navbar-disabled-color: rgba($white, .62);
+  --bs-navbar-brand-color: #ffffff;
+  --bs-navbar-brand-hover-color: #ffffff;
+  background-color: #0c3493 !important;
+  border: 1px solid #0c3493;
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-primary .navbar-brand,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-primary .nav-link {
+  color: var(--bs-navbar-color);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-primary .nav-link:hover,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-primary .nav-link:focus,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-primary .navbar-brand:hover {
+  color: var(--bs-navbar-hover-color);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-body-tertiary .form-control,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-primary .form-control {
+  background-color: #ffffff;
+  border-color: #667085;
+  color: #212529;
 }
 
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-placeholder-img {
@@ -19139,8 +19213,8 @@ const theme1 = `@charset "UTF-8";
   --bs-body-line-height: 1.5;
   --bs-body-color: #212529;
   --bs-body-color-rgb: 33, 37, 41;
-  --bs-body-bg: #ffffff;
-  --bs-body-bg-rgb: 255, 255, 255;
+  --bs-body-bg: #f8f9fa;
+  --bs-body-bg-rgb: 248, 249, 250;
   --bs-emphasis-color: #000000;
   --bs-emphasis-color-rgb: 0, 0, 0;
   --bs-secondary-color: rgba(33, 37, 41, 0.75);

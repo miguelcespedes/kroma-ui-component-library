@@ -15,7 +15,7 @@ $danger: $red-600;
 $light: $gray-100;
 $dark: $gray-800;
 
-$body-bg: $white;
+$body-bg: $gray-100;
 $body-color: $gray-800;
 $border-color: $gray-300;
 $link-color: $primary;
@@ -104,11 +104,21 @@ $toast-box-shadow: 0 0.5rem 1rem rgba(11, 10, 43, 0.12);
   --bs-border-color: #{$border-color};
   --bs-link-color: #{$link-color};
   --bs-link-hover-color: #{$link-hover-color};
-  --bs-header-bg: #{$gray-900};
-  --bs-header-color: #{$white};
-  --bs-header-border: #{$gray-700};
+  --bs-header-bg: #{$blue-100};
+  --bs-header-color: #{$gray-800};
+  --bs-header-border: #{$blue-300};
+  --bs-header-control-bg: #{$white};
+  --bs-header-control-color: #{$blue-700};
+  --bs-header-control-border: #{$blue-300};
+  --bs-header-control-hover-color: #{$white};
+  --bs-header-control-hover-bg: #{$blue-700};
+  --bs-header-control-hover-border: #{$blue-700};
   --bs-secondary-color: #{$gray-600};
   --bs-tertiary-bg: #{$gray-100};
+  --bs-navbar-bg: #{$white};
+  --bs-navbar-color: #{$gray-800};
+  --bs-navbar-hover-color: #{$blue-700};
+  --bs-navbar-border: #{$gray-300};
   --bs-card-bg: #{$card-bg};
   --bs-card-cap-bg: #{$card-cap-bg};
   --bs-dropdown-bg: #{$dropdown-bg};
@@ -129,4 +139,76 @@ $toast-box-shadow: 0 0.5rem 1rem rgba(11, 10, 43, 0.12);
   --bs-table-active-bg: rgba(var(--bs-emphasis-color-rgb), 0.1);
   --bs-table-hover-color: var(--bs-emphasis-color);
   --bs-table-hover-bg: rgba(var(--bs-emphasis-color-rgb), 0.075);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header {
+  background-color: var(--bs-header-bg);
+  color: var(--bs-header-color);
+  border-color: var(--bs-header-border);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header [data-theme-selector] {
+  --bs-btn-color: var(--bs-header-control-color);
+  --bs-btn-border-color: var(--bs-header-control-border);
+  --bs-btn-hover-color: var(--bs-header-control-hover-color);
+  --bs-btn-hover-bg: var(--bs-header-control-hover-bg);
+  --bs-btn-hover-border-color: var(--bs-header-control-hover-border);
+  background-color: var(--bs-header-control-bg);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header-logo {
+  filter: brightness(0);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary {
+  --bs-navbar-color: #{$gray-800};
+  --bs-navbar-hover-color: #{$blue-700};
+  --bs-navbar-disabled-color: rgba($gray-800, .46);
+  --bs-navbar-brand-color: #{$gray-800};
+  --bs-navbar-brand-hover-color: #{$blue-700};
+  background-color: $blue-100 !important;
+  border: 1px solid $blue-300;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .navbar-brand,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .nav-link {
+  color: var(--bs-navbar-color);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .nav-link:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .nav-link:focus,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .navbar-brand:hover {
+  color: var(--bs-navbar-hover-color);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary {
+  --bs-navbar-color: #{$white};
+  --bs-navbar-hover-color: #{$white};
+  --bs-navbar-disabled-color: rgba($white, .62);
+  --bs-navbar-brand-color: #{$white};
+  --bs-navbar-brand-hover-color: #{$white};
+  background-color: $blue-700 !important;
+  border: 1px solid $blue-700;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary .navbar-brand,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary .nav-link {
+  color: var(--bs-navbar-color);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary .nav-link:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary .nav-link:focus,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary .navbar-brand:hover {
+  color: var(--bs-navbar-hover-color);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .form-control,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary .form-control {
+  background-color: $white;
+  border-color: $gray-600-alt;
+  color: $gray-800;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .navbar-brand img {
+  filter: brightness(0);
 }
