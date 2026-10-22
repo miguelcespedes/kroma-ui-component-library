@@ -39,6 +39,39 @@ $dracula-light-info: #087e9b;
 $dracula-light-warning: #946c00;
 $dracula-light-danger: #c62828;
 
+$theme-color-tokens: (
+  "background": $dracula-background,
+  "current-line": $dracula-current-line,
+  "selection": $dracula-selection,
+  "foreground": $dracula-foreground,
+  "red": $dracula-red,
+  "orange": $dracula-orange,
+  "yellow": $dracula-yellow,
+  "green": $dracula-green,
+  "cyan": $dracula-cyan,
+  "purple": $dracula-purple,
+  "pink": $dracula-pink,
+  "background-deep": $dracula-background-deep,
+  "background-raised": $dracula-background-raised,
+  "foreground-muted": $dracula-foreground-muted,
+  "border": $dracula-border,
+  "light-canvas": $dracula-light-canvas,
+  "light-surface": $dracula-light-surface,
+  "light-surface-raised": $dracula-light-surface-raised,
+  "light-surface-accent": $dracula-light-surface-accent,
+  "light-text": $dracula-light-text,
+  "light-text-muted": $dracula-light-text-muted,
+  "light-border": $dracula-light-border,
+  "light-primary": $dracula-light-primary,
+  "light-primary-hover": $dracula-light-primary-hover,
+  "light-link": $dracula-light-link,
+  "light-link-hover": $dracula-light-link-hover,
+  "light-success": $dracula-light-success,
+  "light-info": $dracula-light-info,
+  "light-warning": $dracula-light-warning,
+  "light-danger": $dracula-light-danger
+);
+
 $font-family-system: system-ui, -apple-system, "Segoe UI", sans-serif;
 $font-size-100: 1rem;
 $font-weight-400: 400;

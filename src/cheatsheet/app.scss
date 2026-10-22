@@ -50,6 +50,64 @@ body {
   color: inherit !important;
 }
 
+.bd-color-token {
+  display: flex;
+  min-height: 6rem;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  color: var(--bs-body-bg);
+  background-color: var(--bd-token-color);
+}
+
+.bd-color-token code {
+  color: inherit;
+  font-size: .75rem;
+  opacity: .8;
+}
+
+.bd-color-token-primary {
+  color: var(--bs-primary-text-emphasis);
+  background-color: var(--bs-primary-bg-subtle);
+}
+
+.bd-color-token-secondary {
+  color: var(--bs-secondary-text-emphasis);
+  background-color: var(--bs-secondary-bg-subtle);
+}
+
+.bd-color-token-body {
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+}
+
+.bd-color-token-surface {
+  color: var(--bs-body-color);
+  background-color: var(--bs-tertiary-bg);
+}
+
+.bd-color-token-content {
+  color: var(--bs-body-bg);
+  background-color: var(--bs-body-color);
+}
+
+.bd-color-token-muted {
+  color: var(--bs-body-bg);
+  background-color: var(--bs-secondary-color);
+}
+
+.bd-color-token-border {
+  color: var(--bs-body-color);
+  background-color: var(--bs-border-color);
+}
+
+.bd-color-token-link {
+  color: var(--bs-body-bg);
+  background-color: var(--bs-link-color);
+}
+
 // Contenido principal.
 .bd-cheatsheet {
   max-width: none;

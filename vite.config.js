@@ -29,6 +29,7 @@ export default defineConfig(({ mode }) => ({
     name: "generate-theme-manifest",
     async configResolved() {
       await run(process.execPath, ["scripts/generate-theme-manifest.mjs"]);
+      await run(process.execPath, ["scripts/generate-theme-tokens.mjs"]);
     }
   }, {
     name: "write-named-build-files",

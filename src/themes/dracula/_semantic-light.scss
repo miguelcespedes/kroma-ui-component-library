@@ -5,6 +5,20 @@
 // PROHIBIDO: declarar variables dark, crear primitivas o añadir estilos de una página.
 // DEPENDENCIAS: debe reutilizar _tokens.scss y cargarse antes de Bootstrap.
 
+$theme-semantic-color-tokens: (
+  "primary": $dracula-light-primary,
+  "link": $dracula-light-link,
+  "success": $dracula-light-success,
+  "info": $dracula-light-info,
+  "warning": $dracula-light-warning,
+  "danger": $dracula-light-danger,
+  "body": $dracula-light-canvas,
+  "surface": $dracula-light-surface,
+  "content": $dracula-light-text,
+  "muted-content": $dracula-light-text-muted,
+  "border": $dracula-light-border
+);
+
 $primary: $dracula-light-primary;
 $secondary: $dracula-light-text-muted;
 $success: $dracula-light-success;

@@ -5,6 +5,20 @@
 // PROHIBIDO: duplicar tokens dark globales generados por Bootstrap o repetir primitivas.
 // DEPENDENCIAS: debe reutilizar _tokens.scss y cargarse antes de Bootstrap.
 
+$theme-semantic-color-tokens: (
+  "primary": $dracula-purple,
+  "link": $dracula-cyan,
+  "success": $dracula-green,
+  "info": $dracula-cyan,
+  "warning": $dracula-yellow,
+  "danger": $dracula-red,
+  "body": $dracula-background,
+  "surface": $dracula-background-raised,
+  "content": $dracula-foreground,
+  "muted-content": $dracula-foreground-muted,
+  "border": $dracula-border
+);
+
 $enable-dark-mode: true;
 $body-color-dark: $dracula-foreground;
 $body-bg-dark: $dracula-background;
