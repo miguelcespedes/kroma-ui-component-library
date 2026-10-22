@@ -98,9 +98,12 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
   --bs-header-bg: #{$surface-default-dark};
   --bs-header-color: #{$content-primary-dark};
   --bs-header-border: #{$border-default-dark};
-  --bs-nav-link-color: #{$content-secondary-dark};
-  --bs-nav-link-hover-color: #{$content-primary-dark};
-  --bs-nav-link-disabled-color: #{$content-disabled-dark};
+  --bs-nav-link-color: #{$blue-dark-300};
+  --bs-nav-link-hover-color: #{$blue-dark-200};
+  --bs-nav-link-disabled-color: rgba($blue-dark-300, .46);
+  --bs-link-color: #{$blue-dark-300};
+  --bs-link-hover-color: #{$blue-dark-200};
+  --bs-secondary-color: #{$blue-dark-300};
   --bs-nav-tabs-border-color: #{$blue-dark-700};
   --bs-nav-tabs-link-hover-border-color: #{$blue-dark-700};
   --bs-nav-tabs-link-active-color: #{$white};
@@ -108,13 +111,14 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
   --bs-nav-tabs-link-active-border-color: #{$blue-700};
   --bs-nav-pills-link-active-color: #{$white};
   --bs-nav-pills-link-active-bg: #{$blue-700};
-  --bs-navbar-color: rgba($white, 0.55);
-  --bs-navbar-hover-color: rgba($white, 0.75);
-  --bs-navbar-disabled-color: rgba($white, 0.25);
+  --bs-navbar-color: #{$blue-dark-300};
+  --bs-navbar-hover-color: #{$blue-dark-200};
+  --bs-navbar-disabled-color: #{rgba($blue-dark-300, .46)};
   --bs-navbar-active-color: #{$white};
   --bs-navbar-brand-color: #{$white};
   --bs-navbar-brand-hover-color: #{$white};
-  --bs-navbar-toggler-border-color: rgba($white, 0.15);
+  --bs-navbar-toggler-border-color: rgba($blue-dark-300, .28);
+  --bs-emphasis-color: #{$content-primary-dark};
   --bs-pagination-color: #{$blue-300};
   --bs-pagination-bg: #{$surface-default-dark};
   --bs-pagination-border-color: #{$border-default-dark};
@@ -263,6 +267,42 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
   --bs-tooltip-color: #{$content-primary-dark};
   --bs-tooltip-bg: #{$blue-700};
   --bs-tooltip-border-radius: var(--bs-popover-border-radius);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .nav {
+  --bs-nav-link-color: #{$blue-dark-300};
+  --bs-nav-link-hover-color: #{$blue-dark-200};
+  --bs-nav-link-disabled-color: rgba($blue-dark-300, .46);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar {
+  --bs-navbar-color: #{$blue-dark-300};
+  --bs-navbar-hover-color: #{$blue-dark-200};
+  --bs-navbar-disabled-color: rgba($blue-dark-300, .46);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .btn-outline-dark {
+  --bs-btn-color: #{$blue-dark-300};
+  --bs-btn-border-color: #{$blue-dark-700};
+  --bs-btn-hover-color: #{$content-primary-dark};
+  --bs-btn-hover-bg: #{$blue-dark-700};
+  --bs-btn-hover-border-color: #{$blue-dark-700};
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .nav-link.disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .nav-link.disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .btn:disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .btn.disabled {
+  color: #{rgba($blue-dark-300, .46)};
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] button:disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] [aria-disabled="true"] {
+  cursor: not-allowed;
 }
 
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .progress,

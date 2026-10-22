@@ -5160,7 +5160,7 @@ const theme0 = `@charset "UTF-8";
 }
 
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] {
-  --bs-body-bg: #06112d;
+  --bs-body-bg: #040b20;
   --bs-body-color: #ffffff;
   --bs-secondary-bg: #091a3d;
   --bs-tertiary-bg: #0d2450;
@@ -5176,9 +5176,12 @@ const theme0 = `@charset "UTF-8";
   --bs-header-bg: #091a3d;
   --bs-header-color: #ffffff;
   --bs-header-border: #285092;
-  --bs-nav-link-color: #c4d9ff;
-  --bs-nav-link-hover-color: #ffffff;
-  --bs-nav-link-disabled-color: #94a3b8;
+  --bs-nav-link-color: #9fc1ff;
+  --bs-nav-link-hover-color: #c4d9ff;
+  --bs-nav-link-disabled-color: rgba($blue-dark-300, .46);
+  --bs-link-color: #9fc1ff;
+  --bs-link-hover-color: #c4d9ff;
+  --bs-secondary-color: #9fc1ff;
   --bs-nav-tabs-border-color: #285092;
   --bs-nav-tabs-link-hover-border-color: #285092;
   --bs-nav-tabs-link-active-color: #ffffff;
@@ -5186,13 +5189,14 @@ const theme0 = `@charset "UTF-8";
   --bs-nav-tabs-link-active-border-color: #0c3493;
   --bs-nav-pills-link-active-color: #ffffff;
   --bs-nav-pills-link-active-bg: #0c3493;
-  --bs-navbar-color: rgba($white, 0.55);
-  --bs-navbar-hover-color: rgba($white, 0.75);
-  --bs-navbar-disabled-color: rgba($white, 0.25);
+  --bs-navbar-color: #9fc1ff;
+  --bs-navbar-hover-color: #c4d9ff;
+  --bs-navbar-disabled-color: rgba(159, 193, 255, 0.46);
   --bs-navbar-active-color: #ffffff;
   --bs-navbar-brand-color: #ffffff;
   --bs-navbar-brand-hover-color: #ffffff;
-  --bs-navbar-toggler-border-color: rgba($white, 0.15);
+  --bs-navbar-toggler-border-color: rgba($blue-dark-300, .28);
+  --bs-emphasis-color: #ffffff;
   --bs-pagination-color: #8eb5ff;
   --bs-pagination-bg: #091a3d;
   --bs-pagination-border-color: #285092;
@@ -5335,6 +5339,42 @@ const theme0 = `@charset "UTF-8";
   --bs-tooltip-color: #ffffff;
   --bs-tooltip-bg: #0c3493;
   --bs-tooltip-border-radius: var(--bs-popover-border-radius);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .nav {
+  --bs-nav-link-color: #9fc1ff;
+  --bs-nav-link-hover-color: #c4d9ff;
+  --bs-nav-link-disabled-color: rgba($blue-dark-300, .46);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .navbar {
+  --bs-navbar-color: #9fc1ff;
+  --bs-navbar-hover-color: #c4d9ff;
+  --bs-navbar-disabled-color: rgba($blue-dark-300, .46);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .navbar .btn-outline-dark {
+  --bs-btn-color: #9fc1ff;
+  --bs-btn-border-color: #285092;
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: #285092;
+  --bs-btn-hover-border-color: #285092;
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .nav-link.disabled,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .navbar .nav-link.disabled,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .navbar .disabled,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .navbar .btn:disabled,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .navbar .btn.disabled {
+  color: rgba(159, 193, 255, 0.46);
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] button:disabled,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .disabled,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] [aria-disabled=true] {
+  cursor: not-allowed;
 }
 
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .progress,
@@ -5521,8 +5561,8 @@ const theme0 = `@charset "UTF-8";
   color-scheme: dark;
   --bs-body-color: #ffffff;
   --bs-body-color-rgb: 255, 255, 255;
-  --bs-body-bg: #06112d;
-  --bs-body-bg-rgb: 6, 17, 45;
+  --bs-body-bg: #040b20;
+  --bs-body-bg-rgb: 4, 11, 32;
   --bs-emphasis-color: #ffffff;
   --bs-emphasis-color-rgb: 255, 255, 255;
   --bs-secondary-color: rgba(196, 217, 255, 0.78);
@@ -5548,7 +5588,7 @@ const theme0 = `@charset "UTF-8";
   --bs-warning-bg-subtle: rgba(255, 193, 7, 0.14);
   --bs-danger-bg-subtle: rgba(220, 53, 69, 0.14);
   --bs-light-bg-subtle: #0d2450;
-  --bs-dark-bg-subtle: #06112d;
+  --bs-dark-bg-subtle: #040b20;
   --bs-primary-border-subtle: #8eb5ff;
   --bs-secondary-border-subtle: #285092;
   --bs-success-border-subtle: #198754;
@@ -17316,6 +17356,8 @@ window.bootstrap = bootstrap;
 const themeStylesheet = document.createElement("style");
 themeStylesheet.id = "kroma-theme-stylesheet";
 document.head.append(themeStylesheet);
+document.documentElement.setAttribute("data-kroma-theme", "kroma-entrepreneur");
+document.documentElement.setAttribute("data-bs-theme", "dark");
 initializeThemeDropdown(bootstrap);
 initializeContrastDropdown(bootstrap);
 document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((element) => new Tooltip(element));

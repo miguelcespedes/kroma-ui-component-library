@@ -9,6 +9,9 @@ const themeStylesheet = document.createElement("style");
 themeStylesheet.id = "kroma-theme-stylesheet";
 document.head.append(themeStylesheet);
 
+document.documentElement.setAttribute("data-kroma-theme", "kroma-entrepreneur");
+document.documentElement.setAttribute("data-bs-theme", "dark");
+
 initializeThemeDropdown(bootstrap);
 initializeContrastDropdown(bootstrap);
 
