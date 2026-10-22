@@ -152,6 +152,12 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
     }
   }
 
+  .bd-heading a::before,
+  .bd-aside .btn::before {
+    color: $white;
+    filter: brightness(0) invert(1);
+  }
+
   .card {
     --bs-card-bg: #{$surface-default-dark};
     --bs-card-color: #{$content-primary-dark};

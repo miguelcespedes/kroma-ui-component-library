@@ -5211,6 +5211,11 @@ const theme0 = `@charset "UTF-8";
   color: #ffffff;
   background-color: #091a3d;
 }
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-heading a::before,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside .btn::before {
+  color: #ffffff;
+  filter: brightness(0) invert(1);
+}
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .card {
   --bs-card-bg: #091a3d;
   --bs-card-color: #ffffff;
