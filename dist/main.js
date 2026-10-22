@@ -5168,6 +5168,19 @@ const theme0 = `@charset "UTF-8";
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] #toasts .bd-example {
   background-color: #091a3d;
 }
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .accordion-button {
+  color: #9fc1ff;
+  background-color: #091a3d;
+  border-color: #285092;
+}
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .accordion-button:not(.collapsed) {
+  color: #ffffff;
+  background-color: #0d2450;
+  border-color: #285092;
+}
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .accordion-body {
+  background-color: #091a3d;
+}
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] {
   --bs-body-bg: #040b20;
   --bs-body-color: #ffffff;
@@ -5225,8 +5238,11 @@ const theme0 = `@charset "UTF-8";
   --bs-accordion-border-color: #285092;
   --bs-accordion-button-color: #ffffff;
   --bs-accordion-button-bg: #091a3d;
-  --bs-accordion-button-active-bg: rgba($blue-700, 0.35);
-  --bs-accordion-button-active-color: #8eb5ff;
+  --bs-accordion-button-active-bg: #0d2450;
+  --bs-accordion-button-active-color: #ffffff;
+  --bs-accordion-button-color: #9fc1ff;
+  --bs-accordion-border-color: #285092;
+  --bs-accordion-btn-focus-border-color: #3d6db8;
   --bs-accordion-btn-focus-box-shadow: 0 0 0 0.25rem rgba($blue-300, 0.25);
   --bs-carousel-indicator-active-bg: #ffffff;
   --bs-carousel-caption-color: #ffffff;
@@ -9945,8 +9961,8 @@ textarea.form-control-lg {
   --bs-accordion-btn-focus-box-shadow: 0 0 0 0.25rem rgba(12, 52, 147, 0.25);
   --bs-accordion-body-padding-x: 1.25rem;
   --bs-accordion-body-padding-y: 1rem;
-  --bs-accordion-active-color: #0c3493;
-  --bs-accordion-active-bg: #e8effc;
+  --bs-accordion-active-color: #8eb5ff;
+  --bs-accordion-active-bg: #0d2450;
 }
 
 .accordion-button {

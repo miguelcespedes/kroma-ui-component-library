@@ -24,6 +24,8 @@ $border-subtle-dark: rgba($white, $opacity-hover);
 $card-bg: $surface-default-dark;
 $card-cap-bg: $surface-raised-dark;
 $card-border-color: $border-default-dark;
+$accordion-button-active-bg: $surface-raised-dark;
+$accordion-button-active-color: $blue-300;
 
 $body-color-dark: $white;
 $body-bg-dark: $surface-canvas-dark;
@@ -98,6 +100,22 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
     background-color: $surface-default-dark;
   }
 
+  .accordion-button {
+    color: $blue-dark-300;
+    background-color: $surface-default-dark;
+    border-color: $border-default-dark;
+
+    &:not(.collapsed) {
+      color: $white;
+      background-color: $surface-raised-dark;
+      border-color: $border-default-dark;
+    }
+  }
+
+  .accordion-body {
+    background-color: $surface-default-dark;
+  }
+
   --bs-body-bg: #{$surface-canvas-dark};
   --bs-body-color: #{$content-primary-dark};
   --bs-secondary-bg: #{$surface-default-dark};
@@ -154,8 +172,11 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
   --bs-accordion-border-color: #{$border-default-dark};
   --bs-accordion-button-color: #{$white};
   --bs-accordion-button-bg: #{$surface-default-dark};
-  --bs-accordion-button-active-bg: rgba($blue-700, 0.35);
-  --bs-accordion-button-active-color: #{$blue-300};
+  --bs-accordion-button-active-bg: #{$surface-raised-dark};
+  --bs-accordion-button-active-color: #{$white};
+  --bs-accordion-button-color: #{$blue-dark-300};
+  --bs-accordion-border-color: #{$border-default-dark};
+  --bs-accordion-btn-focus-border-color: #{$blue-dark-600};
   --bs-accordion-btn-focus-box-shadow: 0 0 0 0.25rem rgba($blue-300, 0.25);
   --bs-carousel-indicator-active-bg: #{$white};
   --bs-carousel-caption-color: #{$white};
