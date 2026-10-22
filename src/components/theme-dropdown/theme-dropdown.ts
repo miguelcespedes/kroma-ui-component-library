@@ -12,8 +12,8 @@ export function initializeThemeDropdown(bootstrap: BootstrapDropdown) {
   if (!container) return;
 
   container.innerHTML = `
-    <span class="text-white">Theme</span>
-    <button class="btn btn-outline-light dropdown-toggle" type="button" data-theme-selector data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="text-body">Theme</span>
+    <button class="btn btn-outline-primary dropdown-toggle" type="button" data-theme-selector data-bs-toggle="dropdown" aria-expanded="false">
       <span id="kroma-theme-label">Theme</span>
     </button>
     <ul class="dropdown-menu dropdown-menu-end"></ul>

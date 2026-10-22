@@ -11943,9 +11943,22 @@ body {
   inset: 0 0 auto;
   z-index: 1030;
   min-height: 4rem;
-  background-color: var(--bs-header-bg, var(--bs-dark));
-  color: var(--bs-header-color, var(--bs-white));
+  background-color: var(--bs-header-bg, var(--bs-tertiary-bg, var(--bs-body-bg)));
+  color: var(--bs-header-color, var(--bs-body-color));
   border-color: var(--bs-header-border, var(--bs-border-color));
+}
+
+.bd-header-logo {
+  filter: none;
+}
+
+.bd-header [data-theme-selector] {
+  --bs-btn-color: var(--bs-header-control-color, var(--bs-header-color, var(--bs-body-color)));
+  --bs-btn-border-color: var(--bs-header-control-border, var(--bs-header-border, var(--bs-border-color)));
+  --bs-btn-hover-color: var(--bs-header-control-hover-color, var(--bs-body-bg));
+  --bs-btn-hover-bg: var(--bs-header-control-hover-bg, var(--bs-primary));
+  --bs-btn-hover-border-color: var(--bs-header-control-hover-border, var(--bs-primary));
+  background-color: var(--bs-header-control-bg, transparent);
 }
 
 .bd-cheatsheet {

@@ -52,6 +52,23 @@ $carousel-control-icon-filter-dark: invert(1) grayscale(100%);
 $btn-close-filter-dark: invert(1) grayscale(100%) brightness(200%);
 
 [data-kroma-theme="dracula"][data-bs-theme="dark"] {
+  --bs-header-bg: #{$dracula-purple};
+  --bs-header-color: #{$dracula-background-deep};
+  --bs-header-border: #{$dracula-current-line};
+  --bs-header-link-color: #{$dracula-background-deep};
+  --bs-header-link-hover-color: #{$dracula-pink};
+  --bs-header-disabled-color: rgba($dracula-background-deep, .55);
+  --bs-header-control-bg: #{$dracula-background-deep};
+  --bs-header-control-color: #{$dracula-foreground};
+  --bs-header-control-border: rgba($dracula-foreground, .55);
+  --bs-header-control-hover-color: #{$dracula-background-deep};
+  --bs-header-control-hover-bg: #{$dracula-foreground};
+  --bs-header-control-hover-border: #{$dracula-foreground};
+  --bs-navbar-bg: #{$dracula-background-raised};
+  --bs-navbar-color: #{$dracula-foreground};
+  --bs-navbar-hover-color: #{$dracula-pink};
+  --bs-navbar-border: #{$dracula-border};
+
   .bd-placeholder-img {
     color: $dracula-background-raised;
   }
@@ -171,9 +188,6 @@ $btn-close-filter-dark: invert(1) grayscale(100%) brightness(200%);
   --bs-border-color: #{$dracula-border};
   --bs-link-color: #{$dracula-cyan};
   --bs-link-hover-color: #{$dracula-pink};
-  --bs-header-bg: #{$dracula-background-deep};
-  --bs-header-color: #{$dracula-foreground};
-  --bs-header-border: #{$dracula-border};
   --bs-secondary-bg: #{$dracula-background-deep};
   --bs-tertiary-bg: #{$dracula-background};
   --bs-secondary-color: #{$dracula-foreground-muted};
@@ -273,6 +287,31 @@ $btn-close-filter-dark: invert(1) grayscale(100%) brightness(200%);
     background-color: $dracula-background-raised;
     border-color: $dracula-border;
   }
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary {
+  --bs-navbar-color: #{$dracula-foreground};
+  --bs-navbar-hover-color: #{$dracula-cyan};
+  --bs-navbar-disabled-color: rgba($dracula-foreground-muted, .62);
+  --bs-navbar-brand-color: #{$dracula-foreground};
+  --bs-navbar-brand-hover-color: #{$dracula-pink};
+  background-color: #{$dracula-background-raised} !important;
+  border: 1px solid #{$dracula-border};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary .navbar-brand,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary .nav-link {
+  color: var(--bs-navbar-color);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary .nav-link:hover,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary .nav-link:focus,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary .navbar-brand:hover {
+  color: var(--bs-navbar-hover-color);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary img {
+  filter: none;
 }
 
 [data-kroma-theme="dracula"][data-bs-theme="dark"] .nav,
