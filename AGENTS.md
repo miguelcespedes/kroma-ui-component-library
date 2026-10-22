@@ -37,7 +37,7 @@ src/themes/kroma-entrepreneur/
   _semantic-light.scss                   # Semántica clara y variables Sass base
   _semantic-dark.scss                    # Semántica dark y overrides runtime
   theme.scss                             # Entry point del tema
-src/themes/bootstrap.scss                 # Bootstrap oficial sin personalizaciones Kroma
+node_modules/bootstrap/scss/bootstrap.scss # Fuente oficial de Bootstrap
 dist/                                    # Artefactos generados y versionados
 ```
 
@@ -58,7 +58,7 @@ El orden obligatorio de `theme.scss` es:
 - `_semantic-light.scss` asigna significado claro y define las variables Sass que Bootstrap consume.
 - `_semantic-dark.scss` define las variables Sass oficiales `*-dark` y los overrides CSS bajo `[data-bs-theme="dark"]`.
 - Bootstrap debe importarse después de todas las variables Sass que consume.
-- `src/themes/bootstrap.scss` es el único entrypoint que importa Bootstrap.
+- `src/cheatsheet/app.scss` importa directamente Bootstrap oficial para el catálogo base.
 - Cada `src/themes/<theme>/theme.scss` debe importar Bootstrap después de sus capas semánticas para generar su propia compilación completa.
 - `src/cheatsheet/app.scss` compone Bootstrap nativo y los estilos generales de la aplicación; no debe importar themes de marca.
 - `theme-dropdown.ts` activa el stylesheet inline del theme seleccionado mediante `#kroma-theme-stylesheet`.

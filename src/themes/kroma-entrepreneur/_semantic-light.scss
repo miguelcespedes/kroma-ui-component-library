@@ -188,17 +188,33 @@ $toast-box-shadow: 0 0.5rem 1rem rgba(11, 10, 43, 0.12);
 }
 
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header [data-theme-selector] {
-  --bs-btn-color: var(--bs-header-control-color);
-  --bs-btn-border-color: var(--bs-header-control-border);
-  --bs-btn-hover-color: var(--bs-header-control-hover-color);
-  --bs-btn-hover-bg: var(--bs-header-control-hover-bg);
-  --bs-btn-hover-border-color: var(--bs-header-control-hover-border);
-  background-color: var(--bs-header-control-bg);
+  --bs-btn-color: #{$white};
+  --bs-btn-bg: #{$primary};
+  --bs-btn-border-color: #{$primary};
+  --bs-btn-hover-color: #{$white};
+  --bs-btn-hover-bg: #{$blue-700};
+  --bs-btn-hover-border-color: #{$blue-700};
 }
 
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header-logo {
   filter: brightness(0);
 }
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header [data-theme-selector] {
+  --bs-btn-color: #{$white};
+  --bs-btn-bg: #{$primary};
+  --bs-btn-border-color: #{$primary};
+  --bs-btn-hover-color: #{$white};
+  --bs-btn-hover-bg: #{$primary};
+  --bs-btn-hover-border-color: #{$primary};
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header .dropdown-item.active:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header .dropdown-item.active:focus {
+  color: $white;
+  background-color: $primary;
+}
+
 
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary {
   --bs-navbar-color: #{$gray-800};

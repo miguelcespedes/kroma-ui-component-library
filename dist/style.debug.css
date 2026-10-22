@@ -11902,6 +11902,33 @@ textarea.form-control-lg {
   z-index: 1040;
   left: auto !important;
   right: 0 !important;
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  border-color: var(--bs-border-color);
+}
+
+.bd-header .dropdown-menu .dropdown-item {
+  color: var(--bs-body-color);
+}
+
+.bd-header .dropdown-menu .dropdown-item:hover,
+.bd-header .dropdown-menu .dropdown-item:focus {
+  color: var(--bs-body-color);
+  background-color: var(--bs-tertiary-bg);
+}
+
+.bd-header .dropdown-menu .dropdown-item.active,
+.bd-header .dropdown-menu .dropdown-item.active:hover,
+.bd-header .dropdown-menu .dropdown-item.active:focus {
+  color: var(--bs-dropdown-link-active-color);
+  background-color: var(--bs-dropdown-link-active-bg);
+}
+
+.bd-header [data-theme-selector]:hover,
+.bd-header [data-theme-selector]:focus {
+  color: var(--bs-btn-hover-color);
+  background-color: var(--bs-btn-hover-bg);
+  border-color: var(--bs-btn-hover-border-color);
 }
 
 .bd-header .dropdown-menu .bi {

@@ -527,12 +527,12 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
 }
 
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .bd-header [data-theme-selector] {
-  --bs-btn-color: var(--bs-header-control-color);
-  --bs-btn-border-color: var(--bs-header-control-border);
-  --bs-btn-hover-color: var(--bs-header-control-hover-color);
-  --bs-btn-hover-bg: var(--bs-header-control-hover-bg);
-  --bs-btn-hover-border-color: var(--bs-header-control-hover-border);
-  background-color: var(--bs-header-control-bg);
+  --bs-btn-color: var(--bs-white);
+  --bs-btn-bg: var(--bs-primary);
+  --bs-btn-border-color: var(--bs-primary);
+  --bs-btn-hover-color: var(--bs-white);
+  --bs-btn-hover-bg: var(--bs-primary);
+  --bs-btn-hover-border-color: var(--bs-primary);
 }
 
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .btn-outline-dark {
