@@ -9,23 +9,23 @@
 $enable-dark-mode: true;
 
 // Superficies semánticas del modo oscuro.
-$surface-canvas-dark: $gray-950;
-$surface-default-dark: $gray-900;
-$surface-raised-dark: $gray-850;
-$surface-overlay-dark: $gray-800;
-$surface-muted-dark: $gray-750;
+$surface-canvas-dark: $blue-dark-950;
+$surface-default-dark: $blue-dark-900;
+$surface-raised-dark: $blue-dark-850;
+$surface-overlay-dark: $blue-dark-800;
+$surface-muted-dark: $blue-dark-750;
 $content-primary-dark: $white;
-$content-secondary-dark: $gray-300;
-$content-tertiary-dark: $gray-500;
-$content-disabled-dark: $gray-600;
-$border-default-dark: $gray-750;
+$content-secondary-dark: $blue-dark-200;
+$content-tertiary-dark: $blue-dark-300;
+$content-disabled-dark: $gray-500;
+$border-default-dark: $blue-dark-700;
 $border-subtle-dark: rgba($white, $opacity-hover);
 
 $body-color-dark: $white;
 $body-bg-dark: $surface-canvas-dark;
-$body-secondary-color-dark: rgba($gray-300, .75);
+$body-secondary-color-dark: rgba($blue-dark-200, .78);
 $body-secondary-bg-dark: $surface-default-dark;
-$body-tertiary-color-dark: rgba($gray-300, .5);
+$body-tertiary-color-dark: rgba($blue-dark-200, .58);
 $body-tertiary-bg-dark: $surface-raised-dark;
 $body-emphasis-color-dark: $content-primary-dark;
 $border-color-dark: $border-default-dark;
@@ -47,7 +47,7 @@ $light-text-emphasis-dark: $gray-100;
 $dark-text-emphasis-dark: $gray-300;
 
 $primary-bg-subtle-dark: rgba($blue-700, $opacity-active);
-$secondary-bg-subtle-dark: $gray-850;
+$secondary-bg-subtle-dark: $blue-dark-850;
 $success-bg-subtle-dark: rgba($green-600, $opacity-active);
 $info-bg-subtle-dark: rgba($cyan-500, $opacity-active);
 $warning-bg-subtle-dark: rgba($yellow-500, $opacity-active);
@@ -56,7 +56,7 @@ $light-bg-subtle-dark: $surface-raised-dark;
 $dark-bg-subtle-dark: $surface-canvas-dark;
 
 $primary-border-subtle-dark: $blue-300;
-$secondary-border-subtle-dark: $gray-750;
+$secondary-border-subtle-dark: $blue-dark-700;
 $success-border-subtle-dark: $green-600;
 $info-border-subtle-dark: $cyan-500;
 $warning-border-subtle-dark: $yellow-500;
@@ -101,8 +101,8 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
   --bs-nav-link-color: #{$content-secondary-dark};
   --bs-nav-link-hover-color: #{$content-primary-dark};
   --bs-nav-link-disabled-color: #{$content-disabled-dark};
-  --bs-nav-tabs-border-color: #{$gray-750};
-  --bs-nav-tabs-link-hover-border-color: #{$gray-750};
+  --bs-nav-tabs-border-color: #{$blue-dark-700};
+  --bs-nav-tabs-link-hover-border-color: #{$blue-dark-700};
   --bs-nav-tabs-link-active-color: #{$white};
   --bs-nav-tabs-link-active-bg: #{$blue-700};
   --bs-nav-tabs-link-active-border-color: #{$blue-700};
@@ -122,7 +122,7 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
   --bs-pagination-hover-bg: #{$surface-raised-dark};
   --bs-pagination-hover-border-color: #{$border-default-dark};
   --bs-pagination-focus-color: #{$blue-200};
-  --bs-pagination-focus-bg: #{$gray-850};
+  --bs-pagination-focus-bg: #{$blue-dark-850};
   --bs-pagination-active-color: #{$white};
   --bs-pagination-active-bg: #{$blue-700};
   --bs-pagination-active-border-color: #{$blue-700};
@@ -140,9 +140,9 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
   --bs-carousel-indicator-active-bg: #{$white};
   --bs-carousel-caption-color: #{$white};
   --bs-carousel-control-icon-filter: invert(1) grayscale(100);
-  --bs-offcanvas-bg: #{$gray-900};
+  --bs-offcanvas-bg: #{$surface-default-dark};
   --bs-offcanvas-color: #{$white};
-  --bs-offcanvas-border-color: #{$gray-750};
+  --bs-offcanvas-border-color: #{$border-default-dark};
   --bs-offcanvas-box-shadow: $shadow-dark;
   --bs-card-bg: #{$surface-default-dark};
   --bs-card-color: #{$white};
@@ -153,7 +153,7 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
   --bs-list-group-border-color: #{$border-default-dark};
   --bs-list-group-hover-bg: #{$surface-raised-dark};
   --bs-list-group-action-hover-color: #{$white};
-  --bs-list-group-action-hover-bg: #{$gray-800};
+  --bs-list-group-action-hover-bg: #{$surface-overlay-dark};
   --bs-dropdown-bg: #{$surface-raised-dark};
   --bs-dropdown-color: #{$white};
   --bs-dropdown-border-color: #{$border-default-dark};
@@ -163,8 +163,8 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
   --bs-dropdown-link-active-color: #{$white};
   --bs-dropdown-link-hover-color: #{$white};
   --bs-dropdown-link-disabled-color: #{$gray-600};
-  --bs-dropdown-divider-bg: #{$gray-700};
-  --bs-dropdown-header-color: #{$gray-300};
+  --bs-dropdown-divider-bg: #{$border-default-dark};
+  --bs-dropdown-header-color: #{$content-secondary-dark};
   --bs-modal-bg: #{$surface-default-dark};
   --bs-modal-color: #{$white};
   --bs-modal-border-color: #{$border-default-dark};
@@ -178,20 +178,20 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
   --bs-popover-box-shadow: #{$shadow-dark};
   --bs-tooltip-color: #{$white};
   --bs-tooltip-bg: #{$surface-overlay-dark};
-  --bs-toast-bg: rgba($gray-900, $opacity-overlay);
+  --bs-toast-bg: rgba($surface-default-dark, $opacity-overlay);
   --bs-toast-color: #{$white};
   --bs-toast-border-color: #{$border-default-dark};
   --bs-toast-header-bg: #{$surface-raised-dark};
   --bs-toast-header-color: #{$white};
-  --bs-toast-header-border-color: #{$gray-700};
+  --bs-toast-header-border-color: #{$border-default-dark};
 
   .toast {
-    --bs-toast-bg: #{$gray-900};
+    --bs-toast-bg: #{$surface-default-dark};
     --bs-toast-color: #{$white};
-    --bs-toast-border-color: #{$gray-750};
-    --bs-toast-header-bg: #{$gray-850};
+    --bs-toast-border-color: #{$border-default-dark};
+    --bs-toast-header-bg: #{$surface-raised-dark};
     --bs-toast-header-color: #{$white};
-    --bs-toast-header-border-color: #{$gray-700};
+    --bs-toast-header-border-color: #{$border-default-dark};
   }
 
   --bs-table-color: var(--bs-emphasis-color);
@@ -213,41 +213,41 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
 
   .form-control {
     color: #{$white};
-    background-color: #{$gray-900};
-    border-color: #{$gray-700};
+    background-color: #{$surface-default-dark};
+    border-color: #{$border-default-dark};
 
     &::file-selector-button {
       color: #{$white};
-      background-color: #{$gray-800};
+      background-color: #{$surface-overlay-dark};
     }
   }
 
   .form-select {
     color: #{$white};
-    background-color: #{$gray-900};
-    border-color: #{$gray-700};
+    background-color: #{$surface-default-dark};
+    border-color: #{$border-default-dark};
   }
 
   .input-group-text {
     color: #{$white};
-    background-color: #{$gray-800};
-    border-color: #{$gray-700};
+    background-color: #{$surface-overlay-dark};
+    border-color: #{$border-default-dark};
   }
 
 }
 
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .dropdown-menu {
   --bs-dropdown-color: #{$white};
-  --bs-dropdown-bg: #{$gray-900};
-  --bs-dropdown-border-color: #{$gray-700};
-  --bs-dropdown-divider-bg: #{$gray-700};
+  --bs-dropdown-bg: #{$surface-default-dark};
+  --bs-dropdown-border-color: #{$border-default-dark};
+  --bs-dropdown-divider-bg: #{$border-default-dark};
   --bs-dropdown-link-color: #{$white};
   --bs-dropdown-link-hover-color: #{$white};
-  --bs-dropdown-link-hover-bg: #{$gray-800};
+  --bs-dropdown-link-hover-bg: #{$surface-overlay-dark};
   --bs-dropdown-link-active-color: #{$white};
   --bs-dropdown-link-active-bg: #{$blue-700};
   --bs-dropdown-link-disabled-color: #{$gray-600};
-  --bs-dropdown-header-color: #{$gray-300};
+  --bs-dropdown-header-color: #{$content-secondary-dark};
 }
 
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .popover {
