@@ -1,0 +1,50 @@
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorización explícita.
+// RESPONSABILIDAD: definir primitivas sin significado funcional o de modo.
+// PERMITIDO: modificar colores, tipografía, espaciado y radios reutilizables.
+// PROHIBIDO: añadir variables del framework, selectores CSS o reglas de componentes.
+// DEPENDENCIAS: las capas semánticas consumen estos valores y les asignan significado.
+
+// Dracula official palette: https://draculatheme.com/contribute
+$dracula-background: #282a36;
+$dracula-current-line: #6272a4;
+$dracula-selection: #44475a;
+$dracula-foreground: #f8f8f2;
+$dracula-red: #ff5555;
+$dracula-orange: #ffb86c;
+$dracula-yellow: #f1fa8c;
+$dracula-green: #50fa7b;
+$dracula-cyan: #8be9fd;
+$dracula-purple: #bd93f9;
+$dracula-pink: #ff79c6;
+
+$dracula-background-deep: #21222c;
+$dracula-background-raised: #343746;
+$dracula-foreground-muted: #b9bbca;
+$dracula-border: #44475a;
+
+$dracula-light-canvas: #f8f8f2;
+$dracula-light-surface: #ffffff;
+$dracula-light-surface-raised: #ededef;
+$dracula-light-text: #282a36;
+$dracula-light-text-muted: #6272a4;
+$dracula-light-border: #c8c9d4;
+$dracula-light-primary: #7c4dcc;
+$dracula-light-primary-hover: #6338ad;
+$dracula-light-link: #087e9b;
+$dracula-light-link-hover: #c2187a;
+$dracula-light-success: #16833d;
+$dracula-light-info: #087e9b;
+$dracula-light-warning: #946c00;
+$dracula-light-danger: #c62828;
+
+$font-family-system: system-ui, -apple-system, "Segoe UI", sans-serif;
+$font-size-100: 1rem;
+$font-weight-400: 400;
+$font-weight-600: 600;
+$font-weight-700: 700;
+$line-height-normal: 1.5;
+
+$radius-sm: .25rem;
+$radius-md: .375rem;
+$radius-lg: .5rem;

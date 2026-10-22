@@ -1,0 +1,119 @@
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorización explícita.
+// RESPONSABILIDAD: asignar significado claro a las primitivas y configurar Bootstrap.
+// PERMITIDO: definir variables Sass claras y CSS runtime bajo [data-kroma-theme="dracula"][data-bs-theme="light"].
+// PROHIBIDO: declarar variables dark, crear primitivas o añadir estilos de una página.
+// DEPENDENCIAS: debe reutilizar _tokens.scss y cargarse antes de Bootstrap.
+
+$primary: $dracula-light-primary;
+$secondary: $dracula-light-text-muted;
+$success: $dracula-light-success;
+$info: $dracula-light-info;
+$warning: $dracula-light-warning;
+$danger: $dracula-light-danger;
+$light: $dracula-light-surface-raised;
+$dark: $dracula-light-text;
+
+$body-bg: $dracula-light-canvas;
+$body-color: $dracula-light-text;
+$border-color: $dracula-light-border;
+$link-color: $dracula-light-link;
+$headings-color: $dracula-light-text;
+$link-hover-color: $dracula-light-link-hover;
+$component-active-bg: $dracula-light-primary;
+$component-active-color: $dracula-light-surface;
+
+$dropdown-bg: $dracula-light-surface;
+$dropdown-border-color: $border-color;
+$dropdown-link-color: $body-color;
+$dropdown-link-hover-bg: $dracula-light-surface-raised;
+$dropdown-link-active-bg: $dracula-light-primary;
+$dropdown-link-active-color: $dracula-light-surface;
+$nav-link-color: $body-color;
+$nav-link-hover-color: $link-hover-color;
+$card-bg: $dracula-light-surface;
+$card-cap-bg: $dracula-light-surface-raised;
+
+$border-radius: $radius-md;
+$border-radius-sm: $radius-sm;
+$border-radius-lg: $radius-lg;
+$font-family-base: $font-family-system;
+$font-family-sans-serif: $font-family-base;
+$font-size-base: $font-size-100;
+$font-weight-normal: $font-weight-400;
+$font-weight-semibold: $font-weight-600;
+$font-weight-bold: $font-weight-700;
+$line-height-base: $line-height-normal;
+$headings-font-weight: $font-weight-semibold;
+
+$btn-border-radius: $radius-md;
+$btn-border-radius-sm: $radius-sm;
+$btn-border-radius-lg: $radius-lg;
+$input-border-radius: $radius-md;
+$input-border-radius-sm: $radius-sm;
+$input-border-radius-lg: $radius-lg;
+$card-border-radius: $radius-md;
+$card-border-color: $border-color;
+$navbar-toggler-border-radius: $radius-md;
+$form-control-border-color: $border-color;
+$form-select-border-color: $border-color;
+$input-bg: $dracula-foreground;
+$input-color: $body-color;
+$input-placeholder-color: $dracula-current-line;
+$input-focus-bg: $dracula-foreground;
+$input-focus-color: $body-color;
+$input-focus-border-color: $primary;
+$accordion-border-radius: $radius-md;
+$accordion-button-active-bg: $dracula-selection;
+$accordion-button-active-color: $dracula-foreground;
+$modal-content-border-radius: $radius-lg;
+$toast-border-radius: $radius-md;
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] {
+  --bs-body-bg: #{$body-bg};
+  --bs-body-color: #{$body-color};
+  --bs-heading-color: #{$headings-color};
+  --bs-border-color: #{$border-color};
+  --bs-link-color: #{$link-color};
+  --bs-link-hover-color: #{$link-hover-color};
+  --bs-header-bg: #{$dracula-light-text};
+  --bs-header-color: #{$dracula-foreground};
+  --bs-header-border: #{$border-color};
+  --bs-secondary-color: #{$dracula-light-text-muted};
+  --bs-tertiary-bg: #{$dracula-light-surface-raised};
+  --bs-card-bg: #{$card-bg};
+  --bs-card-cap-bg: #{$card-cap-bg};
+  --bs-dropdown-bg: #{$dropdown-bg};
+  --bs-dropdown-color: #{$body-color};
+  --bs-dropdown-border-color: #{$dropdown-border-color};
+  --bs-dropdown-link-color: #{$dropdown-link-color};
+  --bs-dropdown-link-hover-bg: #{$dropdown-link-hover-bg};
+  --bs-dropdown-link-active-bg: #{$dropdown-link-active-bg};
+  --bs-dropdown-link-active-color: #{$dropdown-link-active-color};
+  --bs-nav-tabs-link-active-bg: #{$dracula-light-surface};
+  --bs-nav-tabs-link-active-color: #{$dracula-light-text};
+  --bs-nav-pills-link-active-color: #{$dracula-light-surface};
+  --bs-nav-pills-link-active-bg: #{$dracula-light-primary};
+  --bs-form-control-bg: #{$dracula-light-surface};
+  --bs-focus-ring-color: rgba($dracula-light-primary, .25);
+  --bs-table-striped-bg: rgba($dracula-light-primary, .06);
+  --bs-table-hover-bg: rgba($dracula-light-link, .07);
+  --bs-table-color: var(--bs-emphasis-color);
+  --bs-table-bg: var(--bs-body-bg);
+  --bs-table-border-color: var(--bs-border-color);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .accordion-button:not(.collapsed) {
+  color: #{$dracula-light-text};
+  background-color: #{$dracula-light-surface-raised};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .nav-tabs .nav-link:not(.active),
+[data-kroma-theme="dracula"][data-bs-theme="light"] .nav-pills .nav-link:not(.active) {
+  color: #{$dracula-light-link};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .nav-tabs .nav-link:not(.active):hover,
+[data-kroma-theme="dracula"][data-bs-theme="light"] .nav-pills .nav-link:not(.active):hover {
+  color: #{$dracula-light-link-hover};
+}

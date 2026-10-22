@@ -12,6 +12,7 @@ El proyecto es privado y se consume como una aplicación del cheatsheet, no como
 - `src/themes/kroma-entrepreneur/_semantic-light.scss`: semántica clara y variables Sass que Bootstrap consume.
 - `src/themes/kroma-entrepreneur/_semantic-dark.scss`: variables Sass `*-dark` y overrides CSS del modo oscuro.
 - `src/themes/kroma-entrepreneur/theme.scss`: entrypoint y composición del tema.
+- `src/themes/dracula/`: implementación experimental del theme Dracula basada en su paleta oficial.
 - `src/themes/bootstrap.scss`: entrypoint de Bootstrap oficial sin personalizaciones Kroma.
 - `src/cheatsheet/app.scss`: compositor CSS de la aplicación; importa Bootstrap oficial y los estilos generales del cheatsheet.
 - `src/components/contrast-dropdown/`: componente Bootstrap encapsulado del combo `light`/`dark`/`auto`.
@@ -158,6 +159,42 @@ El contrato es el siguiente:
 Por ejemplo, el test debe rechazar `$brand-red: #ff0000;` dentro de `_semantic-light.scss`: el color debe vivir en `_tokens.scss` y la capa semántica debe consumirlo mediante una referencia como `$primary: $brand-red;`.
 
 El theme Bootstrap no recibe estos overrides. Cuando el usuario selecciona `Bootstrap`, solo se cargan los estilos oficiales de Bootstrap 5.3.8; los overrides Kroma quedan inactivos porque requieren `data-kroma-theme="kroma-entrepreneur"`.
+
+## Theme Dracula
+
+Se añadió `src/themes/dracula/` como prueba de que la arquitectura puede reproducir una identidad visual externa sin cambiar la aplicación. La implementación usa la paleta oficial publicada por Dracula en [draculatheme.com/contribute](https://draculatheme.com/contribute):
+
+| Rol Dracula | Color | Uso en el theme |
+| --- | --- | --- |
+| Background | `#282A36` | Canvas dark y superficies principales |
+| Current Line | `#6272A4` | Secondary, controles y scrollbar |
+| Selection | `#44475A` | Superficies elevadas y estados activos |
+| Foreground | `#F8F8F2` | Texto principal |
+| Red | `#FF5555` | Danger y validación negativa |
+| Orange | `#FFB86C` | Acentos cálidos |
+| Yellow | `#F1FA8C` | Warning y marcas |
+| Green | `#50FA7B` | Success |
+| Cyan | `#8BE9FD` | Info y enlaces |
+| Purple | `#BD93F9` | Primary y selección |
+| Pink | `#FF79C6` | Hover, enlaces y código |
+
+El resultado confirma que los tokens actuales soportan una nueva identidad sin cambios de arquitectura. Fue suficiente crear las cuatro capas obligatorias y mapear la paleta Dracula a las variables oficiales de Bootstrap. Los valores derivados, como `--bs-primary-rgb` y `--bs-secondary-rgb`, se mantienen en la capa semántica porque Bootstrap los necesita para transparencias y estados.
+
+La cobertura no debe limitarse a los colores principales. La implementación de Dracula sirve como matriz de aprendizaje para revisar, además, superficies, contenido, bordes, estados y componentes secundarios. Para cada nuevo theme hay que revisar explícitamente:
+
+- Superficies: canvas, body, tertiary, cards, headers, footers, offcanvas y toasts.
+- Contenido: texto principal, secundario, disabled, headings, links, código y marcadores.
+- Estados: hover, focus, active, selected, expanded, disabled y `aria-disabled`.
+- Navegación: nav, navbar, tabs, pills, dropdowns, paginación y sidebar del cheatsheet.
+- Formularios: inputs, selects, placeholders, file inputs, input groups, checks, switches y focus rings.
+- Componentes: accordion, buttons, modal, popover, tooltip, progress, carousel, list group y tablas.
+- Recursos gráficos: iconos SVG, indicadores, placeholders y controles con `currentColor` o filtros.
+- Overflow: scrollbar global y cada contenedor con `overflow: auto` o `overflow-y: auto`.
+- Navegación dark: los links inactivos de `.nav-tabs` y `.nav-pills` deben conservar contraste propio; no basta con definir solamente los tokens globales de `nav-link`, porque la cascada de Bootstrap y los estilos del cheatsheet pueden dejarlos demasiado oscuros. Revisar también `:hover`, `.active` y `.disabled`.
+
+El aprendizaje importante es que crear los cuatro archivos permite compilar el theme, pero no garantiza cobertura visual completa. La matriz anterior debe completarse durante la revisión visual del cheatsheet y documentarse cuando un theme necesite una excepción o una nueva primitiva.
+
+El theme aparece automáticamente en el selector después de ejecutar un build. Su modo light es una adaptación de la misma paleta, mientras que el modo dark conserva los colores oficiales de Dracula como referencia principal. Esto demuestra que un nuevo theme puede tener una semántica completamente distinta de `kroma-entrepreneur` sin tocar `app.ts`, `app.scss`, los componentes compartidos ni `node_modules`.
 
 ## Checklist De Cambios
 

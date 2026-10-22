@@ -1,0 +1,11 @@
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorización explícita.
+// RESPONSABILIDAD: ser el único punto de entrada y controlar el orden de compilación.
+// PERMITIDO: importar tokens, semántica clara, semántica dark y Bootstrap.
+// PROHIBIDO: declarar tokens, selectores CSS o reglas específicas de componentes.
+// DEPENDENCIAS: conservar el orden tokens, semantic-light, semantic-dark y Bootstrap.
+
+@import "./tokens";
+@import "./semantic-light";
+@import "./semantic-dark";
+@import "bootstrap/scss/bootstrap";
