@@ -32,7 +32,7 @@ $body-bg-dark: $surface-canvas-dark;
 $body-secondary-color-dark: rgba($blue-dark-200, .78);
 $body-secondary-bg-dark: $surface-default-dark;
 $body-tertiary-color-dark: rgba($blue-dark-200, .58);
-$body-tertiary-bg-dark: $surface-raised-dark;
+$body-tertiary-bg-dark: $surface-canvas-dark;
 $body-emphasis-color-dark: $content-primary-dark;
 $border-color-dark: $border-default-dark;
 $border-color-translucent-dark: rgba($white, .175);
@@ -116,10 +116,62 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
     background-color: $surface-default-dark;
   }
 
+  .bd-aside {
+    background-color: $surface-default-dark;
+    border-right: 1px solid $border-default-dark;
+    color: $content-secondary-dark;
+
+    #toc {
+      background-color: $surface-default-dark;
+    }
+
+    h2 {
+      color: $content-secondary-dark;
+      border-color: $border-subtle-dark !important;
+    }
+
+    .btn {
+      color: $content-secondary-dark;
+      background-color: transparent;
+
+      &:hover,
+      &:focus {
+        color: $content-primary-dark;
+        background-color: $surface-raised-dark;
+      }
+    }
+
+    ul ul {
+      border-left: 1px solid $blue-dark-750;
+    }
+
+    a {
+      color: $content-secondary-dark;
+
+      &:hover,
+      &:focus {
+        color: $content-primary-dark;
+        background-color: $surface-default-dark;
+      }
+    }
+  }
+
+  @media (min-width: 1200px) {
+    body {
+      background: linear-gradient(
+        to right,
+        $surface-canvas-dark 0,
+        $surface-canvas-dark calc(100% - 20%),
+        $surface-default-dark calc(100% - 20%),
+        $surface-default-dark 100%
+      );
+    }
+  }
+
   --bs-body-bg: #{$surface-canvas-dark};
   --bs-body-color: #{$content-primary-dark};
   --bs-secondary-bg: #{$surface-default-dark};
-  --bs-tertiary-bg: #{$surface-raised-dark};
+  --bs-tertiary-bg: #{$surface-canvas-dark};
   --bs-secondary-color: #{$content-secondary-dark};
   --bs-input-bg: #{$surface-default-dark};
   --bs-input-color: #{$content-primary-dark};

@@ -5181,11 +5181,46 @@ const theme0 = `@charset "UTF-8";
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .accordion-body {
   background-color: #091a3d;
 }
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside {
+  background-color: #091a3d;
+  border-right: 1px solid #285092;
+  color: #c4d9ff;
+}
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside #toc {
+  background-color: #091a3d;
+}
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside h2, [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside .h2 {
+  color: #c4d9ff;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside .btn {
+  color: #c4d9ff;
+  background-color: transparent;
+}
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside .btn:hover, [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside .btn:focus {
+  color: #ffffff;
+  background-color: #0d2450;
+}
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside ul ul {
+  border-left: 1px solid #1b3d78;
+}
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside a {
+  color: #c4d9ff;
+}
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside a:hover, [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside a:focus {
+  color: #ffffff;
+  background-color: #091a3d;
+}
+@media (min-width: 1200px) {
+  [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] body {
+    background: linear-gradient(to right, #040b20 0, #040b20 80%, #091a3d 80%, #091a3d 100%);
+  }
+}
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] {
   --bs-body-bg: #040b20;
   --bs-body-color: #ffffff;
   --bs-secondary-bg: #091a3d;
-  --bs-tertiary-bg: #0d2450;
+  --bs-tertiary-bg: #040b20;
   --bs-secondary-color: #c4d9ff;
   --bs-input-bg: #091a3d;
   --bs-input-color: #ffffff;
@@ -5597,8 +5632,8 @@ const theme0 = `@charset "UTF-8";
   --bs-secondary-bg-rgb: 9, 26, 61;
   --bs-tertiary-color: rgba(196, 217, 255, 0.58);
   --bs-tertiary-color-rgb: 196, 217, 255;
-  --bs-tertiary-bg: #0d2450;
-  --bs-tertiary-bg-rgb: 13, 36, 80;
+  --bs-tertiary-bg: #040b20;
+  --bs-tertiary-bg-rgb: 4, 11, 32;
   --bs-primary-text-emphasis: #8eb5ff;
   --bs-secondary-text-emphasis: #dee2e6;
   --bs-success-text-emphasis: #198754;
