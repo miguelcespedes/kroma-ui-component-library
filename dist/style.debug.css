@@ -11943,22 +11943,6 @@ body {
   inset: 0 0 auto;
   z-index: 1030;
   min-height: 4rem;
-  background-color: var(--bs-header-bg, var(--bs-tertiary-bg, var(--bs-body-bg)));
-  color: var(--bs-header-color, var(--bs-body-color));
-  border-color: var(--bs-header-border, var(--bs-border-color));
-}
-
-.bd-header-logo {
-  filter: none;
-}
-
-.bd-header [data-theme-selector] {
-  --bs-btn-color: var(--bs-header-control-color, var(--bs-header-color, var(--bs-body-color)));
-  --bs-btn-border-color: var(--bs-header-control-border, var(--bs-header-border, var(--bs-border-color)));
-  --bs-btn-hover-color: var(--bs-header-control-hover-color, var(--bs-body-bg));
-  --bs-btn-hover-bg: var(--bs-header-control-hover-bg, var(--bs-primary));
-  --bs-btn-hover-border-color: var(--bs-header-control-hover-border, var(--bs-primary));
-  background-color: var(--bs-header-control-bg, transparent);
 }
 
 .bd-cheatsheet {
@@ -11981,7 +11965,6 @@ body {
 }
 
 .bd-heading a {
-  color: var(--bs-secondary-color);
   font-size: 0.875rem;
   text-decoration: none;
 }
@@ -11993,16 +11976,11 @@ body {
 .bd-example {
   min-height: 4rem;
   padding: 1.5rem;
-  border: 1px solid var(--bs-border-color);
-  border-radius: var(--bs-border-radius);
-  background-color: var(--bs-body-bg);
 }
 
 .bd-aside {
   max-height: calc(100vh - 2rem);
   overflow-y: auto;
-  color: var(--bs-body-color);
-  background-color: var(--bs-body-bg);
 }
 
 .bd-heading a::before {
@@ -12023,39 +12001,11 @@ body {
   padding: 0.1875rem 0.5rem;
   margin-top: 0.125rem;
   margin-left: 0.3125rem;
-  color: var(--bs-body-color);
-}
-
-.bd-aside a:hover,
-.bd-aside a:focus {
-  color: var(--bs-primary-text-emphasis);
-  background-color: var(--bs-primary-bg-subtle);
-}
-
-.bd-aside .active {
-  font-weight: 600;
-  color: var(--bs-primary);
-  background-color: var(--bs-primary-bg-subtle);
-}
-
-.bd-aside .collapse {
-  border-left: 0.125rem solid var(--bs-border-color);
 }
 
 .bd-aside .btn {
   padding: 0.25rem 0.5rem;
   font-weight: 600;
-  color: var(--bs-body-color);
-}
-
-.bd-aside .btn:hover,
-.bd-aside .btn:focus {
-  color: var(--bs-primary-text-emphasis);
-  background-color: var(--bs-primary-bg-subtle);
-}
-
-.bd-aside .btn:focus {
-  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
 }
 
 .bd-aside .btn::before {

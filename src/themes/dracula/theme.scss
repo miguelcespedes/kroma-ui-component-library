@@ -9,3 +9,8 @@
 @import "./semantic-light";
 @import "./semantic-dark";
 @import "bootstrap/scss/bootstrap";
+
+// Los componentes del cheatsheet se declaran despues de Bootstrap para que
+// sus tokens de tabla y estados visuales prevalezcan sobre los defaults.
+@import "./semantic-light";
+@import "./semantic-dark";

@@ -116,6 +116,118 @@ $toast-border-radius: $radius-md;
   --bs-table-border-color: var(--bs-border-color);
 }
 
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-primary,
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-secondary,
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-success,
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-info,
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-warning,
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-danger,
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-light,
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-dark {
+  --bs-table-color: #{$dracula-light-text};
+  --bs-table-bg: #{$dracula-light-surface};
+  --bs-table-border-color: #{$dracula-light-border};
+  --bs-table-striped-color: #{$dracula-light-text};
+  --bs-table-striped-bg: #{$dracula-light-surface-raised};
+  --bs-table-active-color: #{$dracula-light-text};
+  --bs-table-active-bg: #{$dracula-light-surface-raised};
+  --bs-table-hover-color: #{$dracula-light-text};
+  --bs-table-hover-bg: #{$dracula-light-surface-raised};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-secondary {
+  --bs-table-bg: rgba($dracula-light-text-muted, .14);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-light {
+  --bs-table-bg: #{$dracula-light-surface-raised};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-dark {
+  --bs-table-bg: #{$dracula-light-text};
+  --bs-table-color: #{$dracula-light-surface};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-primary {
+  --bs-table-bg: rgba($dracula-light-primary, .14);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-success {
+  --bs-table-bg: rgba($dracula-light-success, .14);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-info {
+  --bs-table-bg: rgba($dracula-light-info, .14);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-warning {
+  --bs-table-bg: rgba($dracula-light-warning, .14);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] table .table-danger {
+  --bs-table-bg: rgba($dracula-light-danger, .14);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-header {
+  background-color: var(--bs-header-bg);
+  color: var(--bs-header-color);
+  border-color: var(--bs-header-border);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-header [data-theme-selector] {
+  --bs-btn-color: var(--bs-header-control-color);
+  --bs-btn-border-color: var(--bs-header-control-border);
+  --bs-btn-hover-color: var(--bs-header-control-hover-color);
+  --bs-btn-hover-bg: var(--bs-header-control-hover-bg);
+  --bs-btn-hover-border-color: var(--bs-header-control-hover-border);
+  background-color: var(--bs-header-control-bg);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-heading a {
+  color: var(--bs-secondary-color);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-example {
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--bs-body-bg);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-aside {
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-aside a {
+  color: var(--bs-body-color);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-aside a:hover,
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-aside a:focus,
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-aside .btn:hover,
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-aside .btn:focus {
+  color: var(--bs-primary-text-emphasis);
+  background-color: var(--bs-primary-bg-subtle);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-aside .active {
+  font-weight: 600;
+  color: var(--bs-primary);
+  background-color: var(--bs-primary-bg-subtle);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-aside .collapse {
+  border-left: .125rem solid var(--bs-border-color);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-aside .btn {
+  color: var(--bs-body-color);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-aside .btn:focus {
+  box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb), .25);
+}
+
 [data-kroma-theme="dracula"][data-bs-theme="light"] .bd-header [data-theme-selector] {
   --bs-btn-color: #{$dracula-light-primary};
   --bs-btn-border-color: #{$dracula-light-primary};
