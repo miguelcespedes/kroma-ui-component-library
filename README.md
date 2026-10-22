@@ -20,6 +20,8 @@ El proyecto es privado y se consume como una aplicación del cheatsheet, no como
 
 ## Crear Un Theme
 
+Este proyecto está diseñado para que un agente o desarrollador pueda crear una nueva identidad visual sin modificar la aplicación base. Cuando recibas la instrucción "crea un nuevo theme", interpreta que debes crear una variante independiente dentro de `src/themes/<nombre>/`, reutilizar Bootstrap como motor de componentes y cambiar únicamente sus primitivas y capas semánticas. No copies overrides específicos de otro theme sin revisar sus tokens y selectores.
+
 1. Crea una carpeta en `src/themes/` con el nombre de la variante visual.
 2. Añade `_tokens.scss` con las primitivas propias del sistema visual.
 3. Añade `_semantic-light.scss` para asignar significado a esas primitivas y definir las variables Sass que Bootstrap consume.
@@ -29,6 +31,19 @@ El proyecto es privado y se consume como una aplicación del cheatsheet, no como
 7. El inventario se actualizará automáticamente al iniciar `dev` o un build.
 
 Los archivos semánticos pueden usar tokens, pero no deben importar otras capas semánticas. No importes Bootstrap antes de declarar las variables que Bootstrap consume.
+
+El resultado debe poder seleccionarse desde el dropdown de themes sin cambiar `app.ts`, `app.scss`, los componentes compartidos ni `node_modules`. El límite del sistema es la estructura y la API de componentes de Bootstrap; dentro de ese límite, cada theme puede tener una paleta, tipografía, superficies, bordes, radios, estados y tratamiento dark completamente diferentes.
+
+### Flujo Recomendado
+
+1. Define primero la paleta y las primitivas reutilizables en `_tokens.scss`.
+2. Asigna significado en `_semantic-light.scss`: `primary`, superficies, contenido, bordes y variables de componentes.
+3. Declara en `_semantic-dark.scss` las variables oficiales `*-dark` antes del import de Bootstrap.
+4. Añade overrides runtime únicamente dentro del selector completo del tema y del modo.
+5. Prefiere variables Sass oficiales de Bootstrap para componentes completos; usa CSS runtime solo cuando el componente dependa del modo resuelto en el navegador.
+6. Regenera `dist` después de modificar una fuente que participe en el bundle.
+
+La separación entre primitivas y semántica permite cambiar el sistema visual sin reescribir cada componente. Por ejemplo, un token azul puede asignarse a `$primary` en light y a una superficie o borde distinto en dark sin duplicar colores literales en los componentes.
 
 ## EntryPoint Del Theme
 
@@ -46,6 +61,82 @@ Los archivos semánticos pueden usar tokens, pero no deben importar otras capas 
 Las variables Sass deben existir antes de importar Bootstrap. Los overrides CSS runtime se aplican mediante `data-bs-theme="light"` o `data-bs-theme="dark"`.
 
 `data-kroma-theme` identifica la variante de marca. No debe utilizarse como valor de `data-bs-theme`, que solo controla el modo `light` o `dark`.
+
+## Aislamiento De Modos
+
+Los overrides de modo deben estar limitados a ambos atributos:
+
+```scss
+[data-kroma-theme="mi-theme"][data-bs-theme="dark"] {
+  --bs-body-bg: #{$surface-canvas-dark};
+  --bs-body-color: #{$content-primary-dark};
+}
+```
+
+No uses selectores globales como `.dark`, `body.dark` o `[data-bs-theme="dark"]` sin el identificador del theme. Así, un theme no contamina Bootstrap nativo ni otras variantes. El modo `auto` debe resolverse a `light` o `dark` por el componente de contraste; los themes solo consumen el modo resultante.
+
+## Componentes Y Estados
+
+Para personalizar un componente Bootstrap, sigue este orden:
+
+- Define la variable Sass oficial antes de importar Bootstrap cuando exista, por ejemplo `$accordion-button-active-bg`.
+- Define las variables CSS runtime del componente dentro del selector dark o light cuando el valor dependa del modo.
+- Añade un override de clase solo si Bootstrap no expone una variable suficiente.
+- Incluye estados `hover`, `focus`, `active` y `disabled` cuando el componente sea interactivo.
+
+Los botones secundarios son un ejemplo de override runtime acotado:
+
+```scss
+[data-kroma-theme="mi-theme"][data-bs-theme="dark"] .btn-secondary {
+  --bs-btn-color: #{$white};
+  --bs-btn-bg: #{$blue-dark-700};
+  --bs-btn-border-color: #{$blue-dark-600};
+}
+```
+
+Los pseudo-elementos SVG con `content: url(...)` no siempre heredan visualmente `color`. En esos casos, usa el filtro o el recurso SVG apropiado dentro del selector del modo, sin modificar el SVG global ni el modo light.
+
+## Scrollbars
+
+Las barras nativas deben resolverse con CSS, no con JavaScript ni con un componente visual paralelo. Usa `::-webkit-scrollbar` para Chromium/WebKit y `scrollbar-color` como fallback para Firefox. No combines ambos mecanismos sin una feature query: en navegadores que soportan `scrollbar-color`, sus valores pueden sobrescribir los pseudo-elementos WebKit.
+
+```scss
+[data-kroma-theme="mi-theme"][data-bs-theme="dark"] {
+  @supports selector(::-webkit-scrollbar) {
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar,
+    .scrollable-example::-webkit-scrollbar {
+      width: .625rem;
+      height: .625rem;
+    }
+
+    html::-webkit-scrollbar-track,
+    body::-webkit-scrollbar-track,
+    .scrollable-example::-webkit-scrollbar-track {
+      background: $blue-dark-950;
+    }
+
+    html::-webkit-scrollbar-thumb,
+    body::-webkit-scrollbar-thumb,
+    .scrollable-example::-webkit-scrollbar-thumb {
+      border: .125rem solid $blue-dark-950;
+      border-radius: $radius-sm;
+      background: $blue-dark-600;
+    }
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    html,
+    body,
+    .scrollable-example {
+      scrollbar-color: $blue-dark-600 $blue-dark-950;
+      scrollbar-width: thin;
+    }
+  }
+}
+```
+
+Incluye todos los contenedores que tengan `overflow: auto` o `overflow-y: auto`; personalizar solo `body` no afecta a un scroll interno como `.scrollspy-example`.
 
 ## Reglas
 
@@ -67,6 +158,17 @@ El contrato es el siguiente:
 Por ejemplo, el test debe rechazar `$brand-red: #ff0000;` dentro de `_semantic-light.scss`: el color debe vivir en `_tokens.scss` y la capa semántica debe consumirlo mediante una referencia como `$primary: $brand-red;`.
 
 El theme Bootstrap no recibe estos overrides. Cuando el usuario selecciona `Bootstrap`, solo se cargan los estilos oficiales de Bootstrap 5.3.8; los overrides Kroma quedan inactivos porque requieren `data-kroma-theme="kroma-entrepreneur"`.
+
+## Checklist De Cambios
+
+- ¿Las nuevas primitivas están solo en `_tokens.scss`?
+- ¿Las variables Sass se declaran antes de importar Bootstrap?
+- ¿Los overrides light y dark usan el selector completo del theme?
+- ¿Se mantienen separados `data-kroma-theme` y `data-bs-theme`?
+- ¿Los estados interactivos tienen contraste suficiente?
+- ¿Los contenedores con scroll interno también están cubiertos?
+- ¿`app.scss` y `app.ts` siguen siendo agnósticos de la marca?
+- ¿Se ejecutaron `npx tsc --noEmit`, el build relacionado y `git diff --check -- .`?
 
 El catálogo de themes se genera automáticamente al iniciar `dev` o cualquier build en `src/components/theme-dropdown/themes-inventary.ts`. Cada carpeta bajo `src/themes/` que contenga `theme.scss` se registra automáticamente; Bootstrap se añade siempre como theme base. El inventario importa el CSS inline de cada theme, por lo que un nuevo theme aparece tras reiniciar `dev` o ejecutar un build.
 
