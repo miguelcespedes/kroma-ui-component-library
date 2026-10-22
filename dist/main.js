@@ -5216,6 +5216,30 @@ const theme0 = `@charset "UTF-8";
   color: #ffffff;
   filter: brightness(0) invert(1);
 }
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] body,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside {
+  scrollbar-color: #3d6db8 #040b20;
+  scrollbar-width: thin;
+}
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] body::-webkit-scrollbar,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside::-webkit-scrollbar {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] body::-webkit-scrollbar-track,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside::-webkit-scrollbar-track {
+  background: #040b20;
+}
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] body::-webkit-scrollbar-thumb,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside::-webkit-scrollbar-thumb {
+  border: 0.1875rem solid #040b20;
+  border-radius: 999px;
+  background-color: #3d6db8;
+}
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] body::-webkit-scrollbar-thumb:hover,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside::-webkit-scrollbar-thumb:hover {
+  background-color: #9fc1ff;
+}
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .btn-secondary {
   --bs-btn-color: #ffffff;
   --bs-btn-bg: #285092;

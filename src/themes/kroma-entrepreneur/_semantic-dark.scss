@@ -158,6 +158,35 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
     filter: brightness(0) invert(1);
   }
 
+  body,
+  .bd-aside {
+    scrollbar-color: $blue-dark-600 $surface-canvas-dark;
+    scrollbar-width: thin;
+  }
+
+  body::-webkit-scrollbar,
+  .bd-aside::-webkit-scrollbar {
+    width: .75rem;
+    height: .75rem;
+  }
+
+  body::-webkit-scrollbar-track,
+  .bd-aside::-webkit-scrollbar-track {
+    background: $surface-canvas-dark;
+  }
+
+  body::-webkit-scrollbar-thumb,
+  .bd-aside::-webkit-scrollbar-thumb {
+    border: .1875rem solid $surface-canvas-dark;
+    border-radius: 999px;
+    background-color: $blue-dark-600;
+  }
+
+  body::-webkit-scrollbar-thumb:hover,
+  .bd-aside::-webkit-scrollbar-thumb:hover {
+    background-color: $blue-dark-300;
+  }
+
   .btn-secondary {
     --bs-btn-color: #{$white};
     --bs-btn-bg: #{$blue-dark-700};
