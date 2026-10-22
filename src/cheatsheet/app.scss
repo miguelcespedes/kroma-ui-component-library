@@ -7,6 +7,8 @@
 // _semantic-dark.scss del theme activo y permanecer aislados por sus selectores.
 // VALIDACION: las apariencias deben comprobarse en navegador con el theme activo;
 // un build exitoso no demuestra que el stylesheet inline haya sido aplicado.
+// PATRONES COMPARTIDOS: los estados disabled comunes deben vivir en una capa de
+// componentes compartida, no duplicarse en cada theme ni definirse en este archivo.
 
 @import "bootstrap/scss/bootstrap";
 

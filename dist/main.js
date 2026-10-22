@@ -18541,15 +18541,15 @@ const theme1 = `@charset "UTF-8";
   --bs-border-color: #dee2e6;
   --bs-link-color: #0c3493;
   --bs-link-hover-color: #0c3493;
-  --bs-header-bg: #020617;
-  --bs-header-color: #ffffff;
-  --bs-header-border: #0c3493;
-  --bs-header-control-bg: #123064;
-  --bs-header-control-color: #e8effc;
-  --bs-header-control-border: #285092;
+  --bs-header-bg: #e8effc;
+  --bs-header-color: #212529;
+  --bs-header-border: #8eb5ff;
+  --bs-header-control-bg: #ffffff;
+  --bs-header-control-color: #0c3493;
+  --bs-header-control-border: #8eb5ff;
   --bs-header-control-hover-color: #ffffff;
-  --bs-header-control-hover-bg: #285092;
-  --bs-header-control-hover-border: #8eb5ff;
+  --bs-header-control-hover-bg: #0c3493;
+  --bs-header-control-hover-border: #0c3493;
   --bs-secondary-color: #6c757d;
   --bs-tertiary-bg: #f8f9fa;
   --bs-navbar-bg: #ffffff;
@@ -18592,14 +18592,18 @@ const theme1 = `@charset "UTF-8";
   background-color: var(--bs-header-control-bg);
 }
 
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .bd-header-logo {
+  filter: brightness(0);
+}
+
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-body-tertiary {
   --bs-navbar-color: #212529;
   --bs-navbar-hover-color: #0c3493;
   --bs-navbar-disabled-color: rgba($gray-800, .46);
   --bs-navbar-brand-color: #212529;
   --bs-navbar-brand-hover-color: #0c3493;
-  background-color: #ffffff !important;
-  border: 1px solid #dee2e6;
+  background-color: #e8effc !important;
+  border: 1px solid #8eb5ff;
 }
 
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-body-tertiary .navbar-brand,
@@ -18639,6 +18643,26 @@ const theme1 = `@charset "UTF-8";
   background-color: #ffffff;
   border-color: #667085;
   color: #212529;
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .nav-link.disabled,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar .nav-link.disabled,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar .disabled,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar .btn:disabled,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar .btn.disabled {
+  color: rgba(33, 37, 41, 0.46);
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] button:disabled,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .disabled,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] [aria-disabled=true] {
+  cursor: not-allowed;
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .navbar.bg-body-tertiary .navbar-brand img {
+  filter: brightness(0);
 }
 
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-placeholder-img {
@@ -31058,7 +31082,7 @@ window.bootstrap = bootstrap;
 const themeStylesheet = document.createElement("style");
 themeStylesheet.id = "kroma-theme-stylesheet";
 document.head.append(themeStylesheet);
-document.documentElement.setAttribute("data-kroma-theme", "kroma-entrepreneur");
+document.documentElement.setAttribute("data-kroma-theme", "bootstrap");
 document.documentElement.setAttribute("data-bs-theme", "dark");
 initializeThemeDropdown(bootstrap);
 initializeContrastDropdown(bootstrap);

@@ -553,6 +553,22 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
   pointer-events: auto;
 }
 
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .nav-link.disabled:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .nav-link.disabled:focus,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .nav-link.disabled:focus-visible,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .nav-link.disabled:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .nav-link.disabled:focus,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .nav-link.disabled:focus-visible {
+  --bs-nav-link-color: rgba($blue-dark-300, .46);
+  --bs-nav-link-hover-color: rgba($blue-dark-300, .46);
+  color: rgba($blue-dark-300, .46);
+  text-decoration: none;
+  outline: none;
+  box-shadow: none;
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] button:disabled,
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .disabled,
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] [aria-disabled="true"] {
