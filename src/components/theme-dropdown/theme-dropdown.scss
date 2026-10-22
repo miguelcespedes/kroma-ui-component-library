@@ -1,0 +1,28 @@
+.bd-header .dropdown-menu {
+  z-index: 1040;
+  left: auto !important;
+  right: 0 !important;
+}
+
+.bd-header .dropdown-menu .bi {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+.bd-header .dropdown-menu [data-theme-value] {
+  min-width: 13rem;
+}
+
+@media (max-width: 575.98px) {
+  .bd-header .dropdown {
+    position: static;
+  }
+
+  .bd-header .dropdown-menu {
+    right: .5rem !important;
+    min-width: 0;
+    width: max-content;
+    max-width: calc(100vw - 1rem);
+  }
+}

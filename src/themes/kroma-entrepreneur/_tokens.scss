@@ -1,0 +1,59 @@
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorización explícita.
+// RESPONSABILIDAD: definir primitivas sin significado funcional o de modo.
+// PERMITIDO: modificar colores, tipografía, espaciado y radios reutilizables.
+// PROHIBIDO: añadir variables del framework, selectores CSS o reglas de componentes.
+// DEPENDENCIAS: las capas semánticas consumen estos valores y les asignan significado.
+
+// Primitivas de color.
+$blue-700: #0c3493;
+$blue-300: #8eb5ff;
+$blue-200: #b8d0fa;
+$blue-100: #e8effc;
+$green-600: #198754;
+$cyan-500: #0dcaf0;
+$yellow-500: #ffc107;
+$yellow-800: #66520a;
+$red-600: #dc3545;
+$gray-100: #f8f9fa;
+$gray-950: #010413;
+$gray-300: #dee2e6;
+$gray-500: #94a3b8;
+$gray-600: #6c757d;
+$gray-600-alt: #667085;
+$gray-700: #64748b;
+$gray-750: #334155;
+$gray-800: #212529;
+$gray-850: #111827;
+$gray-900: #020617;
+$black: #000000;
+$white: #ffffff;
+
+// Primitivas de interacción y elevación.
+$opacity-hover: .08;
+$opacity-active: .14;
+$opacity-surface: .26;
+$opacity-focus: .25;
+$opacity-overlay: .72;
+$opacity-scrim: .55;
+$shadow-dark: 0 .5rem 1rem rgba($black, .35);
+$shadow-light: 0 .5rem 1rem rgba($black, .12);
+
+// Primitivas tipográficas.
+$font-family-system: system-ui, -apple-system, "Segoe UI", sans-serif;
+$font-size-100: 1rem;
+$font-weight-400: 400;
+$font-weight-600: 600;
+$font-weight-700: 700;
+$line-height-normal: 1.5;
+
+// Primitivas de espaciado.
+$space-1: .25rem;
+$space-2: .5rem;
+$space-3: 1rem;
+$space-4: 1.5rem;
+
+// Primitivas de forma.
+$radius-sm: .25rem;
+$radius-md: .375rem;
+$radius-lg: .5rem;

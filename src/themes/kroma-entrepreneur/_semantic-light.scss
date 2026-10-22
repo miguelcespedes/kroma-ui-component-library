@@ -1,0 +1,132 @@
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorización explícita.
+// RESPONSABILIDAD: asignar significado claro a las primitivas y configurar Bootstrap.
+// PERMITIDO: definir variables Sass claras y CSS runtime bajo [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"].
+// PROHIBIDO: declarar variables dark, crear primitivas o añadir estilos de una página.
+// DEPENDENCIAS: debe reutilizar _tokens.scss y cargarse antes de Bootstrap.
+
+// Variables Sass claras que Bootstrap consume antes de generar sus estilos.
+$primary: $blue-700;
+$secondary: $gray-600;
+$success: $green-600;
+$info: $cyan-500;
+$warning: $yellow-500;
+$danger: $red-600;
+$light: $gray-100;
+$dark: $gray-800;
+
+$body-bg: $white;
+$body-color: $gray-800;
+$border-color: $gray-300;
+$link-color: $primary;
+$headings-color: $gray-800;
+$link-hover-color: $blue-700;
+$component-active-bg: $primary;
+$component-active-color: $white;
+
+$dropdown-bg: $white;
+$dropdown-border-color: $border-color;
+$dropdown-link-color: $body-color;
+$dropdown-link-hover-bg: $blue-100;
+$dropdown-link-active-bg: $primary;
+$dropdown-link-active-color: $white;
+$nav-link-color: $body-color;
+$nav-link-hover-color: $link-hover-color;
+$card-bg: $white;
+$card-cap-bg: $gray-100;
+
+$border-radius: $radius-md;
+$border-radius-sm: $radius-sm;
+$border-radius-lg: $radius-lg;
+
+// Integración tipográfica con Bootstrap.
+$font-family-base: $font-family-system;
+$font-family-sans-serif: $font-family-base;
+$font-size-base: $font-size-100;
+$font-weight-normal: $font-weight-400;
+$font-weight-semibold: $font-weight-600;
+$font-weight-bold: $font-weight-700;
+$line-height-base: $line-height-normal;
+$headings-font-weight: $font-weight-semibold;
+
+// Configuración compartida de componentes Bootstrap.
+$btn-border-radius: $radius-md;
+$btn-border-radius-sm: $radius-sm;
+$btn-border-radius-lg: $radius-lg;
+$input-border-radius: $radius-md;
+$input-border-radius-sm: $radius-sm;
+$input-border-radius-lg: $radius-lg;
+$card-border-radius: $radius-md;
+$card-border-color: $border-color;
+$navbar-toggler-border-radius: $radius-md;
+$form-control-border-color: $gray-600-alt;
+$form-select-border-color: $gray-600-alt;
+$input-bg: $white;
+$input-color: $body-color;
+$input-placeholder-color: $gray-600;
+$input-focus-bg: $white;
+$input-focus-color: $body-color;
+$input-disabled-bg: $gray-100;
+$input-disabled-color: $gray-600;
+$input-disabled-border-color: $gray-300;
+$input-focus-border-color: $primary;
+$input-focus-box-shadow: 0 0 0 0.25rem rgba($blue-700, 0.25);
+$form-select-border-radius: $radius-md;
+$form-select-color: $body-color;
+$form-select-bg: $white;
+$input-group-addon-color: $body-color;
+$input-group-addon-bg: $gray-100;
+$input-group-addon-border-color: $gray-600-alt;
+$form-file-button-color: $body-color;
+$form-file-button-bg: $gray-100;
+$form-range-track-bg: $gray-300;
+$form-range-thumb-bg: $primary;
+$form-range-thumb-disabled-bg: $gray-600;
+$form-range-thumb-focus-box-shadow: 0 0 0 1px $white, 0 0 0 0.25rem rgba($blue-700, 0.25);
+$accordion-border-radius: $radius-md;
+$accordion-button-active-bg: $blue-100;
+$accordion-button-active-color: $primary;
+$modal-content-border-radius: $radius-lg;
+$toast-border-radius: $radius-md;
+$toast-background-color: rgba($white, 0.96);
+$toast-border-color: $border-color;
+$toast-header-background-color: $gray-100;
+$toast-header-border-color: $border-color;
+$toast-header-color: $body-color;
+$toast-color: $body-color;
+$toast-box-shadow: 0 0.5rem 1rem rgba(11, 10, 43, 0.12);
+
+// Variables CSS runtime del tema claro.
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] {
+  --bs-body-bg: #{$body-bg};
+  --bs-body-color: #{$body-color};
+  --bs-heading-color: #{$headings-color};
+  --bs-border-color: #{$border-color};
+  --bs-link-color: #{$link-color};
+  --bs-link-hover-color: #{$link-hover-color};
+  --bs-header-bg: #{$gray-900};
+  --bs-header-color: #{$white};
+  --bs-header-border: #{$gray-700};
+  --bs-secondary-color: #{$gray-600};
+  --bs-tertiary-bg: #{$gray-100};
+  --bs-card-bg: #{$card-bg};
+  --bs-card-cap-bg: #{$card-cap-bg};
+  --bs-dropdown-bg: #{$dropdown-bg};
+  --bs-dropdown-color: #{$body-color};
+  --bs-dropdown-border-color: #{$dropdown-border-color};
+  --bs-dropdown-link-color: #{$dropdown-link-color};
+  --bs-dropdown-link-hover-bg: #{$dropdown-link-hover-bg};
+  --bs-dropdown-link-active-bg: #{$dropdown-link-active-bg};
+  --bs-dropdown-link-active-color: #{$dropdown-link-active-color};
+
+  --bs-table-color: var(--bs-emphasis-color);
+  --bs-table-bg: var(--bs-body-bg);
+  --bs-table-border-color: var(--bs-border-color);
+  --bs-table-accent-bg: transparent;
+  --bs-table-striped-color: var(--bs-emphasis-color);
+  --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb), 0.05);
+  --bs-table-active-color: var(--bs-emphasis-color);
+  --bs-table-active-bg: rgba(var(--bs-emphasis-color-rgb), 0.1);
+  --bs-table-hover-color: var(--bs-emphasis-color);
+  --bs-table-hover-bg: rgba(var(--bs-emphasis-color-rgb), 0.075);
+}
