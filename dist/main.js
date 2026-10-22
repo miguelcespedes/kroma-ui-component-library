@@ -5685,39 +5685,72 @@ const theme0 = `@charset "UTF-8";
   background-color: var(--bs-body-bg);
 }
 
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-sidebar {
+  align-self: stretch;
+  background-color: #21222c;
+  border-right: 1px solid #44475a;
+}
+
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside {
-  color: var(--bs-body-color);
-  background-color: var(--bs-body-bg);
+  position: relative;
+  align-self: stretch !important;
+  margin-bottom: 0 !important;
+  padding-top: 1px;
+  color: #b9bbca;
+  background-color: #21222c;
+  border-right: 0;
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside #toc {
+  background-color: #21222c;
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside h2, [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .h2 {
+  color: #b9bbca;
+  border-color: #44475a !important;
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside a {
-  color: var(--bs-body-color);
+  color: #b9bbca;
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside a:hover,
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside a:focus,
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn:hover,
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn:focus {
-  color: var(--bs-primary-text-emphasis);
-  background-color: var(--bs-primary-bg-subtle);
+  color: #f8f8f2;
+  background-color: #343746;
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .active {
   font-weight: 600;
-  color: var(--bs-primary);
-  background-color: var(--bs-primary-bg-subtle);
+  color: #f8f8f2;
+  background-color: #44475a;
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .collapse {
-  border-left: 0.125rem solid var(--bs-border-color);
+  border-left: 0.125rem solid #6272a4;
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn {
-  color: var(--bs-body-color);
+  color: #b9bbca;
+  background-color: transparent;
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn:hover,
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn:focus {
+  color: #f8f8f2;
+  background-color: #343746;
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn:focus {
-  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+  box-shadow: 0 0 0 0.25rem rgba(189, 147, 249, 0.25);
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-heading a::before,
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn::before {
+  color: #f8f8f2;
+  filter: brightness(0) invert(1);
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .navbar.bg-body-tertiary img {
@@ -18321,39 +18354,72 @@ textarea.form-control-lg {
   background-color: var(--bs-body-bg);
 }
 
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-sidebar {
+  align-self: stretch;
+  background-color: #21222c;
+  border-right: 1px solid #44475a;
+}
+
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside {
-  color: var(--bs-body-color);
-  background-color: var(--bs-body-bg);
+  position: relative;
+  align-self: stretch !important;
+  margin-bottom: 0 !important;
+  padding-top: 1px;
+  color: #b9bbca;
+  background-color: #21222c;
+  border-right: 0;
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside #toc {
+  background-color: #21222c;
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside h2, [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .h2 {
+  color: #b9bbca;
+  border-color: #44475a !important;
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside a {
-  color: var(--bs-body-color);
+  color: #b9bbca;
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside a:hover,
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside a:focus,
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn:hover,
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn:focus {
-  color: var(--bs-primary-text-emphasis);
-  background-color: var(--bs-primary-bg-subtle);
+  color: #f8f8f2;
+  background-color: #343746;
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .active {
   font-weight: 600;
-  color: var(--bs-primary);
-  background-color: var(--bs-primary-bg-subtle);
+  color: #f8f8f2;
+  background-color: #44475a;
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .collapse {
-  border-left: 0.125rem solid var(--bs-border-color);
+  border-left: 0.125rem solid #6272a4;
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn {
-  color: var(--bs-body-color);
+  color: #b9bbca;
+  background-color: transparent;
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn:hover,
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn:focus {
+  color: #f8f8f2;
+  background-color: #343746;
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn:focus {
-  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+  box-shadow: 0 0 0 0.25rem rgba(189, 147, 249, 0.25);
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-heading a::before,
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn::before {
+  color: #f8f8f2;
+  filter: brightness(0) invert(1);
 }
 
 [data-kroma-theme=dracula][data-bs-theme=dark] .navbar.bg-body-tertiary img {
@@ -31196,7 +31262,7 @@ function initializeThemeDropdown(bootstrap2) {
 const themeTokens = [
   {
     "id": "dracula",
-    "primitive": [
+    "primitiveShared": [
       {
         "name": "background",
         "value": "#282a36"
@@ -31256,125 +31322,436 @@ const themeTokens = [
       {
         "name": "border",
         "value": "#44475a"
-      },
+      }
+    ],
+    "primitiveLight": [
       {
-        "name": "light-canvas",
+        "name": "canvas",
         "value": "#f8f8f2"
       },
       {
-        "name": "light-surface",
+        "name": "surface",
         "value": "#ffffff"
       },
       {
-        "name": "light-surface-raised",
+        "name": "surface-raised",
         "value": "#ededef"
       },
       {
-        "name": "light-surface-accent",
+        "name": "surface-accent",
         "value": "#f1ebff"
       },
       {
-        "name": "light-text",
+        "name": "text",
         "value": "#282a36"
       },
       {
-        "name": "light-text-muted",
+        "name": "text-muted",
         "value": "#6272a4"
       },
       {
-        "name": "light-border",
+        "name": "border",
         "value": "#c8c9d4"
       },
       {
-        "name": "light-primary",
+        "name": "primary",
         "value": "#7c4dcc"
       },
       {
-        "name": "light-primary-hover",
+        "name": "primary-hover",
         "value": "#6338ad"
       },
       {
-        "name": "light-link",
+        "name": "link",
         "value": "#087e9b"
       },
       {
-        "name": "light-link-hover",
+        "name": "link-hover",
         "value": "#c2187a"
       },
       {
-        "name": "light-success",
+        "name": "success",
         "value": "#16833d"
       },
       {
-        "name": "light-info",
+        "name": "info",
         "value": "#087e9b"
       },
       {
-        "name": "light-warning",
+        "name": "warning",
         "value": "#946c00"
       },
       {
-        "name": "light-danger",
+        "name": "danger",
         "value": "#c62828"
       }
     ],
-    "semantic": []
+    "primitiveDark": [
+      {
+        "name": "background",
+        "value": "#282a36"
+      },
+      {
+        "name": "background-deep",
+        "value": "#21222c"
+      },
+      {
+        "name": "background-raised",
+        "value": "#343746"
+      },
+      {
+        "name": "foreground",
+        "value": "#f8f8f2"
+      },
+      {
+        "name": "foreground-muted",
+        "value": "#b9bbca"
+      },
+      {
+        "name": "border",
+        "value": "#44475a"
+      },
+      {
+        "name": "current-line",
+        "value": "#6272a4"
+      },
+      {
+        "name": "selection",
+        "value": "#44475a"
+      },
+      {
+        "name": "purple",
+        "value": "#bd93f9"
+      },
+      {
+        "name": "cyan",
+        "value": "#8be9fd"
+      },
+      {
+        "name": "green",
+        "value": "#50fa7b"
+      },
+      {
+        "name": "yellow",
+        "value": "#f1fa8c"
+      },
+      {
+        "name": "red",
+        "value": "#ff5555"
+      },
+      {
+        "name": "pink",
+        "value": "#ff79c6"
+      }
+    ],
+    "semanticLight": [
+      {
+        "name": "background",
+        "value": "map-get($primitive-shared"
+      },
+      {
+        "name": "current-line",
+        "value": "map-get($primitive-shared"
+      },
+      {
+        "name": "selection",
+        "value": "map-get($primitive-shared"
+      },
+      {
+        "name": "foreground",
+        "value": "map-get($primitive-shared"
+      },
+      {
+        "name": "red",
+        "value": "map-get($primitive-shared"
+      },
+      {
+        "name": "orange",
+        "value": "map-get($primitive-shared"
+      },
+      {
+        "name": "yellow",
+        "value": "map-get($primitive-shared"
+      },
+      {
+        "name": "green",
+        "value": "map-get($primitive-shared"
+      },
+      {
+        "name": "cyan",
+        "value": "map-get($primitive-shared"
+      },
+      {
+        "name": "purple",
+        "value": "map-get($primitive-shared"
+      },
+      {
+        "name": "pink",
+        "value": "map-get($primitive-shared"
+      },
+      {
+        "name": "background-deep",
+        "value": "map-get($primitive-dark"
+      },
+      {
+        "name": "background-raised",
+        "value": "map-get($primitive-dark"
+      },
+      {
+        "name": "foreground-muted",
+        "value": "map-get($primitive-dark"
+      },
+      {
+        "name": "border",
+        "value": "map-get($primitive-dark"
+      },
+      {
+        "name": "light-canvas",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-surface",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-surface-raised",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-surface-accent",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-text",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-text-muted",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-border",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-primary",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-primary-hover",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-link",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-link-hover",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-success",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-info",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-warning",
+        "value": "map-get($primitive-light"
+      },
+      {
+        "name": "light-danger",
+        "value": "map-get($primitive-light"
+      }
+    ],
+    "semanticDark": [
+      {
+        "name": "enable-dark-mode",
+        "value": "true"
+      },
+      {
+        "name": "body-color-dark",
+        "value": "#f8f8f2"
+      },
+      {
+        "name": "body-bg-dark",
+        "value": "#282a36"
+      },
+      {
+        "name": "body-secondary-color-dark",
+        "value": "rgba($dracula-foreground-muted"
+      },
+      {
+        "name": "body-secondary-bg-dark",
+        "value": "#21222c"
+      },
+      {
+        "name": "body-tertiary-color-dark",
+        "value": "rgba($dracula-foreground-muted"
+      },
+      {
+        "name": "body-tertiary-bg-dark",
+        "value": "#282a36"
+      },
+      {
+        "name": "body-emphasis-color-dark",
+        "value": "#f8f8f2"
+      },
+      {
+        "name": "border-color-dark",
+        "value": "#44475a"
+      },
+      {
+        "name": "border-color-translucent-dark",
+        "value": "rgba($dracula-foreground"
+      },
+      {
+        "name": "headings-color-dark",
+        "value": "#f8f8f2"
+      },
+      {
+        "name": "link-color-dark",
+        "value": "#8be9fd"
+      },
+      {
+        "name": "link-hover-color-dark",
+        "value": "#ff79c6"
+      },
+      {
+        "name": "code-color-dark",
+        "value": "#ff79c6"
+      },
+      {
+        "name": "mark-color-dark",
+        "value": "#21222c"
+      },
+      {
+        "name": "mark-bg-dark",
+        "value": "#f1fa8c"
+      },
+      {
+        "name": "primary-text-emphasis-dark",
+        "value": "#bd93f9"
+      },
+      {
+        "name": "secondary-text-emphasis-dark",
+        "value": "#b9bbca"
+      },
+      {
+        "name": "success-text-emphasis-dark",
+        "value": "#50fa7b"
+      },
+      {
+        "name": "info-text-emphasis-dark",
+        "value": "#8be9fd"
+      },
+      {
+        "name": "warning-text-emphasis-dark",
+        "value": "#f1fa8c"
+      },
+      {
+        "name": "danger-text-emphasis-dark",
+        "value": "#ff5555"
+      },
+      {
+        "name": "light-text-emphasis-dark",
+        "value": "#f8f8f2"
+      },
+      {
+        "name": "dark-text-emphasis-dark",
+        "value": "#b9bbca"
+      },
+      {
+        "name": "primary-bg-subtle-dark",
+        "value": "rgba($dracula-purple"
+      },
+      {
+        "name": "secondary-bg-subtle-dark",
+        "value": "#343746"
+      },
+      {
+        "name": "success-bg-subtle-dark",
+        "value": "rgba($dracula-green"
+      },
+      {
+        "name": "info-bg-subtle-dark",
+        "value": "rgba($dracula-cyan"
+      },
+      {
+        "name": "warning-bg-subtle-dark",
+        "value": "rgba($dracula-yellow"
+      },
+      {
+        "name": "danger-bg-subtle-dark",
+        "value": "rgba($dracula-red"
+      },
+      {
+        "name": "light-bg-subtle-dark",
+        "value": "#343746"
+      },
+      {
+        "name": "dark-bg-subtle-dark",
+        "value": "#21222c"
+      },
+      {
+        "name": "primary-border-subtle-dark",
+        "value": "#bd93f9"
+      },
+      {
+        "name": "secondary-border-subtle-dark",
+        "value": "#6272a4"
+      },
+      {
+        "name": "success-border-subtle-dark",
+        "value": "#50fa7b"
+      },
+      {
+        "name": "info-border-subtle-dark",
+        "value": "#8be9fd"
+      },
+      {
+        "name": "warning-border-subtle-dark",
+        "value": "#f1fa8c"
+      },
+      {
+        "name": "danger-border-subtle-dark",
+        "value": "#ff5555"
+      },
+      {
+        "name": "light-border-subtle-dark",
+        "value": "#6272a4"
+      },
+      {
+        "name": "dark-border-subtle-dark",
+        "value": "#343746"
+      },
+      {
+        "name": "input-placeholder-color-dark",
+        "value": "#b9bbca"
+      },
+      {
+        "name": "carousel-indicator-active-bg-dark",
+        "value": "#f8f8f2"
+      },
+      {
+        "name": "carousel-caption-color-dark",
+        "value": "#f8f8f2"
+      },
+      {
+        "name": "carousel-control-icon-filter-dark",
+        "value": "invert(1) grayscale(100%)"
+      },
+      {
+        "name": "btn-close-filter-dark",
+        "value": "invert(1) grayscale(100%) brightness(200%)"
+      }
+    ]
   },
   {
     "id": "kroma-entrepreneur",
-    "primitive": [
-      {
-        "name": "blue-700",
-        "value": "#0c3493"
-      },
-      {
-        "name": "blue-300",
-        "value": "#8eb5ff"
-      },
-      {
-        "name": "blue-200",
-        "value": "#b8d0fa"
-      },
-      {
-        "name": "blue-100",
-        "value": "#e8effc"
-      },
-      {
-        "name": "blue-dark-950",
-        "value": "#040b20"
-      },
-      {
-        "name": "blue-dark-900",
-        "value": "#091a3d"
-      },
-      {
-        "name": "blue-dark-850",
-        "value": "#0d2450"
-      },
-      {
-        "name": "blue-dark-800",
-        "value": "#123064"
-      },
-      {
-        "name": "blue-dark-750",
-        "value": "#1b3d78"
-      },
-      {
-        "name": "blue-dark-700",
-        "value": "#285092"
-      },
-      {
-        "name": "blue-dark-600",
-        "value": "#3d6db8"
-      },
-      {
-        "name": "blue-dark-300",
-        "value": "#9fc1ff"
-      },
-      {
-        "name": "blue-dark-200",
-        "value": "#c4d9ff"
-      },
+    "primitiveShared": [
       {
         "name": "green-600",
         "value": "#198754"
@@ -31446,11 +31823,187 @@ const themeTokens = [
       {
         "name": "white",
         "value": "#ffffff"
+      },
+      {
+        "name": "opacity-hover",
+        "value": ".08"
+      },
+      {
+        "name": "opacity-active",
+        "value": ".14"
+      },
+      {
+        "name": "opacity-surface",
+        "value": ".26"
+      },
+      {
+        "name": "opacity-focus",
+        "value": ".25"
+      },
+      {
+        "name": "opacity-overlay",
+        "value": ".72"
+      },
+      {
+        "name": "opacity-scrim",
+        "value": ".55"
+      },
+      {
+        "name": "font-family-system",
+        "value": "(system-ui"
+      },
+      {
+        "name": "font-size-100",
+        "value": "1rem"
+      },
+      {
+        "name": "font-weight-400",
+        "value": "400"
+      },
+      {
+        "name": "font-weight-600",
+        "value": "600"
+      },
+      {
+        "name": "font-weight-700",
+        "value": "700"
+      },
+      {
+        "name": "line-height-normal",
+        "value": "1.5"
+      },
+      {
+        "name": "space-1",
+        "value": ".25rem"
+      },
+      {
+        "name": "space-2",
+        "value": ".5rem"
+      },
+      {
+        "name": "space-3",
+        "value": "1rem"
+      },
+      {
+        "name": "space-4",
+        "value": "1.5rem"
+      },
+      {
+        "name": "radius-sm",
+        "value": ".25rem"
+      },
+      {
+        "name": "radius-md",
+        "value": ".375rem"
+      },
+      {
+        "name": "radius-lg",
+        "value": ".5rem"
       }
     ],
-    "semantic": []
+    "primitiveLight": [
+      {
+        "name": "blue-700",
+        "value": "#0c3493"
+      },
+      {
+        "name": "blue-300",
+        "value": "#8eb5ff"
+      },
+      {
+        "name": "blue-200",
+        "value": "#b8d0fa"
+      },
+      {
+        "name": "blue-100",
+        "value": "#e8effc"
+      }
+    ],
+    "primitiveDark": [
+      {
+        "name": "blue-dark-950",
+        "value": "#040b20"
+      },
+      {
+        "name": "blue-dark-900",
+        "value": "#091a3d"
+      },
+      {
+        "name": "blue-dark-850",
+        "value": "#0d2450"
+      },
+      {
+        "name": "blue-dark-800",
+        "value": "#123064"
+      },
+      {
+        "name": "blue-dark-750",
+        "value": "#1b3d78"
+      },
+      {
+        "name": "blue-dark-700",
+        "value": "#285092"
+      },
+      {
+        "name": "blue-dark-600",
+        "value": "#3d6db8"
+      },
+      {
+        "name": "blue-dark-300",
+        "value": "#9fc1ff"
+      },
+      {
+        "name": "blue-dark-200",
+        "value": "#c4d9ff"
+      }
+    ],
+    "semanticLight": [],
+    "semanticDark": []
   }
 ];
+const colorPattern = /^(#|rgb\(|rgba\(|hsl\(|hsla\(|oklch\(|lab\(|lch\(|color\()/i;
+function getTextColor(value) {
+  const hex = value.match(/^#([0-9a-f]{3,8})$/i)?.[1];
+  if (!hex) return "#212529";
+  const normalized = hex.length === 3 ? hex.split("").map((channel) => channel + channel).join("") : hex.slice(0, 6);
+  const channels = [0, 2, 4].map((index) => parseInt(normalized.slice(index, index + 2), 16) / 255);
+  const luminance = channels.map((channel) => channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * luminance[0] + 0.7152 * luminance[1] + 0.0722 * luminance[2] < 0.45 ? "#ffffff" : "#212529";
+}
+function initializeColorTokenPalette() {
+  const palette = document.querySelector("[data-theme-token-palette]");
+  if (!palette) return;
+  const renderTokens = () => {
+    const theme = themeTokens.find((entry) => entry.id === document.documentElement.dataset.kromaTheme);
+    const contrast = document.documentElement.dataset.bsTheme === "dark" ? "dark" : "light";
+    const groups = theme ? contrast === "dark" ? [
+      ["Primitive color tokens · dark", theme.primitiveDark],
+      ["Semantic color tokens · dark", theme.semanticDark]
+    ] : [
+      ["Primitive color tokens · light", theme.primitiveLight],
+      ["Semantic color tokens · light", theme.semanticLight]
+    ] : [];
+    palette.innerHTML = groups.map(([title, tokens]) => {
+      const colors = tokens.filter((token) => colorPattern.test(token.value));
+      if (!colors.length) return "";
+      return `
+        <div class="col-12"><h4 class="h6 mt-3">${title}</h4></div>
+        ${colors.map((token) => `
+        <div class="col-6 col-md-3">
+          <div class="bd-color-token" style="--bd-token-color: ${token.value}; --bd-token-text: ${getTextColor(token.value)}">
+            <span>${token.name}</span>
+            <code>${token.value}</code>
+          </div>
+        </div>`).join("")}`;
+    }).join("");
+  };
+  renderTokens();
+  new MutationObserver(renderTokens).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-kroma-theme", "data-bs-theme"]
+  });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderTokens);
+}
 window.bootstrap = bootstrap;
 const themeStylesheet = document.createElement("style");
 themeStylesheet.id = "kroma-theme-stylesheet";
@@ -31459,26 +32012,7 @@ document.documentElement.setAttribute("data-kroma-theme", "bootstrap");
 document.documentElement.setAttribute("data-bs-theme", "dark");
 initializeThemeDropdown(bootstrap);
 initializeContrastDropdown(bootstrap);
-const palette = document.querySelector("[data-theme-tokens]");
-if (palette) {
-  const renderTokens = () => {
-    const theme = themeTokens.find((entry) => entry.id === document.documentElement.dataset.kromaTheme);
-    palette.innerHTML = theme ? [
-      ["Primitive colors", theme.primitive],
-      ["Semantic colors", theme.semantic]
-    ].map(([title, tokens]) => `
-      <div class="col-12"><h4 class="h6 mt-3">${title}</h4></div>
-      ${tokens.map((token) => `
-      <div class="col-6 col-md-3">
-        <div class="bd-color-token" style="--bd-token-color: ${token.value}">
-          <span>${token.name}</span>
-          <code>${token.value}</code>
-        </div>
-      </div>`).join("")}`).join("") : "";
-  };
-  renderTokens();
-  new MutationObserver(renderTokens).observe(document.documentElement, { attributes: true, attributeFilter: ["data-kroma-theme"] });
-}
+initializeColorTokenPalette();
 document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((element) => new Tooltip(element));
 document.querySelectorAll('[data-bs-toggle="popover"]').forEach((element) => new Popover(element));
 document.querySelectorAll(".toast").forEach((element) => {

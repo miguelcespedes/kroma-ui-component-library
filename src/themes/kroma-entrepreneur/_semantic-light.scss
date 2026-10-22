@@ -5,6 +5,91 @@
 // PROHIBIDO: declarar variables dark, crear primitivas o añadir estilos de una página.
 // DEPENDENCIAS: debe reutilizar _tokens.scss y cargarse antes de Bootstrap.
 
+$semantic-light: (
+  "primary": $blue-700,
+  "secondary": $gray-600,
+  "success": $green-600,
+  "info": $cyan-500,
+  "warning": $yellow-500,
+  "danger": $red-600,
+  "light": $gray-100,
+  "dark": $gray-800,
+  "body-bg": $gray-100,
+  "body-color": $gray-800,
+  "border-color": $gray-300,
+  "link-color": $blue-700,
+  "headings-color": $gray-800,
+  "link-hover-color": $blue-700,
+  "component-active-bg": $blue-700,
+  "component-active-color": $white,
+  "dropdown-bg": $white,
+  "dropdown-border-color": $gray-300,
+  "dropdown-link-color": $gray-800,
+  "dropdown-link-hover-bg": $blue-100,
+  "dropdown-link-active-bg": $blue-700,
+  "dropdown-link-active-color": $white,
+  "nav-link-color": $gray-800,
+  "nav-link-hover-color": $blue-700,
+  "card-bg": $white,
+  "card-cap-bg": $gray-100,
+  "border-radius": $radius-md,
+  "border-radius-sm": $radius-sm,
+  "border-radius-lg": $radius-lg,
+  "font-family-base": $font-family-system,
+  "font-family-sans-serif": $font-family-system,
+  "font-size-base": $font-size-100,
+  "font-weight-normal": $font-weight-400,
+  "font-weight-semibold": $font-weight-600,
+  "font-weight-bold": $font-weight-700,
+  "line-height-base": $line-height-normal,
+  "headings-font-weight": $font-weight-600,
+  "btn-border-radius": $radius-md,
+  "btn-border-radius-sm": $radius-sm,
+  "btn-border-radius-lg": $radius-lg,
+  "input-border-radius": $radius-md,
+  "input-border-radius-sm": $radius-sm,
+  "input-border-radius-lg": $radius-lg,
+  "card-border-radius": $radius-md,
+  "card-border-color": $gray-300,
+  "navbar-toggler-border-radius": $radius-md,
+  "form-control-border-color": $gray-600-alt,
+  "form-select-border-color": $gray-600-alt,
+  "input-bg": $white,
+  "input-color": $gray-800,
+  "input-placeholder-color": $gray-600,
+  "input-focus-bg": $white,
+  "input-focus-color": $gray-800,
+  "input-disabled-bg": $gray-100,
+  "input-disabled-color": $gray-600,
+  "input-disabled-border-color": $gray-300,
+  "input-focus-border-color": $blue-700,
+  "input-focus-box-shadow": 0 0 0 0.25rem rgba($blue-700, 0.25),
+  "form-select-border-radius": $radius-md,
+  "form-select-color": $gray-800,
+  "form-select-bg": $white,
+  "input-group-addon-color": $gray-800,
+  "input-group-addon-bg": $gray-100,
+  "input-group-addon-border-color": $gray-600-alt,
+  "form-file-button-color": $gray-800,
+  "form-file-button-bg": $gray-100,
+  "form-range-track-bg": $gray-300,
+  "form-range-thumb-bg": $blue-700,
+  "form-range-thumb-disabled-bg": $gray-600,
+  "form-range-thumb-focus-box-shadow": (0 0 0 1px $white, 0 0 0 0.25rem rgba($blue-700, 0.25)),
+  "accordion-border-radius": $radius-md,
+  "accordion-button-active-bg": $blue-100,
+  "accordion-button-active-color": $blue-700,
+  "modal-content-border-radius": $radius-lg,
+  "toast-border-radius": $radius-md,
+  "toast-background-color": rgba($white, 0.96),
+  "toast-border-color": $gray-300,
+  "toast-header-background-color": $gray-100,
+  "toast-header-border-color": $gray-300,
+  "toast-header-color": $gray-800,
+  "toast-color": $gray-800,
+  "toast-box-shadow": 0 0.5rem 1rem rgba(11, 10, 43, 0.12)
+);
+
 $theme-semantic-color-tokens: (
   "primary": $blue-700,
   "link": $blue-700,
@@ -19,39 +104,41 @@ $theme-semantic-color-tokens: (
   "border": $gray-300
 );
 
+$theme-semantic-light-color-tokens: $theme-semantic-color-tokens;
+
 // Variables Sass claras que Bootstrap consume antes de generar sus estilos.
-$primary: $blue-700;
-$secondary: $gray-600;
-$success: $green-600;
-$info: $cyan-500;
-$warning: $yellow-500;
-$danger: $red-600;
-$light: $gray-100;
-$dark: $gray-800;
+$primary: map-get($semantic-light, "primary");
+$secondary: map-get($semantic-light, "secondary");
+$success: map-get($semantic-light, "success");
+$info: map-get($semantic-light, "info");
+$warning: map-get($semantic-light, "warning");
+$danger: map-get($semantic-light, "danger");
+$light: map-get($semantic-light, "light");
+$dark: map-get($semantic-light, "dark");
 
-$body-bg: $gray-100;
-$body-color: $gray-800;
-$border-color: $gray-300;
-$link-color: $primary;
-$headings-color: $gray-800;
-$link-hover-color: $blue-700;
-$component-active-bg: $primary;
-$component-active-color: $white;
+$body-bg: map-get($semantic-light, "body-bg");
+$body-color: map-get($semantic-light, "body-color");
+$border-color: map-get($semantic-light, "border-color");
+$link-color: map-get($semantic-light, "link-color");
+$headings-color: map-get($semantic-light, "headings-color");
+$link-hover-color: map-get($semantic-light, "link-hover-color");
+$component-active-bg: map-get($semantic-light, "component-active-bg");
+$component-active-color: map-get($semantic-light, "component-active-color");
 
-$dropdown-bg: $white;
-$dropdown-border-color: $border-color;
-$dropdown-link-color: $body-color;
-$dropdown-link-hover-bg: $blue-100;
-$dropdown-link-active-bg: $primary;
-$dropdown-link-active-color: $white;
-$nav-link-color: $body-color;
-$nav-link-hover-color: $link-hover-color;
-$card-bg: $white;
-$card-cap-bg: $gray-100;
+$dropdown-bg: map-get($semantic-light, "dropdown-bg");
+$dropdown-border-color: map-get($semantic-light, "dropdown-border-color");
+$dropdown-link-color: map-get($semantic-light, "dropdown-link-color");
+$dropdown-link-hover-bg: map-get($semantic-light, "dropdown-link-hover-bg");
+$dropdown-link-active-bg: map-get($semantic-light, "dropdown-link-active-bg");
+$dropdown-link-active-color: map-get($semantic-light, "dropdown-link-active-color");
+$nav-link-color: map-get($semantic-light, "nav-link-color");
+$nav-link-hover-color: map-get($semantic-light, "nav-link-hover-color");
+$card-bg: map-get($semantic-light, "card-bg");
+$card-cap-bg: map-get($semantic-light, "card-cap-bg");
 
-$border-radius: $radius-md;
-$border-radius-sm: $radius-sm;
-$border-radius-lg: $radius-lg;
+$border-radius: map-get($semantic-light, "border-radius");
+$border-radius-sm: map-get($semantic-light, "border-radius-sm");
+$border-radius-lg: map-get($semantic-light, "border-radius-lg");
 
 // Integración tipográfica con Bootstrap.
 $font-family-base: $font-family-system;

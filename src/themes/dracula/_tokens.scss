@@ -39,7 +39,18 @@ $dracula-light-info: #087e9b;
 $dracula-light-warning: #946c00;
 $dracula-light-danger: #c62828;
 
-$theme-color-tokens: (
+$font-family-system: system-ui, -apple-system, "Segoe UI", sans-serif;
+$font-size-100: 1rem;
+$font-weight-400: 400;
+$font-weight-600: 600;
+$font-weight-700: 700;
+$line-height-normal: 1.5;
+
+$radius-sm: .25rem;
+$radius-md: .375rem;
+$radius-lg: .5rem;
+
+$primitive-shared: (
   "background": $dracula-background,
   "current-line": $dracula-current-line,
   "selection": $dracula-selection,
@@ -54,31 +65,73 @@ $theme-color-tokens: (
   "background-deep": $dracula-background-deep,
   "background-raised": $dracula-background-raised,
   "foreground-muted": $dracula-foreground-muted,
-  "border": $dracula-border,
-  "light-canvas": $dracula-light-canvas,
-  "light-surface": $dracula-light-surface,
-  "light-surface-raised": $dracula-light-surface-raised,
-  "light-surface-accent": $dracula-light-surface-accent,
-  "light-text": $dracula-light-text,
-  "light-text-muted": $dracula-light-text-muted,
-  "light-border": $dracula-light-border,
-  "light-primary": $dracula-light-primary,
-  "light-primary-hover": $dracula-light-primary-hover,
-  "light-link": $dracula-light-link,
-  "light-link-hover": $dracula-light-link-hover,
-  "light-success": $dracula-light-success,
-  "light-info": $dracula-light-info,
-  "light-warning": $dracula-light-warning,
-  "light-danger": $dracula-light-danger
+  "border": $dracula-border
 );
 
-$font-family-system: system-ui, -apple-system, "Segoe UI", sans-serif;
-$font-size-100: 1rem;
-$font-weight-400: 400;
-$font-weight-600: 600;
-$font-weight-700: 700;
-$line-height-normal: 1.5;
+$primitive-light: (
+  "canvas": $dracula-light-canvas,
+  "surface": $dracula-light-surface,
+  "surface-raised": $dracula-light-surface-raised,
+  "surface-accent": $dracula-light-surface-accent,
+  "text": $dracula-light-text,
+  "text-muted": $dracula-light-text-muted,
+  "border": $dracula-light-border,
+  "primary": $dracula-light-primary,
+  "primary-hover": $dracula-light-primary-hover,
+  "link": $dracula-light-link,
+  "link-hover": $dracula-light-link-hover,
+  "success": $dracula-light-success,
+  "info": $dracula-light-info,
+  "warning": $dracula-light-warning,
+  "danger": $dracula-light-danger
+);
 
-$radius-sm: .25rem;
-$radius-md: .375rem;
-$radius-lg: .5rem;
+$primitive-dark: (
+  "background": $dracula-background,
+  "background-deep": $dracula-background-deep,
+  "background-raised": $dracula-background-raised,
+  "foreground": $dracula-foreground,
+  "foreground-muted": $dracula-foreground-muted,
+  "border": $dracula-border,
+  "current-line": $dracula-current-line,
+  "selection": $dracula-selection,
+  "purple": $dracula-purple,
+  "cyan": $dracula-cyan,
+  "green": $dracula-green,
+  "yellow": $dracula-yellow,
+  "red": $dracula-red,
+  "pink": $dracula-pink
+);
+
+$theme-semantic-light-color-tokens: (
+  "background": map-get($primitive-shared, "background"),
+  "current-line": map-get($primitive-shared, "current-line"),
+  "selection": map-get($primitive-shared, "selection"),
+  "foreground": map-get($primitive-shared, "foreground"),
+  "red": map-get($primitive-shared, "red"),
+  "orange": map-get($primitive-shared, "orange"),
+  "yellow": map-get($primitive-shared, "yellow"),
+  "green": map-get($primitive-shared, "green"),
+  "cyan": map-get($primitive-shared, "cyan"),
+  "purple": map-get($primitive-shared, "purple"),
+  "pink": map-get($primitive-shared, "pink"),
+  "background-deep": map-get($primitive-dark, "background-deep"),
+  "background-raised": map-get($primitive-dark, "background-raised"),
+  "foreground-muted": map-get($primitive-dark, "foreground-muted"),
+  "border": map-get($primitive-dark, "border"),
+  "light-canvas": map-get($primitive-light, "canvas"),
+  "light-surface": map-get($primitive-light, "surface"),
+  "light-surface-raised": map-get($primitive-light, "surface-raised"),
+  "light-surface-accent": map-get($primitive-light, "surface-accent"),
+  "light-text": map-get($primitive-light, "text"),
+  "light-text-muted": map-get($primitive-light, "text-muted"),
+  "light-border": map-get($primitive-light, "border"),
+  "light-primary": map-get($primitive-light, "primary"),
+  "light-primary-hover": map-get($primitive-light, "primary-hover"),
+  "light-link": map-get($primitive-light, "link"),
+  "light-link-hover": map-get($primitive-light, "link-hover"),
+  "light-success": map-get($primitive-light, "success"),
+  "light-info": map-get($primitive-light, "info"),
+  "light-warning": map-get($primitive-light, "warning"),
+  "light-danger": map-get($primitive-light, "danger")
+);

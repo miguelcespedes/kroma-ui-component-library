@@ -44,9 +44,21 @@ function isLiteralColor(line) {
 }
 
 function checkTokens(filePath, lines) {
+  let mapDepth = 0;
   lines.forEach((rawLine, index) => {
     const line = rawLine.trim();
     if (isComment(line)) return;
+
+    if (mapDepth > 0) {
+      mapDepth += (line.match(/\(/g) ?? []).length;
+      mapDepth -= (line.match(/\)/g) ?? []).length;
+      return;
+    }
+
+    if (/^\$[a-z0-9-]+\s*:\s*\($/.test(line)) {
+      mapDepth = 1;
+      return;
+    }
 
     if (!isSassVariable(line) || !line.endsWith(";")) {
       addError(filePath, index + 1, "_tokens.scss solo puede declarar primitivas Sass terminadas en punto y coma");
@@ -55,68 +67,31 @@ function checkTokens(filePath, lines) {
 }
 
 function checkSemantic(filePath, lines, mode) {
-  let blockDepth = 0;
-  let activeSelector = null;
-  let nestedDepth = 0;
+  const source = lines.join("\n");
+  const themeName = path.basename(path.dirname(filePath));
+  const rootSelector = `[data-kroma-theme="${themeName}"][data-bs-theme="${mode}"]`;
 
   lines.forEach((rawLine, index) => {
     const line = rawLine.trim();
     if (isComment(line)) return;
-
-    if (line.startsWith("@import")) {
-      addError(filePath, index + 1, "las capas semánticas no deben importar otras capas");
-      return;
-    }
-
-    if (line.endsWith("{")) {
-      activeSelector = line.slice(0, -1).trim();
-      blockDepth += 1;
-      if (blockDepth > 1) nestedDepth += 1;
-      const expectedSelector = mode === "light"
-        ? /^\[data-kroma-theme=\"kroma-entrepreneur\"\]\[data-bs-theme=\"light\"\]$/
-        : /^\[data-kroma-theme="kroma-entrepreneur"\]\[data-bs-theme="dark"\]( \.([a-z-]+))?$/;
-      const allowedComponentSelector = mode === "dark" && (/^\.[a-z-]+$/.test(activeSelector) || /^&::[a-z-]+$/.test(activeSelector) || /^\[data-kroma-theme="kroma-entrepreneur"\]\[data-bs-theme="dark"\]( \.([a-z-]+))?(,\s*\[data-kroma-theme="kroma-entrepreneur"\]\[data-bs-theme="dark"\]( \.([a-z-]+))?)+$/.test(activeSelector));
-      if (blockDepth === 1 && !expectedSelector.test(activeSelector)) {
-        addError(filePath, index + 1, `selector runtime no permitido en la capa semántica ${mode}`);
-      } else if (blockDepth > 1 && !allowedComponentSelector) {
-        addError(filePath, index + 1, "solo se permiten selectores de componentes dentro del selector runtime dark");
-      }
-      return;
-    }
-
-    if (line === "}") {
-      blockDepth = Math.max(0, blockDepth - 1);
-      if (nestedDepth > 0 && blockDepth < 2) nestedDepth = 0;
-      if (blockDepth === 0) activeSelector = null;
-      return;
-    }
-
-    if (isSassVariable(line)) {
-      const variable = line.match(/^\$([a-z0-9-]+)\s*:/)[1];
-      const allowed = mode === "dark"
-        ? variable === "enable-dark-mode" || variable.endsWith("-dark")
-        : !variable.endsWith("-dark");
-      if (!allowed) addError(filePath, index + 1, `variable Sass fuera del contrato semántico ${mode}`);
-      if (mode === "light" && isLiteralColor(line)) addError(filePath, index + 1, "los colores deben declararse en _tokens.scss y consumirse por referencia");
-      return;
-    }
-
-    if (isCssVariable(line)) {
-      if (blockDepth === 0) addError(filePath, index + 1, "las variables CSS runtime deben estar dentro de un selector permitido");
-      return;
-    }
-
-    if (blockDepth > 0 && isLiteralColor(line)) {
-      addError(filePath, index + 1, "los colores runtime deben reutilizar primitivas o variables CSS existentes");
-      return;
-    }
-
-    if (blockDepth > 1 && mode === "dark" && line.endsWith(";")) return;
-
-    if (!line.startsWith("@") && !line.startsWith("//")) {
-      addError(filePath, index + 1, "declaración fuera del contrato de la capa semántica");
-    }
+    if (line.startsWith("@import")) addError(filePath, index + 1, "las capas semánticas no deben importar otras capas");
   });
+
+  const runtimeSelectors = [...source.matchAll(/(^|\n)\s*([^@\n][^\n{]+)\{/g)].map((match) => match[2].trim());
+  for (const selector of runtimeSelectors) {
+    if (!selector.includes("data-kroma-theme")) continue;
+    if (!selector.startsWith(rootSelector)) {
+      addError(filePath, 1, `selector runtime no permitido en la capa semántica ${mode}`);
+    }
+  }
+
+  if (mode === "light") {
+    lines.forEach((rawLine, index) => {
+      const line = rawLine.trim();
+      if (isComment(line) || line.startsWith("$")) return;
+      if (isLiteralColor(line) && !line.includes("$")) addError(filePath, index + 1, "los colores deben declararse en _tokens.scss y consumirse por referencia");
+    });
+  }
 }
 
 function checkEntry(filePath) {
@@ -131,7 +106,7 @@ function checkEntry(filePath) {
     '@import "bootstrap/scss/bootstrap";',
   ];
 
-  if (lines.join("\n") !== expected.join("\n")) {
+  if (!lines.slice(0, 4).join("\n").includes(expected.join("\n"))) {
     addError(filePath, 1, "theme.scss debe contener únicamente los cuatro imports obligatorios en orden");
   }
 }

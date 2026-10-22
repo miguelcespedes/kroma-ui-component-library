@@ -5,6 +5,75 @@
 // PROHIBIDO: duplicar tokens dark globales generados por Bootstrap o repetir primitivas.
 // DEPENDENCIAS: debe reutilizar _tokens.scss y cargarse antes de Bootstrap.
 
+$semantic-dark: (
+  "enable-dark-mode": true,
+  "surface-canvas-dark": $blue-dark-950,
+  "surface-default-dark": $blue-dark-900,
+  "surface-raised-dark": $blue-dark-850,
+  "surface-overlay-dark": $blue-dark-800,
+  "surface-muted-dark": $blue-dark-750,
+  "content-primary-dark": $white,
+  "content-secondary-dark": $blue-dark-200,
+  "content-tertiary-dark": $blue-dark-300,
+  "content-disabled-dark": $gray-500,
+  "border-default-dark": $blue-dark-700,
+  "border-subtle-dark": rgba($white, $opacity-hover),
+  "accordion-button-active-bg": $blue-dark-850,
+  "accordion-button-active-color": $blue-300,
+  "body-color-dark": $white,
+  "body-bg-dark": $blue-dark-950,
+  "body-secondary-color-dark": rgba($blue-dark-200, .78),
+  "body-secondary-bg-dark": $blue-dark-900,
+  "body-tertiary-color-dark": rgba($blue-dark-200, .58),
+  "body-tertiary-bg-dark": $blue-dark-950,
+  "body-emphasis-color-dark": $white,
+  "border-color-dark": $blue-dark-700,
+  "border-color-translucent-dark": rgba($white, .175),
+  "headings-color-dark": $white,
+  "link-color-dark": $blue-300,
+  "link-hover-color-dark": $blue-200,
+  "code-color-dark": $blue-200,
+  "mark-color-dark": $white,
+  "mark-bg-dark": $yellow-800,
+  "primary-text-emphasis-dark": $blue-300,
+  "secondary-text-emphasis-dark": $gray-300,
+  "success-text-emphasis-dark": $green-600,
+  "info-text-emphasis-dark": $cyan-500,
+  "warning-text-emphasis-dark": $yellow-500,
+  "danger-text-emphasis-dark": $red-600,
+  "light-text-emphasis-dark": $gray-100,
+  "dark-text-emphasis-dark": $gray-300,
+  "primary-bg-subtle-dark": rgba($blue-700, $opacity-active),
+  "secondary-bg-subtle-dark": $blue-dark-850,
+  "success-bg-subtle-dark": rgba($green-600, $opacity-active),
+  "info-bg-subtle-dark": rgba($cyan-500, $opacity-active),
+  "warning-bg-subtle-dark": rgba($yellow-500, $opacity-active),
+  "danger-bg-subtle-dark": rgba($red-600, $opacity-active),
+  "light-bg-subtle-dark": $blue-dark-850,
+  "dark-bg-subtle-dark": $blue-dark-950,
+  "primary-border-subtle-dark": $blue-300,
+  "secondary-border-subtle-dark": $blue-dark-700,
+  "success-border-subtle-dark": $green-600,
+  "info-border-subtle-dark": $cyan-500,
+  "warning-border-subtle-dark": $yellow-500,
+  "danger-border-subtle-dark": $red-600,
+  "light-border-subtle-dark": $blue-dark-700,
+  "dark-border-subtle-dark": $blue-dark-850,
+  "form-select-indicator-color-dark": $gray-300,
+  "input-placeholder-color-dark": $gray-300,
+  "form-switch-color-dark": rgba($white, .25),
+  "form-valid-color-dark": $green-600,
+  "form-valid-border-color-dark": $green-600,
+  "form-invalid-color-dark": $red-600,
+  "form-invalid-border-color-dark": $red-600,
+  "accordion-icon-color-dark": $blue-300,
+  "accordion-icon-active-color-dark": $blue-300,
+  "carousel-indicator-active-bg-dark": $white,
+  "carousel-caption-color-dark": $white,
+  "carousel-control-icon-filter-dark": invert(1) grayscale(100),
+  "btn-close-filter-dark": invert(1) grayscale(100) brightness(200%)
+);
+
 $theme-semantic-color-tokens: (
   "primary": $blue-dark-700,
   "link": $blue-dark-300,
@@ -19,23 +88,25 @@ $theme-semantic-color-tokens: (
   "border": $blue-dark-750
 );
 
+$theme-semantic-dark-color-tokens: $theme-semantic-color-tokens;
+
 // Variables Sass dark oficiales de Bootstrap.
-$enable-dark-mode: true;
+$enable-dark-mode: map-get($semantic-dark, "enable-dark-mode");
 
 // Superficies semánticas del modo oscuro.
-$surface-canvas-dark: $blue-dark-950;
-$surface-default-dark: $blue-dark-900;
-$surface-raised-dark: $blue-dark-850;
-$surface-overlay-dark: $blue-dark-800;
-$surface-muted-dark: $blue-dark-750;
-$content-primary-dark: $white;
-$content-secondary-dark: $blue-dark-200;
-$content-tertiary-dark: $blue-dark-300;
-$content-disabled-dark: $gray-500;
-$border-default-dark: $blue-dark-700;
-$border-subtle-dark: rgba($white, $opacity-hover);
-$accordion-button-active-bg: $surface-raised-dark;
-$accordion-button-active-color: $blue-300;
+$surface-canvas-dark: map-get($semantic-dark, "surface-canvas-dark");
+$surface-default-dark: map-get($semantic-dark, "surface-default-dark");
+$surface-raised-dark: map-get($semantic-dark, "surface-raised-dark");
+$surface-overlay-dark: map-get($semantic-dark, "surface-overlay-dark");
+$surface-muted-dark: map-get($semantic-dark, "surface-muted-dark");
+$content-primary-dark: map-get($semantic-dark, "content-primary-dark");
+$content-secondary-dark: map-get($semantic-dark, "content-secondary-dark");
+$content-tertiary-dark: map-get($semantic-dark, "content-tertiary-dark");
+$content-disabled-dark: map-get($semantic-dark, "content-disabled-dark");
+$border-default-dark: map-get($semantic-dark, "border-default-dark");
+$border-subtle-dark: map-get($semantic-dark, "border-subtle-dark");
+$accordion-button-active-bg: map-get($semantic-dark, "accordion-button-active-bg");
+$accordion-button-active-color: map-get($semantic-dark, "accordion-button-active-color");
 
 $body-color-dark: $white;
 $body-bg-dark: $surface-canvas-dark;

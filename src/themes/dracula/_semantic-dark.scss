@@ -19,51 +19,101 @@ $theme-semantic-color-tokens: (
   "border": $dracula-border
 );
 
-$enable-dark-mode: true;
-$body-color-dark: $dracula-foreground;
-$body-bg-dark: $dracula-background;
-$body-secondary-color-dark: rgba($dracula-foreground-muted, .82);
-$body-secondary-bg-dark: $dracula-background-deep;
-$body-tertiary-color-dark: rgba($dracula-foreground-muted, .62);
-$body-tertiary-bg-dark: $dracula-background;
-$body-emphasis-color-dark: $dracula-foreground;
-$border-color-dark: $dracula-border;
-$border-color-translucent-dark: rgba($dracula-foreground, .16);
-$headings-color-dark: $dracula-foreground;
-$link-color-dark: $dracula-cyan;
-$link-hover-color-dark: $dracula-pink;
-$code-color-dark: $dracula-pink;
-$mark-color-dark: $dracula-background-deep;
-$mark-bg-dark: $dracula-yellow;
-$primary-text-emphasis-dark: $dracula-purple;
-$secondary-text-emphasis-dark: $dracula-foreground-muted;
-$success-text-emphasis-dark: $dracula-green;
-$info-text-emphasis-dark: $dracula-cyan;
-$warning-text-emphasis-dark: $dracula-yellow;
-$danger-text-emphasis-dark: $dracula-red;
-$light-text-emphasis-dark: $dracula-foreground;
-$dark-text-emphasis-dark: $dracula-foreground-muted;
-$primary-bg-subtle-dark: rgba($dracula-purple, .18);
-$secondary-bg-subtle-dark: $dracula-background-raised;
-$success-bg-subtle-dark: rgba($dracula-green, .16);
-$info-bg-subtle-dark: rgba($dracula-cyan, .16);
-$warning-bg-subtle-dark: rgba($dracula-yellow, .16);
-$danger-bg-subtle-dark: rgba($dracula-red, .16);
-$light-bg-subtle-dark: $dracula-background-raised;
-$dark-bg-subtle-dark: $dracula-background-deep;
-$primary-border-subtle-dark: $dracula-purple;
-$secondary-border-subtle-dark: $dracula-current-line;
-$success-border-subtle-dark: $dracula-green;
-$info-border-subtle-dark: $dracula-cyan;
-$warning-border-subtle-dark: $dracula-yellow;
-$danger-border-subtle-dark: $dracula-red;
-$light-border-subtle-dark: $dracula-current-line;
-$dark-border-subtle-dark: $dracula-background-raised;
-$input-placeholder-color-dark: $dracula-foreground-muted;
-$carousel-indicator-active-bg-dark: $dracula-foreground;
-$carousel-caption-color-dark: $dracula-foreground;
-$carousel-control-icon-filter-dark: invert(1) grayscale(100%);
-$btn-close-filter-dark: invert(1) grayscale(100%) brightness(200%);
+$theme-semantic-dark-color-tokens: $theme-semantic-color-tokens;
+
+$semantic-dark: (
+  "enable-dark-mode": true,
+  "body-color-dark": $dracula-foreground,
+  "body-bg-dark": $dracula-background,
+  "body-secondary-color-dark": rgba($dracula-foreground-muted, .82),
+  "body-secondary-bg-dark": $dracula-background-deep,
+  "body-tertiary-color-dark": rgba($dracula-foreground-muted, .62),
+  "body-tertiary-bg-dark": $dracula-background,
+  "body-emphasis-color-dark": $dracula-foreground,
+  "border-color-dark": $dracula-border,
+  "border-color-translucent-dark": rgba($dracula-foreground, .16),
+  "headings-color-dark": $dracula-foreground,
+  "link-color-dark": $dracula-cyan,
+  "link-hover-color-dark": $dracula-pink,
+  "code-color-dark": $dracula-pink,
+  "mark-color-dark": $dracula-background-deep,
+  "mark-bg-dark": $dracula-yellow,
+  "primary-text-emphasis-dark": $dracula-purple,
+  "secondary-text-emphasis-dark": $dracula-foreground-muted,
+  "success-text-emphasis-dark": $dracula-green,
+  "info-text-emphasis-dark": $dracula-cyan,
+  "warning-text-emphasis-dark": $dracula-yellow,
+  "danger-text-emphasis-dark": $dracula-red,
+  "light-text-emphasis-dark": $dracula-foreground,
+  "dark-text-emphasis-dark": $dracula-foreground-muted,
+  "primary-bg-subtle-dark": rgba($dracula-purple, .18),
+  "secondary-bg-subtle-dark": $dracula-background-raised,
+  "success-bg-subtle-dark": rgba($dracula-green, .16),
+  "info-bg-subtle-dark": rgba($dracula-cyan, .16),
+  "warning-bg-subtle-dark": rgba($dracula-yellow, .16),
+  "danger-bg-subtle-dark": rgba($dracula-red, .16),
+  "light-bg-subtle-dark": $dracula-background-raised,
+  "dark-bg-subtle-dark": $dracula-background-deep,
+  "primary-border-subtle-dark": $dracula-purple,
+  "secondary-border-subtle-dark": $dracula-current-line,
+  "success-border-subtle-dark": $dracula-green,
+  "info-border-subtle-dark": $dracula-cyan,
+  "warning-border-subtle-dark": $dracula-yellow,
+  "danger-border-subtle-dark": $dracula-red,
+  "light-border-subtle-dark": $dracula-current-line,
+  "dark-border-subtle-dark": $dracula-background-raised,
+  "input-placeholder-color-dark": $dracula-foreground-muted,
+  "carousel-indicator-active-bg-dark": $dracula-foreground,
+  "carousel-caption-color-dark": $dracula-foreground,
+  "carousel-control-icon-filter-dark": invert(1) grayscale(100%),
+  "btn-close-filter-dark": invert(1) grayscale(100%) brightness(200%)
+);
+
+$enable-dark-mode: map-get($semantic-dark, "enable-dark-mode");
+$body-color-dark: map-get($semantic-dark, "body-color-dark");
+$body-bg-dark: map-get($semantic-dark, "body-bg-dark");
+$body-secondary-color-dark: map-get($semantic-dark, "body-secondary-color-dark");
+$body-secondary-bg-dark: map-get($semantic-dark, "body-secondary-bg-dark");
+$body-tertiary-color-dark: map-get($semantic-dark, "body-tertiary-color-dark");
+$body-tertiary-bg-dark: map-get($semantic-dark, "body-tertiary-bg-dark");
+$body-emphasis-color-dark: map-get($semantic-dark, "body-emphasis-color-dark");
+$border-color-dark: map-get($semantic-dark, "border-color-dark");
+$border-color-translucent-dark: map-get($semantic-dark, "border-color-translucent-dark");
+$headings-color-dark: map-get($semantic-dark, "headings-color-dark");
+$link-color-dark: map-get($semantic-dark, "link-color-dark");
+$link-hover-color-dark: map-get($semantic-dark, "link-hover-color-dark");
+$code-color-dark: map-get($semantic-dark, "code-color-dark");
+$mark-color-dark: map-get($semantic-dark, "mark-color-dark");
+$mark-bg-dark: map-get($semantic-dark, "mark-bg-dark");
+$primary-text-emphasis-dark: map-get($semantic-dark, "primary-text-emphasis-dark");
+$secondary-text-emphasis-dark: map-get($semantic-dark, "secondary-text-emphasis-dark");
+$success-text-emphasis-dark: map-get($semantic-dark, "success-text-emphasis-dark");
+$info-text-emphasis-dark: map-get($semantic-dark, "info-text-emphasis-dark");
+$warning-text-emphasis-dark: map-get($semantic-dark, "warning-text-emphasis-dark");
+$danger-text-emphasis-dark: map-get($semantic-dark, "danger-text-emphasis-dark");
+$light-text-emphasis-dark: map-get($semantic-dark, "light-text-emphasis-dark");
+$dark-text-emphasis-dark: map-get($semantic-dark, "dark-text-emphasis-dark");
+$primary-bg-subtle-dark: map-get($semantic-dark, "primary-bg-subtle-dark");
+$secondary-bg-subtle-dark: map-get($semantic-dark, "secondary-bg-subtle-dark");
+$success-bg-subtle-dark: map-get($semantic-dark, "success-bg-subtle-dark");
+$info-bg-subtle-dark: map-get($semantic-dark, "info-bg-subtle-dark");
+$warning-bg-subtle-dark: map-get($semantic-dark, "warning-bg-subtle-dark");
+$danger-bg-subtle-dark: map-get($semantic-dark, "danger-bg-subtle-dark");
+$light-bg-subtle-dark: map-get($semantic-dark, "light-bg-subtle-dark");
+$dark-bg-subtle-dark: map-get($semantic-dark, "dark-bg-subtle-dark");
+$primary-border-subtle-dark: map-get($semantic-dark, "primary-border-subtle-dark");
+$secondary-border-subtle-dark: map-get($semantic-dark, "secondary-border-subtle-dark");
+$success-border-subtle-dark: map-get($semantic-dark, "success-border-subtle-dark");
+$info-border-subtle-dark: map-get($semantic-dark, "info-border-subtle-dark");
+$warning-border-subtle-dark: map-get($semantic-dark, "warning-border-subtle-dark");
+$danger-border-subtle-dark: map-get($semantic-dark, "danger-border-subtle-dark");
+$light-border-subtle-dark: map-get($semantic-dark, "light-border-subtle-dark");
+$dark-border-subtle-dark: map-get($semantic-dark, "dark-border-subtle-dark");
+$input-placeholder-color-dark: map-get($semantic-dark, "input-placeholder-color-dark");
+$carousel-indicator-active-bg-dark: map-get($semantic-dark, "carousel-indicator-active-bg-dark");
+$carousel-caption-color-dark: map-get($semantic-dark, "carousel-caption-color-dark");
+$carousel-control-icon-filter-dark: map-get($semantic-dark, "carousel-control-icon-filter-dark");
+$btn-close-filter-dark: map-get($semantic-dark, "btn-close-filter-dark");
 
 [data-kroma-theme="dracula"][data-bs-theme="dark"] {
   --bs-header-bg: #{$dracula-purple};
@@ -383,39 +433,72 @@ $btn-close-filter-dark: invert(1) grayscale(100%) brightness(200%);
   background-color: var(--bs-body-bg);
 }
 
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-sidebar {
+  align-self: stretch;
+  background-color: $dracula-background-deep;
+  border-right: 1px solid $dracula-border;
+}
+
 [data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside {
-  color: var(--bs-body-color);
-  background-color: var(--bs-body-bg);
+  position: relative;
+  align-self: stretch !important;
+  margin-bottom: 0 !important;
+  padding-top: 1px;
+  color: $dracula-foreground-muted;
+  background-color: $dracula-background-deep;
+  border-right: 0;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside #toc {
+  background-color: $dracula-background-deep;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside h2 {
+  color: $dracula-foreground-muted;
+  border-color: $dracula-border !important;
 }
 
 [data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside a {
-  color: var(--bs-body-color);
+  color: $dracula-foreground-muted;
 }
 
 [data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside a:hover,
 [data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside a:focus,
 [data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside .btn:hover,
 [data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside .btn:focus {
-  color: var(--bs-primary-text-emphasis);
-  background-color: var(--bs-primary-bg-subtle);
+  color: $dracula-foreground;
+  background-color: $dracula-background-raised;
 }
 
 [data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside .active {
   font-weight: 600;
-  color: var(--bs-primary);
-  background-color: var(--bs-primary-bg-subtle);
+  color: $dracula-foreground;
+  background-color: $dracula-selection;
 }
 
 [data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside .collapse {
-  border-left: .125rem solid var(--bs-border-color);
+  border-left: .125rem solid $dracula-current-line;
 }
 
 [data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside .btn {
-  color: var(--bs-body-color);
+  color: $dracula-foreground-muted;
+  background-color: transparent;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside .btn:hover,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside .btn:focus {
+  color: $dracula-foreground;
+  background-color: $dracula-background-raised;
 }
 
 [data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside .btn:focus {
-  box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb), .25);
+  box-shadow: 0 0 0 .25rem rgba($dracula-purple, .25);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-heading a::before,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside .btn::before {
+  color: $dracula-foreground;
+  filter: brightness(0) invert(1);
 }
 
 [data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary img {

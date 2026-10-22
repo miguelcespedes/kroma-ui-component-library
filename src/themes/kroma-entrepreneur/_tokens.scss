@@ -5,38 +5,97 @@
 // PROHIBIDO: añadir variables del framework, selectores CSS o reglas de componentes.
 // DEPENDENCIAS: las capas semánticas consumen estos valores y les asignan significado.
 
+$primitive-shared: (
+  "green-600": #198754,
+  "cyan-500": #0dcaf0,
+  "yellow-500": #ffc107,
+  "yellow-800": #66520a,
+  "red-600": #dc3545,
+  "gray-100": #f8f9fa,
+  "gray-950": #010413,
+  "gray-300": #dee2e6,
+  "gray-500": #94a3b8,
+  "gray-600": #6c757d,
+  "gray-600-alt": #667085,
+  "gray-700": #64748b,
+  "gray-750": #334155,
+  "gray-800": #212529,
+  "gray-850": #111827,
+  "gray-900": #020617,
+  "black": #000000,
+  "white": #ffffff,
+  "opacity-hover": .08,
+  "opacity-active": .14,
+  "opacity-surface": .26,
+  "opacity-focus": .25,
+  "opacity-overlay": .72,
+  "opacity-scrim": .55,
+  "font-family-system": (system-ui, -apple-system, "Segoe UI", sans-serif),
+  "font-size-100": 1rem,
+  "font-weight-400": 400,
+  "font-weight-600": 600,
+  "font-weight-700": 700,
+  "line-height-normal": 1.5,
+  "space-1": .25rem,
+  "space-2": .5rem,
+  "space-3": 1rem,
+  "space-4": 1.5rem,
+  "radius-sm": .25rem,
+  "radius-md": .375rem,
+  "radius-lg": .5rem
+);
+
+$primitive-light: (
+  "blue-700": #0c3493,
+  "blue-300": #8eb5ff,
+  "blue-200": #b8d0fa,
+  "blue-100": #e8effc
+);
+
+$primitive-dark: (
+  "blue-dark-950": #040b20,
+  "blue-dark-900": #091a3d,
+  "blue-dark-850": #0d2450,
+  "blue-dark-800": #123064,
+  "blue-dark-750": #1b3d78,
+  "blue-dark-700": #285092,
+  "blue-dark-600": #3d6db8,
+  "blue-dark-300": #9fc1ff,
+  "blue-dark-200": #c4d9ff
+);
+
 // Primitivas de color.
-$blue-700: #0c3493;
-$blue-300: #8eb5ff;
-$blue-200: #b8d0fa;
-$blue-100: #e8effc;
-$blue-dark-950: #040b20;
-$blue-dark-900: #091a3d;
-$blue-dark-850: #0d2450;
-$blue-dark-800: #123064;
-$blue-dark-750: #1b3d78;
-$blue-dark-700: #285092;
-$blue-dark-600: #3d6db8;
-$blue-dark-300: #9fc1ff;
-$blue-dark-200: #c4d9ff;
-$green-600: #198754;
-$cyan-500: #0dcaf0;
-$yellow-500: #ffc107;
-$yellow-800: #66520a;
-$red-600: #dc3545;
-$gray-100: #f8f9fa;
-$gray-950: #010413;
-$gray-300: #dee2e6;
-$gray-500: #94a3b8;
-$gray-600: #6c757d;
-$gray-600-alt: #667085;
-$gray-700: #64748b;
-$gray-750: #334155;
-$gray-800: #212529;
-$gray-850: #111827;
-$gray-900: #020617;
-$black: #000000;
-$white: #ffffff;
+$blue-700: map-get($primitive-light, "blue-700");
+$blue-300: map-get($primitive-light, "blue-300");
+$blue-200: map-get($primitive-light, "blue-200");
+$blue-100: map-get($primitive-light, "blue-100");
+$blue-dark-950: map-get($primitive-dark, "blue-dark-950");
+$blue-dark-900: map-get($primitive-dark, "blue-dark-900");
+$blue-dark-850: map-get($primitive-dark, "blue-dark-850");
+$blue-dark-800: map-get($primitive-dark, "blue-dark-800");
+$blue-dark-750: map-get($primitive-dark, "blue-dark-750");
+$blue-dark-700: map-get($primitive-dark, "blue-dark-700");
+$blue-dark-600: map-get($primitive-dark, "blue-dark-600");
+$blue-dark-300: map-get($primitive-dark, "blue-dark-300");
+$blue-dark-200: map-get($primitive-dark, "blue-dark-200");
+$green-600: map-get($primitive-shared, "green-600");
+$cyan-500: map-get($primitive-shared, "cyan-500");
+$yellow-500: map-get($primitive-shared, "yellow-500");
+$yellow-800: map-get($primitive-shared, "yellow-800");
+$red-600: map-get($primitive-shared, "red-600");
+$gray-100: map-get($primitive-shared, "gray-100");
+$gray-950: map-get($primitive-shared, "gray-950");
+$gray-300: map-get($primitive-shared, "gray-300");
+$gray-500: map-get($primitive-shared, "gray-500");
+$gray-600: map-get($primitive-shared, "gray-600");
+$gray-600-alt: map-get($primitive-shared, "gray-600-alt");
+$gray-700: map-get($primitive-shared, "gray-700");
+$gray-750: map-get($primitive-shared, "gray-750");
+$gray-800: map-get($primitive-shared, "gray-800");
+$gray-850: map-get($primitive-shared, "gray-850");
+$gray-900: map-get($primitive-shared, "gray-900");
+$black: map-get($primitive-shared, "black");
+$white: map-get($primitive-shared, "white");
 
 $theme-color-tokens: (
   "blue-700": $blue-700,
@@ -73,30 +132,30 @@ $theme-color-tokens: (
 );
 
 // Primitivas de interacción y elevación.
-$opacity-hover: .08;
-$opacity-active: .14;
-$opacity-surface: .26;
-$opacity-focus: .25;
-$opacity-overlay: .72;
-$opacity-scrim: .55;
+$opacity-hover: map-get($primitive-shared, "opacity-hover");
+$opacity-active: map-get($primitive-shared, "opacity-active");
+$opacity-surface: map-get($primitive-shared, "opacity-surface");
+$opacity-focus: map-get($primitive-shared, "opacity-focus");
+$opacity-overlay: map-get($primitive-shared, "opacity-overlay");
+$opacity-scrim: map-get($primitive-shared, "opacity-scrim");
 $shadow-dark: 0 .5rem 1rem rgba($black, .35);
 $shadow-light: 0 .5rem 1rem rgba($black, .12);
 
 // Primitivas tipográficas.
-$font-family-system: system-ui, -apple-system, "Segoe UI", sans-serif;
-$font-size-100: 1rem;
-$font-weight-400: 400;
-$font-weight-600: 600;
-$font-weight-700: 700;
-$line-height-normal: 1.5;
+$font-family-system: map-get($primitive-shared, "font-family-system");
+$font-size-100: map-get($primitive-shared, "font-size-100");
+$font-weight-400: map-get($primitive-shared, "font-weight-400");
+$font-weight-600: map-get($primitive-shared, "font-weight-600");
+$font-weight-700: map-get($primitive-shared, "font-weight-700");
+$line-height-normal: map-get($primitive-shared, "line-height-normal");
 
 // Primitivas de espaciado.
-$space-1: .25rem;
-$space-2: .5rem;
-$space-3: 1rem;
-$space-4: 1.5rem;
+$space-1: map-get($primitive-shared, "space-1");
+$space-2: map-get($primitive-shared, "space-2");
+$space-3: map-get($primitive-shared, "space-3");
+$space-4: map-get($primitive-shared, "space-4");
 
 // Primitivas de forma.
-$radius-sm: .25rem;
-$radius-md: .375rem;
-$radius-lg: .5rem;
+$radius-sm: map-get($primitive-shared, "radius-sm");
+$radius-md: map-get($primitive-shared, "radius-md");
+$radius-lg: map-get($primitive-shared, "radius-lg");

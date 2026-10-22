@@ -162,6 +162,29 @@ No conviertas `.bd-header` en `.navbar`. El header global tiene layout propio; a
 
 `Primary navbar` y `Alternative navbar` son nombres de variantes visuales. El header debe implementar la misma decisión mediante `bd-header-primary` o `bd-header-alternative`; no se debe resolver añadiendo la clase Bootstrap `.navbar` al header.
 
+### Clasificación De Tokens Por Contraste
+
+La clasificación de tokens no debe inferirse por el nombre de la variable. Cada theme debe declarar mapas explícitos:
+
+```text
+_tokens.scss
+  $primitive-shared
+  $primitive-light
+  $primitive-dark
+
+_semantic-light.scss
+  $semantic-light
+  $theme-semantic-light-color-tokens
+
+_semantic-dark.scss
+  $semantic-dark
+  $theme-semantic-dark-color-tokens
+```
+
+Los mapas `primitive-*` contienen valores sin significado de componente. Los mapas `semantic-*` contienen asignaciones a roles del theme y pueden incluir todas las variables Sass que Bootstrap consume. Mantén las variables Sass públicas existentes como aliases obtenidos desde esos mapas para evitar romper referencias.
+
+El catálogo del Cheatsheet debe mostrar dos inventarios independientes del contraste activo: las primitivas específicas (`Primitive light colors` o `Primitive dark colors`) y los tokens semánticos de color (`Semantic light colors` o `Semantic dark colors`). No se debe asumir ni representar una relación uno a uno entre ambos inventarios. Los tokens compartidos se mantienen disponibles para el sistema, pero no se muestran en la paleta visual. El generador debe leer únicamente los mapas explícitos; no debe deducir la clasificación a partir de prefijos como `dark` o `light`.
+
 ### Criterios De Aceptación
 
 Un theme está terminado solo si cumple todo lo siguiente:
@@ -345,6 +368,14 @@ Por ejemplo, el test debe rechazar `$brand-red: #ff0000;` dentro de `_semantic-l
 El theme Bootstrap no recibe estos overrides. Cuando el usuario selecciona `Bootstrap`, solo se cargan los estilos oficiales de Bootstrap 5.3.8; los overrides Kroma quedan inactivos porque requieren `data-kroma-theme="kroma-entrepreneur"`.
 
 ## Theme Dracula
+
+### Lección Del Sidebar
+
+El sidebar del cheatsheet no es únicamente el acordeón `#toc`. En desktop, el `body` usa un grid y el lateral es una columna independiente; por eso pintar solo `.bd-aside` deja zonas del sidebar con el fondo del `body`. El fondo, el borde y la altura de la columna deben aplicarse al contenedor lateral (`.bd-sidebar`), mientras `.bd-aside` conserva el contenido de navegación.
+
+No se debe solucionar extendiendo un pseudo-elemento con `100vw` ni añadiendo `overflow-y: auto` al contenido: eso puede crear scroll interno y no cubre de forma fiable la columna completa. La estructura debe mantener `.bd-sidebar` como área del grid y `.bd-aside` como contenido. Validar siempre desktop y móvil, porque en móvil el sidebar deja de ser una columna fija y pasa a flujo normal.
+
+El build Sass no demuestra que el fondo cubra el área correcta. Después de seleccionar el theme, comprobar visualmente el rectángulo completo del sidebar y revisar los estilos computados de `.bd-sidebar`, `.bd-aside`, `#toc`, enlaces, botones y estados activo, hover y focus.
 
 Se añadió `src/themes/dracula/` como prueba de que la arquitectura puede reproducir una identidad visual externa sin cambiar la aplicación. La implementación usa la paleta oficial publicada por Dracula en [draculatheme.com/contribute](https://draculatheme.com/contribute):
 
