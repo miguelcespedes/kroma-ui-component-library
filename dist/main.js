@@ -5216,6 +5216,20 @@ const theme0 = `@charset "UTF-8";
   color: #ffffff;
   filter: brightness(0) invert(1);
 }
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .btn-secondary {
+  --bs-btn-color: #ffffff;
+  --bs-btn-bg: #285092;
+  --bs-btn-border-color: #3d6db8;
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: #3d6db8;
+  --bs-btn-hover-border-color: #285092;
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: #3d6db8;
+  --bs-btn-active-border-color: #285092;
+  --bs-btn-disabled-color: #dee2e6;
+  --bs-btn-disabled-bg: #1b3d78;
+  --bs-btn-disabled-border-color: #1b3d78;
+}
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .card {
   --bs-card-bg: #091a3d;
   --bs-card-color: #ffffff;

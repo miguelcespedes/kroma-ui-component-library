@@ -158,6 +158,21 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
     filter: brightness(0) invert(1);
   }
 
+  .btn-secondary {
+    --bs-btn-color: #{$white};
+    --bs-btn-bg: #{$blue-dark-700};
+    --bs-btn-border-color: #{$blue-dark-600};
+    --bs-btn-hover-color: #{$white};
+    --bs-btn-hover-bg: #{$blue-dark-600};
+    --bs-btn-hover-border-color: #{$blue-dark-700};
+    --bs-btn-active-color: #{$white};
+    --bs-btn-active-bg: #{$blue-dark-600};
+    --bs-btn-active-border-color: #{$blue-dark-700};
+    --bs-btn-disabled-color: #{$gray-300};
+    --bs-btn-disabled-bg: #{$surface-muted-dark};
+    --bs-btn-disabled-border-color: #{$surface-muted-dark};
+  }
+
   .card {
     --bs-card-bg: #{$surface-default-dark};
     --bs-card-color: #{$content-primary-dark};
