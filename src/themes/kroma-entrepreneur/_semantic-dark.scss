@@ -7,7 +7,6 @@
 
 // Variables Sass dark oficiales de Bootstrap.
 $enable-dark-mode: true;
-$secondary: $blue-dark-700;
 
 // Superficies semánticas del modo oscuro.
 $surface-canvas-dark: $blue-dark-950;
@@ -21,9 +20,6 @@ $content-tertiary-dark: $blue-dark-300;
 $content-disabled-dark: $gray-500;
 $border-default-dark: $blue-dark-700;
 $border-subtle-dark: rgba($white, $opacity-hover);
-$card-bg: $surface-default-dark;
-$card-cap-bg: $surface-raised-dark;
-$card-border-color: $border-default-dark;
 $accordion-button-active-bg: $surface-raised-dark;
 $accordion-button-active-color: $blue-300;
 
@@ -156,6 +152,28 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
     }
   }
 
+  .card {
+    --bs-card-bg: #{$surface-default-dark};
+    --bs-card-color: #{$content-primary-dark};
+    --bs-card-border-color: #{$border-default-dark};
+    --bs-card-cap-bg: #{$surface-raised-dark};
+    background-color: $surface-default-dark;
+    color: $content-primary-dark;
+    border-color: $border-default-dark;
+
+    .card-header,
+    .card-footer {
+      background-color: $surface-raised-dark;
+      color: $content-primary-dark;
+      border-color: $border-default-dark;
+    }
+
+    .card-body {
+      background-color: $surface-default-dark;
+      color: $content-primary-dark;
+    }
+  }
+
   @media (min-width: 1200px) {
     body {
       background: linear-gradient(
@@ -170,6 +188,11 @@ $btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
 
   --bs-body-bg: #{$surface-canvas-dark};
   --bs-body-color: #{$content-primary-dark};
+  --bs-secondary-rgb: #{red($blue-dark-700)}, #{green($blue-dark-700)}, #{blue($blue-dark-700)};
+  --bs-card-bg: #{$surface-default-dark};
+  --bs-card-color: #{$content-primary-dark};
+  --bs-card-border-color: #{$border-default-dark};
+  --bs-card-cap-bg: #{$surface-raised-dark};
   --bs-secondary-bg: #{$surface-default-dark};
   --bs-tertiary-bg: #{$surface-canvas-dark};
   --bs-secondary-color: #{$content-secondary-dark};
