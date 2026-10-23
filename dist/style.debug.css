@@ -12248,6 +12248,252 @@ textarea.form-control-lg {
     max-width: calc(100vw - 1rem);
   }
 }
+.kroma-chat {
+  --chat-bg: var(--kroma-color-surface-raised, var(--bs-body-bg, #fff));
+  --chat-canvas: var(--kroma-color-surface-canvas, var(--bs-tertiary-bg, #f5f6f8));
+  --chat-text: var(--kroma-color-content-primary, var(--bs-body-color, #20242d));
+  --chat-muted: var(--kroma-color-content-secondary, var(--bs-secondary-color, #697386));
+  --chat-border: var(--kroma-color-border-default, var(--bs-border-color, #e3e6eb));
+  --chat-primary: var(--kroma-color-action-primary, var(--bs-primary, #5b55d9));
+  --chat-on-primary: var(--kroma-color-on-action, var(--bs-white, #fff));
+  --chat-focus: var(--kroma-color-focus-indicator, var(--bs-primary, #5b55d9));
+  --chat-radius: var(--kroma-radius-lg, 1.25rem);
+  display: flex;
+  width: min(100%, 26rem);
+  height: min(44rem, 82vh);
+  min-height: 32rem;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--chat-border);
+  border-radius: var(--chat-radius);
+  background: var(--chat-bg);
+  color: var(--chat-text);
+  font-family: var(--kroma-font-family-base, var(--bs-body-font-family, system-ui, sans-serif));
+  box-shadow: var(--kroma-elevation-2, 0 1rem 2.5rem rgba(27, 35, 52, 0.12));
+}
+.kroma-chat *, .kroma-chat *::before, .kroma-chat *::after {
+  box-sizing: border-box;
+}
+.kroma-chat__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.1rem 1.15rem;
+  border-bottom: 1px solid var(--chat-border);
+}
+.kroma-chat__avatar {
+  display: grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--chat-primary);
+  color: var(--chat-on-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.kroma-chat__heading {
+  min-width: 0;
+  flex: 1;
+}
+.kroma-chat__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.kroma-chat__subtitle {
+  margin: 0.15rem 0 0;
+  color: var(--chat-muted);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+.kroma-chat__presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--chat-muted);
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+.kroma-chat__presence span {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #32a675;
+}
+.kroma-chat__messages {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 1.25rem 1rem;
+  list-style: none;
+  overscroll-behavior: contain;
+}
+.kroma-chat__message {
+  display: flex;
+  max-width: 88%;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.kroma-chat__message--user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+.kroma-chat__message--assistant {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+.kroma-chat__bubble {
+  padding: 0.75rem 0.9rem;
+  border-radius: 1rem 1rem 1rem 0.3rem;
+  background: var(--chat-canvas);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.kroma-chat__message--user .kroma-chat__bubble {
+  border-radius: 1rem 1rem 0.3rem 1rem;
+  background: var(--chat-primary);
+  color: var(--chat-on-primary);
+}
+.kroma-chat__meta {
+  padding-inline: 0.25rem;
+  color: var(--chat-muted);
+  font-size: 0.68rem;
+}
+.kroma-chat__suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  padding: 0.25rem 1rem 0.85rem;
+}
+.kroma-chat__suggestions[hidden] {
+  display: none;
+}
+.kroma-chat__suggestion {
+  min-height: 2rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--chat-border);
+  border-radius: 999px;
+  background: var(--chat-bg);
+  color: var(--chat-text);
+  font: inherit;
+  font-size: 0.74rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.kroma-chat__suggestion:hover {
+  border-color: var(--chat-primary);
+  background: var(--chat-canvas);
+}
+.kroma-chat__composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin: 0 1rem;
+  padding: 0.45rem 0.45rem 0.45rem 0.9rem;
+  border: 1px solid var(--chat-border);
+  border-radius: 1rem;
+  background: var(--chat-bg);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.kroma-chat__composer:focus-within {
+  border-color: var(--chat-focus);
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--chat-focus) 18%, transparent);
+}
+.kroma-chat__input {
+  width: 100%;
+  min-height: 2.5rem;
+  max-height: 7rem;
+  resize: none;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--chat-text);
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  padding-block: 0.45rem;
+}
+.kroma-chat__input::placeholder {
+  color: var(--chat-muted);
+  opacity: 1;
+}
+.kroma-chat__send {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: 0.75rem;
+  background: var(--chat-primary);
+  color: var(--chat-on-primary);
+  font: inherit;
+  font-size: 1.35rem;
+  cursor: pointer;
+}
+.kroma-chat__send:hover:not(:disabled) {
+  filter: brightness(0.92);
+}
+.kroma-chat__send:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+.kroma-chat :where(button, textarea):focus-visible {
+  outline: 3px solid var(--chat-focus);
+  outline-offset: 3px;
+}
+.kroma-chat__footnote {
+  margin: 0.65rem 1rem 0.8rem;
+  color: var(--chat-muted);
+  font-size: 0.68rem;
+  text-align: center;
+}
+.kroma-chat__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+@media (max-width: 30rem) {
+  .kroma-chat {
+    width: 100%;
+    height: 100%;
+    min-height: 28rem;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .kroma-chat__header {
+    padding: 0.85rem;
+  }
+  .kroma-chat__messages {
+    padding-inline: 0.8rem;
+  }
+  .kroma-chat__suggestions {
+    padding-inline: 0.8rem;
+  }
+  .kroma-chat__composer {
+    margin-inline: 0.8rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kroma-chat *, .kroma-chat *::before, .kroma-chat *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 body {
   scroll-behavior: smooth;
   min-width: 320px;

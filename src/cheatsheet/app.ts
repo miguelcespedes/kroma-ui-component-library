@@ -3,6 +3,7 @@ import "./app.scss";
 import { initializeContrastDropdown } from "../components/contrast-dropdown/contrast-dropdown";
 import { initializeThemeDropdown } from "../components/theme-dropdown/theme-dropdown";
 import { initializeColorTokenPalette } from "../components/color-token-palette/color-token-palette";
+import { initializeChat } from "../components/chat/chat";
 
 window.bootstrap = bootstrap;
 
@@ -17,6 +18,7 @@ document.documentElement.setAttribute("data-bs-theme", "dark");
 initializeThemeDropdown(bootstrap);
 initializeContrastDropdown(bootstrap);
 initializeColorTokenPalette();
+document.querySelectorAll<HTMLElement>("[data-kroma-chat]").forEach((chat) => initializeChat(chat));
 
 document.querySelectorAll<HTMLElement>('[data-bs-toggle="tooltip"]').forEach((element) => new bootstrap.Tooltip(element));
 document.querySelectorAll<HTMLElement>('[data-bs-toggle="popover"]').forEach((element) => new bootstrap.Popover(element));
