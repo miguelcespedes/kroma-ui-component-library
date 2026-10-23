@@ -192,6 +192,9 @@ for (const theme of themes) {
           if (!selector.includes(`[data-kroma-theme=${theme}]`) && !selector.includes(`[data-kroma-theme="${theme}"]`)) {
             fail(entry, `unscoped rule: ${selector}`);
           }
+          if (/\[data-kroma-theme[^\]]*\]\s+(?:html|:root)(?![\w-])/.test(selector)) {
+            fail(entry, `unreachable root descendant selector: ${selector}`);
+          }
         }
         const declarations = new Map();
         for (const child of node.nodes) {

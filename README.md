@@ -13,7 +13,7 @@ Kroma es un sistema de diseño con tokens propios; Bootstrap 5.3.8 implementa lo
 | `src/adapters/bootstrap/themes/<theme>/` | Adaptaciones de variables y componentes Bootstrap por tema; sin selectores `.bd-*` del catálogo. |
 | `src/themes/<theme>/theme.scss` | CSS runtime de cada marca; nunca importa Bootstrap. |
 | `src/cheatsheet/app.scss` | Única compilación completa Bootstrap y estilos propios del catálogo. |
-| `src/components/theme-dropdown/` | Carga de assets CSS de marca con intercambio después de `load`; Bootstrap base no carga ningún asset Kroma. |
+| `src/components/theme-dropdown/` | Carga transaccional de assets CSS de marca: valida reglas, confirma tema y persiste solo al final; Bootstrap base no carga ningún asset Kroma. |
 | `src/components/contrast-dropdown/` | Traducción de `auto` a `data-bs-theme=light/dark`; responde a la preferencia del sistema. |
 | `src/components/color-token-palette/` | Visualización de primitivas específicas y semántica del contraste efectivo. |
 
@@ -35,7 +35,7 @@ npm run build:min
 git diff --check -- .
 ```
 
-`build:debug` y `build:min` borran `dist` antes de generar; ejecutar `build:debug` al final para conservar los artefactos debug versionados. El test arquitectónico compila en memoria y compara roles del catálogo con CSS efectivo. La prueba browser levanta temporalmente `vite preview` y prueba tres viewports, tres temas, tres modos y un cambio de preferencia del sistema.
+`build:debug` y `build:min` borran `dist` antes de generar; ejecutar `build:debug` al final para conservar los artefactos debug versionados. El test arquitectónico compila en memoria y compara roles del catálogo con CSS efectivo. La prueba browser levanta temporalmente `vite preview` y prueba tres navegadores, tres viewports, tres temas, tres modos, estados hover/active, accesibilidad, fixture, movimiento reducido y fallos/concurrencia del selector de temas.
 
 ## Integración con Bootstrap
 
@@ -51,9 +51,9 @@ Los selectores propios del catálogo (`.bd-*`, `.scrollspy-example`) se concentr
 
 ## Contrato de temas y tokens
 
-Cada tema declara primitivas en `_tokens.scss` y roles en `_semantic-{light,dark}.scss`. El runtime publica, además de colores, tokens estables de tipografía (`--kroma-font-*`), espaciado (`--kroma-space-*`), forma (`--kroma-radius-*`), elevación (`--kroma-elevation-*`) y movimiento (`--kroma-motion-*`). Los adaptadores por tema pueden seguir afinando componentes, pero el adaptador compartido es genérico: aplica a cualquier `data-kroma-theme` distinto de `bootstrap`.
+Cada tema declara primitivas en `_tokens.scss` y roles en `_semantic-{light,dark}.scss`. El runtime publica, además de colores, tokens estables de tipografía (`--kroma-font-*`), espaciado (`--kroma-space-*`), forma (`--kroma-radius-*`), elevación (`--kroma-elevation-*`), movimiento (`--kroma-motion-*`), estados interactivos de botón, colores legibles y scrollbar. Los adaptadores por tema pueden seguir afinando componentes, pero el adaptador compartido es genérico: aplica a cualquier `data-kroma-theme` distinto de `bootstrap`.
 
-La matriz `compatibility.json` declara componente, scope, fuente Kroma, destino Bootstrap, estado, mecanismo y estrategia de expansión. `npm run test:theme-layers` compila el adaptador, comprueba que cada mapping llega a una declaración real y que cada destino `--bs-*` existe en Bootstrap 5.3.8.
+La matriz `compatibility.json` declara componente, scope, fuente Kroma, destino Bootstrap, estado, mecanismo y estrategia de expansión. `npm run test:theme-layers` compila el adaptador, comprueba que cada mapping llega a una declaración real, que cada destino `--bs-*` existe en Bootstrap 5.3.8 y que no quedan selectores raíz inalcanzables.
 
 `src/themes/kroma-certification/` es un fixture: `theme.json` lo excluye del manifiesto y del catálogo, pero se compila en los tests para demostrar que un tema nuevo funciona sin tocar el adaptador. La prueba browser lo inyecta, valida light/dark y verifica que un tema no registrado no hereda tokens Kroma.
 

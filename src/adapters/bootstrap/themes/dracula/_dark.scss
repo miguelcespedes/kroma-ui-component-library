@@ -10,6 +10,9 @@
   --kroma-header-color: #{$dracula-background-deep};
   --kroma-header-border: #{$dracula-current-line};
   --kroma-header-control-bg: #{$dracula-background-deep};
+  --kroma-scrollbar-thumb: #{$dracula-current-line};
+  --kroma-scrollbar-track: #{$dracula-background-deep};
+  --kroma-scrollbar-thumb-hover: #{$dracula-purple};
   --bs-navbar-bg: #{$dracula-background-raised};
   --bs-navbar-color: #{$dracula-foreground};
   --bs-navbar-hover-color: #{$dracula-pink};
@@ -30,21 +33,14 @@
     background-color: $dracula-background-deep;
   }
 
-  .card {
-    --bs-card-bg: #{$dracula-background-deep};
-    --bs-card-color: #{$dracula-foreground};
-    --bs-card-border-color: #{$dracula-border};
-    --bs-card-cap-bg: #{$dracula-background-raised};
-  }
-
   .btn-secondary {
     --bs-btn-color: #{$dracula-foreground};
-    --bs-btn-bg: #{$dracula-current-line};
-    --bs-btn-border-color: #{$dracula-current-line};
-    --bs-btn-hover-color: #{$dracula-foreground};
+    --bs-btn-bg: #{$dracula-selection};
+    --bs-btn-border-color: #{$dracula-selection};
+    --bs-btn-hover-color: #{$dracula-background-deep};
     --bs-btn-hover-bg: #{$dracula-purple};
     --bs-btn-hover-border-color: #{$dracula-purple};
-    --bs-btn-active-color: #{$dracula-foreground};
+    --bs-btn-active-color: #{$dracula-background-deep};
     --bs-btn-active-bg: #{$dracula-purple};
     --bs-btn-active-border-color: #{$dracula-purple};
     --bs-btn-disabled-color: #{$dracula-foreground-muted};
@@ -245,34 +241,34 @@
 }
 
 @supports selector(::-webkit-scrollbar) {
-  [data-kroma-theme="dracula"][data-bs-theme="dark"] html::-webkit-scrollbar,
-  [data-kroma-theme="dracula"][data-bs-theme="dark"] body::-webkit-scrollbar {
+  html[data-kroma-theme="dracula"][data-bs-theme="dark"]::-webkit-scrollbar,
+  html[data-kroma-theme="dracula"][data-bs-theme="dark"] body::-webkit-scrollbar {
     width: .625rem;
     height: .625rem;
   }
 
-  [data-kroma-theme="dracula"][data-bs-theme="dark"] html::-webkit-scrollbar-track,
-  [data-kroma-theme="dracula"][data-bs-theme="dark"] body::-webkit-scrollbar-track {
+  html[data-kroma-theme="dracula"][data-bs-theme="dark"]::-webkit-scrollbar-track,
+  html[data-kroma-theme="dracula"][data-bs-theme="dark"] body::-webkit-scrollbar-track {
     border-radius: $radius-sm;
     background: $dracula-background-deep;
   }
 
-  [data-kroma-theme="dracula"][data-bs-theme="dark"] html::-webkit-scrollbar-thumb,
-  [data-kroma-theme="dracula"][data-bs-theme="dark"] body::-webkit-scrollbar-thumb {
+  html[data-kroma-theme="dracula"][data-bs-theme="dark"]::-webkit-scrollbar-thumb,
+  html[data-kroma-theme="dracula"][data-bs-theme="dark"] body::-webkit-scrollbar-thumb {
     border: .125rem solid $dracula-background-deep;
     border-radius: $radius-sm;
     background: $dracula-current-line;
   }
 
-  [data-kroma-theme="dracula"][data-bs-theme="dark"] html::-webkit-scrollbar-thumb:hover,
-  [data-kroma-theme="dracula"][data-bs-theme="dark"] body::-webkit-scrollbar-thumb:hover {
+  html[data-kroma-theme="dracula"][data-bs-theme="dark"]::-webkit-scrollbar-thumb:hover,
+  html[data-kroma-theme="dracula"][data-bs-theme="dark"] body::-webkit-scrollbar-thumb:hover {
     background: $dracula-purple;
   }
 }
 
 @supports not selector(::-webkit-scrollbar) {
-  [data-kroma-theme="dracula"][data-bs-theme="dark"] html,
-  [data-kroma-theme="dracula"][data-bs-theme="dark"] body {
+  html[data-kroma-theme="dracula"][data-bs-theme="dark"],
+  html[data-kroma-theme="dracula"][data-bs-theme="dark"] body {
     scrollbar-color: $dracula-current-line $dracula-background-deep;
     scrollbar-width: thin;
   }

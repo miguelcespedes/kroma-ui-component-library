@@ -26,7 +26,9 @@
 
 @mixin kroma-mode($mode, $colors, $primitives, $shared) {
   $action: map-get($colors, "primary");
+  $action-hover: map-get($colors, "link");
   $on-action: if(kroma-contrast($action, #000) >= kroma-contrast($action, #fff), #000, #fff);
+  $on-action-hover: if(kroma-contrast($action-hover, #000) >= kroma-contrast($action-hover, #fff), #000, #fff);
   &[data-bs-theme="#{$mode}"] {
     @each $name, $value in $shared {
       @if not map-has-key($primitives, $name) {
@@ -60,7 +62,9 @@
       --kroma-color-#{$name}-rgb: #{red($value)}, #{green($value)}, #{blue($value)};
       @if index(("primary", "link", "success", "info", "warning", "danger"), $name) {
         $on-color: if(kroma-contrast($value, #000) >= kroma-contrast($value, #fff), #000, #fff);
+        $readable-color: if(kroma-contrast($value, map-get($colors, "body")) >= 4.5, $value, map-get($colors, "content"));
         --kroma-color-on-#{$name}: #{$on-color};
+        --kroma-color-readable-#{$name}: #{$readable-color};
       }
     }
     --kroma-color-surface-canvas: var(--kroma-color-body);
@@ -75,8 +79,10 @@
     --kroma-color-border-strong: var(--kroma-color-content-secondary);
     --kroma-color-action-primary: var(--kroma-color-primary);
     --kroma-color-action-secondary: var(--kroma-color-content-secondary);
-    --kroma-color-action-primary-hover: var(--kroma-color-link);
+    --kroma-color-readable-secondary: #{if(kroma-contrast(map-get($colors, "muted-content"), map-get($colors, "body")) >= 4.5, map-get($colors, "muted-content"), map-get($colors, "content"))};
+    --kroma-color-action-primary-hover: #{$action-hover};
     --kroma-color-on-action: #{$on-action};
+    --kroma-color-on-action-hover: #{$on-action-hover};
     --kroma-color-focus-indicator: var(--kroma-color-primary);
     --kroma-color-disabled: var(--kroma-color-muted-content);
     --kroma-focus-ring-width: 2px;
@@ -84,6 +90,15 @@
     --kroma-button-primary-bg: var(--kroma-color-action-primary);
     --kroma-button-primary-fg: var(--kroma-color-on-action);
     --kroma-button-primary-hover-bg: var(--kroma-color-action-primary-hover);
+    --kroma-button-primary-hover-fg: var(--kroma-color-on-action-hover);
+    --kroma-button-primary-active-bg: var(--kroma-color-action-primary);
+    --kroma-button-primary-active-fg: var(--kroma-color-on-action);
+    --kroma-button-primary-disabled-bg: var(--kroma-color-surface-raised);
+    --kroma-button-primary-disabled-fg: var(--kroma-color-disabled);
+    --kroma-button-primary-disabled-border: var(--kroma-color-border-default);
+    --kroma-scrollbar-thumb: var(--kroma-color-border-strong);
+    --kroma-scrollbar-track: var(--kroma-color-surface-subtle);
+    --kroma-scrollbar-thumb-hover: var(--kroma-color-primary);
     --kroma-card-bg: var(--kroma-color-surface);
     --kroma-card-border: var(--kroma-color-border-default);
     --kroma-input-bg: var(--kroma-color-surface);

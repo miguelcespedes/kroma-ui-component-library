@@ -24,6 +24,19 @@
     ]
   },
   {
+    "component": "form validation",
+    "scope": "[data-kroma-theme]",
+    "inherits": true,
+    "mechanism": "runtime CSS custom properties",
+    "expansion": "Validation feedback uses readable role colors over the page canvas.",
+    "mappings": [
+      { "source": "--kroma-color-readable-danger", "target": "--bs-form-invalid-color", "state": "invalid" },
+      { "source": "--kroma-color-danger", "target": "--bs-form-invalid-border-color", "state": "invalid" },
+      { "source": "--kroma-color-readable-success", "target": "--bs-form-valid-color", "state": "valid" },
+      { "source": "--kroma-color-success", "target": "--bs-form-valid-border-color", "state": "valid" }
+    ]
+  },
+  {
     "component": "button",
     "scope": ".btn-primary",
     "inherits": false,
@@ -32,8 +45,13 @@
     "mappings": [
       { "source": "--kroma-button-primary-bg", "target": "--bs-btn-bg", "state": "default" },
       { "source": "--kroma-button-primary-fg", "target": "--bs-btn-color", "state": "default" },
+      { "source": "--kroma-button-primary-hover-fg", "target": "--bs-btn-hover-color", "state": "hover" },
       { "source": "--kroma-button-primary-hover-bg", "target": "--bs-btn-hover-bg", "state": "hover" },
-      { "source": "--kroma-button-primary-bg", "target": "--bs-btn-active-bg", "state": "active" }
+      { "source": "--kroma-button-primary-active-fg", "target": "--bs-btn-active-color", "state": "active" },
+      { "source": "--kroma-button-primary-active-bg", "target": "--bs-btn-active-bg", "state": "active" },
+      { "source": "--kroma-button-primary-disabled-fg", "target": "--bs-btn-disabled-color", "state": "disabled" },
+      { "source": "--kroma-button-primary-disabled-bg", "target": "--bs-btn-disabled-bg", "state": "disabled" },
+      { "source": "--kroma-button-primary-disabled-border", "target": "--bs-btn-disabled-border-color", "state": "disabled" }
     ]
   },
   {
@@ -44,9 +62,22 @@
     "mechanism": "runtime local CSS variables",
     "expansion": "The adapter repeats the contract for primary, success, danger, info and warning.",
     "mappings": [
-      { "source": "--kroma-color-primary", "target": "--bs-btn-color", "state": "default" },
+      { "source": "--kroma-color-readable-primary", "target": "--bs-btn-color", "state": "default" },
       { "source": "--kroma-color-on-primary", "target": "--bs-btn-hover-color", "state": "hover" },
       { "source": "--kroma-color-primary", "target": "--bs-btn-hover-bg", "state": "hover" }
+    ]
+  },
+  {
+    "component": "button outline secondary",
+    "scope": ".btn-outline-secondary",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Uses the readable secondary foreground and the secondary action surface.",
+    "mappings": [
+      { "source": "--kroma-color-readable-secondary", "target": "--bs-btn-color", "state": "default" },
+      { "source": "--kroma-color-action-secondary", "target": "--bs-btn-border-color", "state": "default" },
+      { "source": "--kroma-color-surface", "target": "--bs-btn-hover-color", "state": "hover" },
+      { "source": "--kroma-color-action-secondary", "target": "--bs-btn-hover-bg", "state": "hover" }
     ]
   },
   {

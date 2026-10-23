@@ -183,7 +183,7 @@ $dropdown-link-active-color: $dracula-light-surface;
 
 [data-kroma-theme="dracula"][data-bs-theme="light"] .nav-tabs .nav-link:not(.active),
 [data-kroma-theme="dracula"][data-bs-theme="light"] .nav-pills .nav-link:not(.active) {
-  color: #{$dracula-light-link};
+  color: var(--kroma-color-readable-link);
 }
 
 [data-kroma-theme="dracula"][data-bs-theme="light"] .nav-tabs .nav-link:not(.active):hover,

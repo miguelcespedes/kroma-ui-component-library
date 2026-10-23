@@ -30,7 +30,7 @@ git diff --check -- .
 - `src/adapters/bootstrap/themes/<theme>/`: adaptaciones de los themes existentes; no contienen selectores `.bd-*` del cheatsheet. No agregar aquí nuevas reglas `.bd-*`: su destino es `src/cheatsheet/app.scss` y deben consumir `--kroma-*`.
 - `src/themes/<theme>/theme.scss`: compone tokens, semántica y adaptaciones; **no importa Bootstrap**. Vite emite un CSS ligero por theme.
 - `src/cheatsheet/app.scss`: única compilación completa de Bootstrap 5.3.8 y estilos del catálogo.
-- `src/cheatsheet/app.ts`: inicialización de componentes; `theme-dropdown` carga el CSS activo, `contrast-dropdown` resuelve `auto` a light/dark.
+- `src/cheatsheet/app.ts`: inicialización de componentes; `theme-dropdown` carga el CSS de forma transaccional (valida, confirma y luego persiste), `contrast-dropdown` resuelve `auto` a light/dark.
 - `scripts/generate-theme-tokens.mjs`: evalúa los mapas Sass con Dart Sass (no inferir roles por nombres ni parsear expresiones Sass con regex).
 
 El cheatsheet sigue siendo privado; no añadir exports npm ni infraestructura de publicación sin autorización. El núcleo Kroma no debe importar el cheatsheet ni usar nombres de Bootstrap como API propia. `data-kroma-theme` identifica marca y `data-bs-theme` solo contraste resuelto. Bootstrap nativo no recibe overrides de Kroma.

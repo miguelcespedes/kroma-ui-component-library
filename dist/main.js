@@ -5132,6 +5132,7 @@ const themes = [
   { id: "kroma-entrepreneur", label: "Kroma Entrepreneur", stylesheet: theme1 }
 ];
 const storageKey = "kroma-theme-mode";
+const themeAttribute = "data-kroma-theme";
 function initializeThemeDropdown(bootstrap2) {
   const container = document.querySelector("[data-theme-dropdown]");
   if (!container) return;
@@ -5149,60 +5150,125 @@ function initializeThemeDropdown(bootstrap2) {
     item.innerHTML = `<button class="dropdown-item d-flex align-items-center" type="button" data-theme-value="${id}" aria-pressed="false">${label}<span class="ms-3"></span><svg class="bi ms-auto d-none" aria-hidden="true"><use href="#check2"></use></svg></button>`;
     menu.append(item);
   });
+  const root = document.documentElement;
+  const selector = document.querySelector("[data-theme-selector]");
+  const labelElement = document.querySelector("#kroma-theme-label");
+  const currentStylesheet = () => document.querySelector("#kroma-theme-stylesheet");
+  let activeTheme = "bootstrap";
+  let selection = 0;
+  let pendingLink = null;
+  const normalizeTheme = (theme) => availableThemes.some(({ id }) => id === theme) ? theme : "bootstrap";
   const getStoredTheme = () => {
     try {
-      const storedTheme = localStorage.getItem(storageKey);
-      return availableThemes.some(({ id }) => id === storedTheme) ? storedTheme : "bootstrap";
+      return normalizeTheme(localStorage.getItem(storageKey));
     } catch {
       return "bootstrap";
     }
   };
-  let selection = 0;
-  const setTheme = (theme, initial = false) => {
-    const selectedTheme = availableThemes.some((item) => item.id === theme) ? theme : "bootstrap";
-    const themeStylesheet2 = document.querySelector("#kroma-theme-stylesheet");
-    const stylesheet = availableThemes.find((item) => item.id === selectedTheme)?.stylesheet;
-    const request = ++selection;
-    if (initial && stylesheet) document.documentElement.style.visibility = "hidden";
-    document.querySelectorAll("[data-pending-kroma-theme]").forEach((link) => link.remove());
-    if (stylesheet && themeStylesheet2 && themeStylesheet2.href !== new URL(stylesheet, document.baseURI).href) {
-      const pending = document.createElement("link");
-      pending.rel = "stylesheet";
-      pending.href = stylesheet;
-      pending.dataset.pendingKromaTheme = selectedTheme;
-      pending.addEventListener("load", () => {
-        if (request !== selection) return;
-        document.documentElement.setAttribute("data-kroma-theme", selectedTheme);
-        themeStylesheet2.remove();
-        pending.id = "kroma-theme-stylesheet";
-        delete pending.dataset.pendingKromaTheme;
-        document.documentElement.style.visibility = "";
-      }, { once: true });
-      pending.addEventListener("error", () => {
-        pending.remove();
-        document.documentElement.style.visibility = "";
-      }, { once: true });
-      document.head.append(pending);
-    } else {
-      document.documentElement.setAttribute("data-kroma-theme", selectedTheme);
-      if (!stylesheet) themeStylesheet2?.removeAttribute("href");
-      if (initial) document.documentElement.style.visibility = "";
-    }
+  const persistTheme = (theme) => {
     try {
-      localStorage.setItem(storageKey, selectedTheme);
+      localStorage.setItem(storageKey, theme);
     } catch {
     }
-    const themeLabel = availableThemes.find((item) => item.id === selectedTheme)?.label || selectedTheme;
-    const themeButton = document.querySelector("[data-theme-selector]");
-    themeButton?.setAttribute("aria-label", `Theme: ${themeLabel}`);
-    const themeLabelElement = document.querySelector("#kroma-theme-label");
-    if (themeLabelElement) themeLabelElement.textContent = themeLabel;
+  };
+  const updateControls = (theme) => {
+    const themeLabel = availableThemes.find((item) => item.id === theme)?.label || theme;
+    selector?.setAttribute("aria-label", `Theme: ${themeLabel}`);
+    selector?.setAttribute("aria-busy", "false");
+    if (labelElement) labelElement.textContent = themeLabel;
     document.querySelectorAll("[data-theme-value]").forEach((button) => {
-      const selected = button.dataset.themeValue === selectedTheme;
+      const selected = button.dataset.themeValue === theme;
       button.classList.toggle("active", selected);
       button.setAttribute("aria-pressed", String(selected));
       button.querySelector(".bi")?.classList.toggle("d-none", !selected);
     });
+  };
+  const setStatus = (status) => {
+    container.dataset.themeState = status;
+  };
+  const clearPending = () => {
+    pendingLink?.remove();
+    pendingLink = null;
+  };
+  const commitTheme = (theme, nextStylesheet) => {
+    const previousStylesheet = currentStylesheet();
+    root.setAttribute(themeAttribute, theme);
+    if (nextStylesheet) {
+      nextStylesheet.media = "all";
+      nextStylesheet.id = "kroma-theme-stylesheet";
+      delete nextStylesheet.dataset.pendingKromaTheme;
+      if (previousStylesheet && previousStylesheet !== nextStylesheet) previousStylesheet.remove();
+    } else if (previousStylesheet) {
+      previousStylesheet.removeAttribute("href");
+    }
+    pendingLink = null;
+    activeTheme = theme;
+    root.style.visibility = "";
+    persistTheme(theme);
+    updateControls(theme);
+    setStatus("ready");
+  };
+  const failTheme = (theme, error) => {
+    clearPending();
+    root.style.visibility = "";
+    console.error(`[kroma] Failed to load theme stylesheet "${theme}".`, error);
+    persistTheme(activeTheme);
+    updateControls(activeTheme);
+    setStatus("error");
+  };
+  const usableStylesheet = (link) => {
+    try {
+      return (link.sheet?.cssRules.length ?? 0) > 0;
+    } catch {
+      return true;
+    }
+  };
+  const setTheme = (theme, initial = false) => {
+    const selectedTheme = normalizeTheme(theme);
+    const request = ++selection;
+    const stylesheet = availableThemes.find((item) => item.id === selectedTheme)?.stylesheet;
+    if (pendingLink) clearPending();
+    if (selectedTheme === activeTheme) {
+      root.style.visibility = "";
+      persistTheme(activeTheme);
+      updateControls(activeTheme);
+      setStatus("ready");
+      return;
+    }
+    if (!stylesheet) {
+      commitTheme(selectedTheme);
+      return;
+    }
+    if (initial) root.style.visibility = "hidden";
+    selector?.setAttribute("aria-busy", "true");
+    setStatus("loading");
+    const pending = document.createElement("link");
+    pending.rel = "stylesheet";
+    pending.href = stylesheet;
+    pending.media = "print";
+    pending.dataset.pendingKromaTheme = selectedTheme;
+    pending.addEventListener("load", () => {
+      if (request !== selection) {
+        pending.remove();
+        return;
+      }
+      if (!usableStylesheet(pending)) {
+        failTheme(selectedTheme, new Error("Stylesheet loaded without usable rules"));
+        pending.remove();
+        return;
+      }
+      commitTheme(selectedTheme, pending);
+    }, { once: true });
+    pending.addEventListener("error", () => {
+      if (request !== selection) {
+        pending.remove();
+        return;
+      }
+      failTheme(selectedTheme, new Error(`HTTP error while loading ${stylesheet}`));
+      pending.remove();
+    }, { once: true });
+    pendingLink = pending;
+    document.head.append(pending);
   };
   setTheme(getStoredTheme(), true);
   document.querySelectorAll("[data-theme-value]").forEach((button) => {

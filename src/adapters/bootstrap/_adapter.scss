@@ -29,18 +29,25 @@ $kroma-theme-scope: '[data-kroma-theme]:not([data-kroma-theme="bootstrap"])';
   --bs-link-color-rgb: var(--kroma-color-link-rgb);
   --bs-tertiary-bg: var(--kroma-color-surface-raised);
   --bs-tertiary-bg-rgb: var(--kroma-color-surface-rgb);
+  --bs-form-invalid-color: var(--kroma-color-readable-danger);
+  --bs-form-invalid-border-color: var(--kroma-color-danger);
+  --bs-form-valid-color: var(--kroma-color-readable-success);
+  --bs-form-valid-border-color: var(--kroma-color-success);
 }
 
 #{$kroma-theme-scope} .btn-primary {
   --bs-btn-color: var(--kroma-button-primary-fg);
   --bs-btn-bg: var(--kroma-button-primary-bg);
   --bs-btn-border-color: var(--kroma-button-primary-bg);
-  --bs-btn-hover-color: var(--kroma-button-primary-fg);
+  --bs-btn-hover-color: var(--kroma-button-primary-hover-fg);
   --bs-btn-hover-bg: var(--kroma-button-primary-hover-bg);
   --bs-btn-hover-border-color: var(--kroma-button-primary-hover-bg);
-  --bs-btn-active-color: var(--kroma-button-primary-fg);
-  --bs-btn-active-bg: var(--kroma-button-primary-bg);
-  --bs-btn-active-border-color: var(--kroma-button-primary-bg);
+  --bs-btn-active-color: var(--kroma-button-primary-active-fg);
+  --bs-btn-active-bg: var(--kroma-button-primary-active-bg);
+  --bs-btn-active-border-color: var(--kroma-button-primary-active-bg);
+  --bs-btn-disabled-color: var(--kroma-button-primary-disabled-fg);
+  --bs-btn-disabled-bg: var(--kroma-button-primary-disabled-bg);
+  --bs-btn-disabled-border-color: var(--kroma-button-primary-disabled-border);
   --bs-btn-focus-shadow-rgb: var(--kroma-color-primary-rgb);
 }
 
@@ -167,14 +174,30 @@ $kroma-theme-scope: '[data-kroma-theme]:not([data-kroma-theme="bootstrap"])';
   --bs-tooltip-color: var(--kroma-color-surface);
 }
 
+#{$kroma-theme-scope} .btn-outline-secondary {
+  --bs-btn-color: var(--kroma-color-readable-secondary);
+  --bs-btn-border-color: var(--kroma-color-action-secondary);
+  --bs-btn-hover-color: var(--kroma-color-surface);
+  --bs-btn-hover-bg: var(--kroma-color-action-secondary);
+  --bs-btn-hover-border-color: var(--kroma-color-action-secondary);
+  --bs-btn-active-color: var(--kroma-color-surface);
+  --bs-btn-active-bg: var(--kroma-color-action-secondary);
+  --bs-btn-active-border-color: var(--kroma-color-action-secondary);
+  --bs-btn-focus-shadow-rgb: var(--kroma-color-muted-content-rgb);
+}
+
 @each $name in ("primary", "success", "danger", "info", "warning") {
   #{$kroma-theme-scope} .badge.bg-#{$name},
   #{$kroma-theme-scope} .badge.text-bg-#{$name} {
     color: var(--kroma-color-on-#{$name}) !important;
   }
 
+  #{$kroma-theme-scope} .btn-#{$name} {
+    --bs-btn-focus-shadow-rgb: var(--kroma-color-#{$name}-rgb);
+  }
+
   #{$kroma-theme-scope} .btn-outline-#{$name} {
-    --bs-btn-color: var(--kroma-color-#{$name});
+    --bs-btn-color: var(--kroma-color-readable-#{$name});
     --bs-btn-border-color: var(--kroma-color-#{$name});
     --bs-btn-hover-color: var(--kroma-color-on-#{$name});
     --bs-btn-hover-bg: var(--kroma-color-#{$name});

@@ -33,34 +33,38 @@ $form-select-indicator-dark: url("data:image/svg+xml,<svg xmlns='http://www.w3.o
     background-color: $surface-default-dark;
   }
 
+  --kroma-scrollbar-thumb: #{$blue-dark-600};
+  --kroma-scrollbar-track: #{$blue-dark-950};
+  --kroma-scrollbar-thumb-hover: #{$blue-dark-300};
+
   @supports selector(::-webkit-scrollbar) {
-    html::-webkit-scrollbar,
+    &::-webkit-scrollbar,
     body::-webkit-scrollbar {
       width: .625rem;
       height: .625rem;
     }
 
-    html::-webkit-scrollbar-track,
+    &::-webkit-scrollbar-track,
     body::-webkit-scrollbar-track {
       border-radius: $radius-sm;
       background: $blue-dark-950;
     }
 
-    html::-webkit-scrollbar-thumb,
+    &::-webkit-scrollbar-thumb,
     body::-webkit-scrollbar-thumb {
       border: .125rem solid $blue-dark-950;
       border-radius: $radius-sm;
       background: $blue-dark-600;
     }
 
-    html::-webkit-scrollbar-thumb:hover,
+    &::-webkit-scrollbar-thumb:hover,
     body::-webkit-scrollbar-thumb:hover {
       background: $blue-dark-300;
     }
   }
 
   @supports not selector(::-webkit-scrollbar) {
-    html,
+    &,
     body {
       scrollbar-color: $blue-dark-600 $blue-dark-950;
       scrollbar-width: thin;

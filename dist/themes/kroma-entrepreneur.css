@@ -172,30 +172,35 @@
 [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .accordion-body {
   background-color: #091a3d;
 }
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] {
+  --kroma-scrollbar-thumb: #3d6db8;
+  --kroma-scrollbar-track: #040b20;
+  --kroma-scrollbar-thumb-hover: #9fc1ff;
+}
 @supports selector(::-webkit-scrollbar) {
-  [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] html::-webkit-scrollbar,
+  [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark]::-webkit-scrollbar,
   [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] body::-webkit-scrollbar {
     width: 0.625rem;
     height: 0.625rem;
   }
-  [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] html::-webkit-scrollbar-track,
+  [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark]::-webkit-scrollbar-track,
   [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] body::-webkit-scrollbar-track {
     border-radius: 0.25rem;
     background: #040b20;
   }
-  [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] html::-webkit-scrollbar-thumb,
+  [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark]::-webkit-scrollbar-thumb,
   [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] body::-webkit-scrollbar-thumb {
     border: 0.125rem solid #040b20;
     border-radius: 0.25rem;
     background: #3d6db8;
   }
-  [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] html::-webkit-scrollbar-thumb:hover,
+  [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark]::-webkit-scrollbar-thumb:hover,
   [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] body::-webkit-scrollbar-thumb:hover {
     background: #9fc1ff;
   }
 }
 @supports not selector(::-webkit-scrollbar) {
-  [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] html,
+  [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark],
   [data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] body {
     scrollbar-color: #3d6db8 #040b20;
     scrollbar-width: thin;
@@ -648,21 +653,27 @@
   --kroma-color-primary: #0c3493;
   --kroma-color-primary-rgb: 12, 52, 147;
   --kroma-color-on-primary: #fff;
+  --kroma-color-readable-primary: #0c3493;
   --kroma-color-link: #0c3493;
   --kroma-color-link-rgb: 12, 52, 147;
   --kroma-color-on-link: #fff;
+  --kroma-color-readable-link: #0c3493;
   --kroma-color-success: #198754;
   --kroma-color-success-rgb: 25, 135, 84;
   --kroma-color-on-success: #000;
+  --kroma-color-readable-success: #212529;
   --kroma-color-info: #0dcaf0;
   --kroma-color-info-rgb: 13, 202, 240;
   --kroma-color-on-info: #000;
+  --kroma-color-readable-info: #212529;
   --kroma-color-warning: #ffc107;
   --kroma-color-warning-rgb: 255, 193, 7;
   --kroma-color-on-warning: #000;
+  --kroma-color-readable-warning: #212529;
   --kroma-color-danger: #dc3545;
   --kroma-color-danger-rgb: 220, 53, 69;
   --kroma-color-on-danger: #000;
+  --kroma-color-readable-danger: #212529;
   --kroma-color-body: #f8f9fa;
   --kroma-color-body-rgb: 248, 249, 250;
   --kroma-color-surface: #ffffff;
@@ -683,8 +694,10 @@
   --kroma-color-border-strong: var(--kroma-color-content-secondary);
   --kroma-color-action-primary: var(--kroma-color-primary);
   --kroma-color-action-secondary: var(--kroma-color-content-secondary);
-  --kroma-color-action-primary-hover: var(--kroma-color-link);
+  --kroma-color-readable-secondary: #212529;
+  --kroma-color-action-primary-hover: #0c3493;
   --kroma-color-on-action: #fff;
+  --kroma-color-on-action-hover: #fff;
   --kroma-color-focus-indicator: var(--kroma-color-primary);
   --kroma-color-disabled: var(--kroma-color-muted-content);
   --kroma-focus-ring-width: 2px;
@@ -692,6 +705,15 @@
   --kroma-button-primary-bg: var(--kroma-color-action-primary);
   --kroma-button-primary-fg: var(--kroma-color-on-action);
   --kroma-button-primary-hover-bg: var(--kroma-color-action-primary-hover);
+  --kroma-button-primary-hover-fg: var(--kroma-color-on-action-hover);
+  --kroma-button-primary-active-bg: var(--kroma-color-action-primary);
+  --kroma-button-primary-active-fg: var(--kroma-color-on-action);
+  --kroma-button-primary-disabled-bg: var(--kroma-color-surface-raised);
+  --kroma-button-primary-disabled-fg: var(--kroma-color-disabled);
+  --kroma-button-primary-disabled-border: var(--kroma-color-border-default);
+  --kroma-scrollbar-thumb: var(--kroma-color-border-strong);
+  --kroma-scrollbar-track: var(--kroma-color-surface-subtle);
+  --kroma-scrollbar-thumb-hover: var(--kroma-color-primary);
   --kroma-card-bg: var(--kroma-color-surface);
   --kroma-card-border: var(--kroma-color-border-default);
   --kroma-input-bg: var(--kroma-color-surface);
@@ -773,21 +795,27 @@
   --kroma-color-primary: #285092;
   --kroma-color-primary-rgb: 40, 80, 146;
   --kroma-color-on-primary: #fff;
+  --kroma-color-readable-primary: #c4d9ff;
   --kroma-color-link: #9fc1ff;
   --kroma-color-link-rgb: 159, 193, 255;
   --kroma-color-on-link: #000;
+  --kroma-color-readable-link: #9fc1ff;
   --kroma-color-success: #198754;
   --kroma-color-success-rgb: 25, 135, 84;
   --kroma-color-on-success: #000;
+  --kroma-color-readable-success: #c4d9ff;
   --kroma-color-info: #0dcaf0;
   --kroma-color-info-rgb: 13, 202, 240;
   --kroma-color-on-info: #000;
+  --kroma-color-readable-info: #0dcaf0;
   --kroma-color-warning: #ffc107;
   --kroma-color-warning-rgb: 255, 193, 7;
   --kroma-color-on-warning: #000;
+  --kroma-color-readable-warning: #ffc107;
   --kroma-color-danger: #dc3545;
   --kroma-color-danger-rgb: 220, 53, 69;
   --kroma-color-on-danger: #000;
+  --kroma-color-readable-danger: #c4d9ff;
   --kroma-color-body: #040b20;
   --kroma-color-body-rgb: 4, 11, 32;
   --kroma-color-surface: #091a3d;
@@ -808,8 +836,10 @@
   --kroma-color-border-strong: var(--kroma-color-content-secondary);
   --kroma-color-action-primary: var(--kroma-color-primary);
   --kroma-color-action-secondary: var(--kroma-color-content-secondary);
-  --kroma-color-action-primary-hover: var(--kroma-color-link);
+  --kroma-color-readable-secondary: #9fc1ff;
+  --kroma-color-action-primary-hover: #9fc1ff;
   --kroma-color-on-action: #fff;
+  --kroma-color-on-action-hover: #000;
   --kroma-color-focus-indicator: var(--kroma-color-primary);
   --kroma-color-disabled: var(--kroma-color-muted-content);
   --kroma-focus-ring-width: 2px;
@@ -817,6 +847,15 @@
   --kroma-button-primary-bg: var(--kroma-color-action-primary);
   --kroma-button-primary-fg: var(--kroma-color-on-action);
   --kroma-button-primary-hover-bg: var(--kroma-color-action-primary-hover);
+  --kroma-button-primary-hover-fg: var(--kroma-color-on-action-hover);
+  --kroma-button-primary-active-bg: var(--kroma-color-action-primary);
+  --kroma-button-primary-active-fg: var(--kroma-color-on-action);
+  --kroma-button-primary-disabled-bg: var(--kroma-color-surface-raised);
+  --kroma-button-primary-disabled-fg: var(--kroma-color-disabled);
+  --kroma-button-primary-disabled-border: var(--kroma-color-border-default);
+  --kroma-scrollbar-thumb: var(--kroma-color-border-strong);
+  --kroma-scrollbar-track: var(--kroma-color-surface-subtle);
+  --kroma-scrollbar-thumb-hover: var(--kroma-color-primary);
   --kroma-card-bg: var(--kroma-color-surface);
   --kroma-card-border: var(--kroma-color-border-default);
   --kroma-input-bg: var(--kroma-color-surface);
