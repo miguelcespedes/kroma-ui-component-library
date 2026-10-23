@@ -36,6 +36,25 @@
     @each $name, $value in $primitives {
       --kroma-ref-#{$name}: #{$value};
     }
+    --kroma-font-family-base: var(--kroma-ref-font-family-system);
+    --kroma-font-size-base: var(--kroma-ref-font-size-100);
+    --kroma-font-weight-normal: var(--kroma-ref-font-weight-400);
+    --kroma-font-weight-semibold: var(--kroma-ref-font-weight-600);
+    --kroma-font-weight-bold: var(--kroma-ref-font-weight-700);
+    --kroma-line-height-base: var(--kroma-ref-line-height-normal);
+    --kroma-space-1: var(--kroma-ref-space-1);
+    --kroma-space-2: var(--kroma-ref-space-2);
+    --kroma-space-3: var(--kroma-ref-space-3);
+    --kroma-space-4: var(--kroma-ref-space-4);
+    --kroma-radius-sm: var(--kroma-ref-radius-sm);
+    --kroma-radius-md: var(--kroma-ref-radius-md);
+    --kroma-radius-lg: var(--kroma-ref-radius-lg);
+    --kroma-elevation-1: var(--kroma-ref-shadow-1);
+    --kroma-elevation-2: var(--kroma-ref-shadow-2);
+    --kroma-motion-duration-fast: var(--kroma-ref-duration-fast);
+    --kroma-motion-duration-normal: var(--kroma-ref-duration-normal);
+    --kroma-motion-easing-standard: var(--kroma-ref-easing-standard);
+    --kroma-motion-easing-emphasized: var(--kroma-ref-easing-emphasized);
     @each $name, $value in $colors {
       --kroma-color-#{$name}: #{$value};
       --kroma-color-#{$name}-rgb: #{red($value)}, #{green($value)}, #{blue($value)};
@@ -60,6 +79,8 @@
     --kroma-color-on-action: #{$on-action};
     --kroma-color-focus-indicator: var(--kroma-color-primary);
     --kroma-color-disabled: var(--kroma-color-muted-content);
+    --kroma-focus-ring-width: 2px;
+    --kroma-focus-ring-offset: 2px;
     --kroma-button-primary-bg: var(--kroma-color-action-primary);
     --kroma-button-primary-fg: var(--kroma-color-on-action);
     --kroma-button-primary-hover-bg: var(--kroma-color-action-primary-hover);

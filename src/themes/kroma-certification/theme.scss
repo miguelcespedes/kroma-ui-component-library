@@ -1,0 +1,14 @@
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// RESPONSABILIDAD: tema de certificación para validar el contrato sin publicarlo.
+// PERMITIDO: componer tokens, semántica y runtime Kroma.
+// PROHIBIDO: importar Bootstrap o definir layout del cheatsheet.
+
+@import "./tokens";
+@import "./semantic-light";
+@import "./semantic-dark";
+@import "../../design-system/runtime";
+
+[data-kroma-theme="kroma-certification"] {
+  @include kroma-mode(light, $theme-semantic-light-color-tokens, $primitive-light, $primitive-shared);
+  @include kroma-mode(dark, $theme-semantic-dark-color-tokens, $primitive-dark, $primitive-shared);
+}

@@ -5290,6 +5290,101 @@ const themeTokens = [
         "name": "border",
         "value": "#44475a",
         "type": "color"
+      },
+      {
+        "name": "font-family-system",
+        "value": '(system-ui, -apple-system, "Segoe UI", sans-serif)',
+        "type": "font-family"
+      },
+      {
+        "name": "font-size-100",
+        "value": "1rem",
+        "type": "number"
+      },
+      {
+        "name": "font-weight-400",
+        "value": "400",
+        "type": "number"
+      },
+      {
+        "name": "font-weight-600",
+        "value": "600",
+        "type": "number"
+      },
+      {
+        "name": "font-weight-700",
+        "value": "700",
+        "type": "number"
+      },
+      {
+        "name": "line-height-normal",
+        "value": "1.5",
+        "type": "number"
+      },
+      {
+        "name": "space-1",
+        "value": "0.25rem",
+        "type": "number"
+      },
+      {
+        "name": "space-2",
+        "value": "0.5rem",
+        "type": "number"
+      },
+      {
+        "name": "space-3",
+        "value": "1rem",
+        "type": "number"
+      },
+      {
+        "name": "space-4",
+        "value": "1.5rem",
+        "type": "number"
+      },
+      {
+        "name": "radius-sm",
+        "value": "0.25rem",
+        "type": "number"
+      },
+      {
+        "name": "radius-md",
+        "value": "0.375rem",
+        "type": "number"
+      },
+      {
+        "name": "radius-lg",
+        "value": "0.5rem",
+        "type": "number"
+      },
+      {
+        "name": "shadow-1",
+        "value": "(0 0.125rem 0.25rem rgba(33, 34, 44, 0.25))",
+        "type": "font-family"
+      },
+      {
+        "name": "shadow-2",
+        "value": "(0 0.5rem 1rem rgba(33, 34, 44, 0.35))",
+        "type": "font-family"
+      },
+      {
+        "name": "duration-fast",
+        "value": "120ms",
+        "type": "number"
+      },
+      {
+        "name": "duration-normal",
+        "value": "200ms",
+        "type": "number"
+      },
+      {
+        "name": "easing-standard",
+        "value": "cubic-bezier(0.2, 0, 0, 1)",
+        "type": "string"
+      },
+      {
+        "name": "easing-emphasized",
+        "value": "cubic-bezier(0.2, 0, 0, 1)",
+        "type": "string"
       }
     ],
     "primitiveLight": [
@@ -5748,6 +5843,36 @@ const themeTokens = [
         "name": "radius-lg",
         "value": "0.5rem",
         "type": "number"
+      },
+      {
+        "name": "shadow-1",
+        "value": "(0 0.125rem 0.25rem rgba(11, 10, 43, 0.12))",
+        "type": "font-family"
+      },
+      {
+        "name": "shadow-2",
+        "value": "(0 0.5rem 1rem rgba(11, 10, 43, 0.12))",
+        "type": "font-family"
+      },
+      {
+        "name": "duration-fast",
+        "value": "120ms",
+        "type": "number"
+      },
+      {
+        "name": "duration-normal",
+        "value": "200ms",
+        "type": "number"
+      },
+      {
+        "name": "easing-standard",
+        "value": "cubic-bezier(0.2, 0, 0, 1)",
+        "type": "string"
+      },
+      {
+        "name": "easing-emphasized",
+        "value": "cubic-bezier(0.2, 0, 0, 1)",
+        "type": "string"
       }
     ],
     "primitiveLight": [

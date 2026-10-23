@@ -8,7 +8,10 @@ Ejecutar desde la raíz de este repositorio:
 npx tsc --noEmit
 npm run test:theme-layers
 npm run build:debug
-node scripts/test-theme-browser.mjs
+npm run test:theme-browser
+npm run test:theme-browser:all
+npm run test:negative
+npm run metrics:architecture
 npm run build:min
 git diff --check -- .
 ```
@@ -40,3 +43,12 @@ El cheatsheet sigue siendo privado; no añadir exports npm ni infraestructura de
 - No hacer commit, push ni PR salvo petición explícita; revisar `git status --short` y `git diff --check -- .`.
 - Las pruebas de build y arquitectura no sustituyen a la verificación en navegador de computed styles, selector activo y estados visuales.
 - No colocar únicamente CSS Kroma en `@layer` mientras Bootstrap permanezca sin capa; documentar y ensayar cualquier adopción futura de Cascade Layers de forma integral.
+
+## Contratos nuevos
+
+- El adaptador compartido es genérico (`[data-kroma-theme]:not([data-kroma-theme="bootstrap"])`); no debe nombrar temas. Los nombres de tema pertenecen a `src/themes/`.
+- `src/themes/<theme>/theme.json` puede marcar `fixture: true`; esos temas se excluyen del manifiesto y del catálogo, pero deben compilar y pasar el contrato.
+- `src/design-system/_runtime.scss` publica tokens de tipografía, espaciado, forma, elevación y movimiento además de color. Todo tema debe aportar las primitivas correspondientes.
+- `src/adapters/bootstrap/compatibility.json` es un contrato verificado: component, scope, mechanism, expansion y mappings source/target/state. Cada destino `--bs-*` debe existir en Bootstrap 5.3.8.
+- `scripts/report-architecture-metrics.mjs` compara contra `metrics/architecture-baseline.json`, no contra `HEAD`. Actualizar el baseline solo con autorización explícita.
+- `scripts/test-theme-browser.mjs` usa `os.tmpdir()` y `KROMA_BROWSERS`/`--all`; no introducir rutas absolutas de usuario.

@@ -1,0 +1,29 @@
+{
+  "capturedFromCommit": "945129a",
+  "capturedAt": "2026-10-23",
+  "artifacts": {
+    "cssBaseBytes": 298820,
+    "themeStyleBytes": {
+      "dracula": 26484,
+      "kroma-entrepreneur": 31312
+    },
+    "jsBytes": 194768,
+    "totalArtifactsBytes": 1038836
+  },
+  "architecture": {
+    "bootstrapCompilations": 1,
+    "duplicateRuleCopies": 0,
+    "invalidSassValues": 0,
+    "publicThemes": 2,
+    "fixtureThemes": 0,
+    "sharedAdapterThemeNames": 2,
+    "sharedAdapterLines": 97,
+    "themeAdapterLines": {
+      "dracula-light": 288,
+      "dracula-dark": 467,
+      "kroma-entrepreneur-light": 336,
+      "kroma-entrepreneur-dark": 554
+    },
+    "compatibilityContracts": 8
+  }
+}

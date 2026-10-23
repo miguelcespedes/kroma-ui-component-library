@@ -42,7 +42,13 @@ $primitive-shared: (
   "space-4": 1.5rem,
   "radius-sm": .25rem,
   "radius-md": .375rem,
-  "radius-lg": .5rem
+  "radius-lg": .5rem,
+  "shadow-1": (0 .125rem .25rem rgba(#0b0a2b, .12)),
+  "shadow-2": (0 .5rem 1rem rgba(#0b0a2b, .12)),
+  "duration-fast": 120ms,
+  "duration-normal": 200ms,
+  "easing-standard": cubic-bezier(.2, 0, 0, 1),
+  "easing-emphasized": cubic-bezier(.2, 0, 0, 1)
 );
 
 $primitive-light: (

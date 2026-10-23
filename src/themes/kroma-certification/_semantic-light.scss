@@ -1,0 +1,17 @@
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// RESPONSABILIDAD: roles de color light del tema de certificación.
+// DEPENDENCIAS: únicamente las primitivas de _tokens.scss.
+
+$theme-semantic-light-color-tokens: (
+  "primary": map-get($primitive-light, "primary"),
+  "link": map-get($primitive-light, "link"),
+  "success": map-get($primitive-light, "success"),
+  "info": map-get($primitive-light, "info"),
+  "warning": map-get($primitive-light, "warning"),
+  "danger": map-get($primitive-light, "danger"),
+  "body": map-get($primitive-light, "canvas"),
+  "surface": map-get($primitive-light, "surface"),
+  "content": map-get($primitive-light, "text"),
+  "muted-content": map-get($primitive-light, "text-muted"),
+  "border": map-get($primitive-light, "border")
+);

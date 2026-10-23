@@ -1,10 +1,247 @@
 [
-  { "component": "body", "source": "--kroma-color-surface-canvas", "target": "--bs-body-bg", "scope": "[data-kroma-theme]", "inherits": true, "state": "default", "mechanism": "runtime CSS" },
-  { "component": "utilities", "source": "--kroma-color-primary-rgb", "target": "--bs-primary-rgb", "scope": "[data-kroma-theme]", "inherits": true, "state": "default", "mechanism": "runtime CSS; RGB computed by Sass from the canonical color" },
-  { "component": "button", "source": "--kroma-button-primary-bg", "target": "--bs-btn-bg", "scope": ".btn-primary", "inherits": false, "state": "default/hover/active", "mechanism": "runtime local CSS variable" },
-  { "component": "card", "source": "--kroma-card-bg", "target": "--bs-card-bg", "scope": ".card", "inherits": false, "state": "default", "mechanism": "runtime local CSS variable" },
-  { "component": "dropdown", "source": "--kroma-color-surface-raised", "target": "--bs-dropdown-bg", "scope": ".dropdown-menu", "inherits": false, "state": "default", "mechanism": "runtime local CSS variable" },
-  { "component": "form control", "source": "--kroma-input-bg", "target": "background-color", "scope": ".form-control", "inherits": false, "state": "default/focus", "mechanism": "CSS property override; Bootstrap compiles $input-bg directly" },
-  { "component": "form select", "source": "--kroma-input-bg", "target": "background-color", "scope": ".form-select", "inherits": false, "state": "default/focus", "mechanism": "CSS property override; Bootstrap compiles $form-select-bg directly" },
-  { "component": "table", "source": "--kroma-color-surface", "target": "--bs-table-bg", "scope": ".table", "inherits": false, "state": "default", "mechanism": "runtime local CSS variable; variants require their own selector" }
+  {
+    "component": "body",
+    "scope": "[data-kroma-theme]",
+    "inherits": true,
+    "mechanism": "runtime CSS custom properties",
+    "expansion": "Inherited by the document subtree unless a component publishes a local --bs-* contract.",
+    "mappings": [
+      { "source": "--kroma-color-surface-canvas", "target": "--bs-body-bg", "state": "default" },
+      { "source": "--kroma-color-content-primary", "target": "--bs-body-color", "state": "default" },
+      { "source": "--kroma-color-border-default", "target": "--bs-border-color", "state": "default" }
+    ]
+  },
+  {
+    "component": "utilities",
+    "scope": "[data-kroma-theme]",
+    "inherits": true,
+    "mechanism": "runtime CSS custom properties",
+    "expansion": "RGB channels are computed by Sass from the canonical Kroma color.",
+    "mappings": [
+      { "source": "--kroma-color-primary-rgb", "target": "--bs-primary-rgb", "state": "default" },
+      { "source": "--kroma-color-success-rgb", "target": "--bs-success-rgb", "state": "default" },
+      { "source": "--kroma-color-link-rgb", "target": "--bs-link-color-rgb", "state": "default" }
+    ]
+  },
+  {
+    "component": "button",
+    "scope": ".btn-primary",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Bootstrap consumes the local variables for default, hover and active states.",
+    "mappings": [
+      { "source": "--kroma-button-primary-bg", "target": "--bs-btn-bg", "state": "default" },
+      { "source": "--kroma-button-primary-fg", "target": "--bs-btn-color", "state": "default" },
+      { "source": "--kroma-button-primary-hover-bg", "target": "--bs-btn-hover-bg", "state": "hover" },
+      { "source": "--kroma-button-primary-bg", "target": "--bs-btn-active-bg", "state": "active" }
+    ]
+  },
+  {
+    "component": "button outline",
+    "scope": ".btn-outline-primary",
+    "scopes": [".btn-outline-primary", ".btn-outline-success", ".btn-outline-danger", ".btn-outline-info", ".btn-outline-warning"],
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "The adapter repeats the contract for primary, success, danger, info and warning.",
+    "mappings": [
+      { "source": "--kroma-color-primary", "target": "--bs-btn-color", "state": "default" },
+      { "source": "--kroma-color-on-primary", "target": "--bs-btn-hover-color", "state": "hover" },
+      { "source": "--kroma-color-primary", "target": "--bs-btn-hover-bg", "state": "hover" }
+    ]
+  },
+  {
+    "component": "badge",
+    "scope": ".badge.bg-primary",
+    "scopes": [".badge.bg-primary", ".badge.text-bg-primary", ".badge.bg-success", ".badge.text-bg-success", ".badge.bg-danger", ".badge.text-bg-danger", ".badge.bg-info", ".badge.text-bg-info", ".badge.bg-warning", ".badge.text-bg-warning"],
+    "inherits": false,
+    "mechanism": "CSS property override",
+    "expansion": "Bootstrap has no public badge foreground variable; the adapter sets color with !important.",
+    "mappings": [
+      { "source": "--kroma-color-on-primary", "target": "color", "state": "default" }
+    ]
+  },
+  {
+    "component": "card",
+    "scope": ".card",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Card headers and footers inherit the component background from Bootstrap.",
+    "mappings": [
+      { "source": "--kroma-card-bg", "target": "--bs-card-bg", "state": "default" },
+      { "source": "--kroma-card-border", "target": "--bs-card-border-color", "state": "default" }
+    ]
+  },
+  {
+    "component": "dropdown",
+    "scope": ".dropdown-menu",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Active and hover states are expressed through Bootstrap dropdown variables.",
+    "mappings": [
+      { "source": "--kroma-color-surface-raised", "target": "--bs-dropdown-bg", "state": "default" },
+      { "source": "--kroma-color-content-primary", "target": "--bs-dropdown-link-color", "state": "default" },
+      { "source": "--kroma-color-action-primary", "target": "--bs-dropdown-link-active-bg", "state": "active" }
+    ]
+  },
+  {
+    "component": "form control",
+    "scope": ".form-control",
+    "inherits": false,
+    "mechanism": "CSS property override; Bootstrap compiles form control colors directly",
+    "expansion": "Default and focus rules are both required because Bootstrap emits the color as a property.",
+    "mappings": [
+      { "source": "--kroma-input-bg", "target": "background-color", "state": "default/focus" },
+      { "source": "--kroma-input-border", "target": "border-color", "state": "default" },
+      { "source": "--kroma-input-focus-border", "target": "border-color", "state": "focus" }
+    ]
+  },
+  {
+    "component": "form select",
+    "scope": ".form-select",
+    "inherits": false,
+    "mechanism": "CSS property override; Bootstrap compiles form select colors directly",
+    "expansion": "The select shares the form contract and keeps its native indicator.",
+    "mappings": [
+      { "source": "--kroma-input-bg", "target": "background-color", "state": "default/focus" },
+      { "source": "--kroma-input-border", "target": "border-color", "state": "default" }
+    ]
+  },
+  {
+    "component": "table",
+    "scope": ".table",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Contextual variants are declared by each theme because they encode theme-specific surface intent.",
+    "mappings": [
+      { "source": "--kroma-color-surface", "target": "--bs-table-bg", "state": "default" },
+      { "source": "--kroma-color-content-primary", "target": "--bs-table-color", "state": "default" },
+      { "source": "--kroma-color-border-default", "target": "--bs-table-border-color", "state": "default" }
+    ]
+  },
+  {
+    "component": "nav",
+    "scope": ".nav",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Tabs and pills inherit the link contract; active states remain component-specific.",
+    "mappings": [
+      { "source": "--kroma-color-content-primary", "target": "--bs-nav-link-color", "state": "default" },
+      { "source": "--kroma-color-link", "target": "--bs-nav-link-hover-color", "state": "hover" },
+      { "source": "--kroma-color-disabled", "target": "--bs-nav-link-disabled-color", "state": "disabled" }
+    ]
+  },
+  {
+    "component": "navbar",
+    "scope": ".navbar",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Themed headers may override the local variables at a higher specificity.",
+    "mappings": [
+      { "source": "--kroma-color-content-primary", "target": "--bs-navbar-color", "state": "default" },
+      { "source": "--kroma-color-link", "target": "--bs-navbar-hover-color", "state": "hover" }
+    ]
+  },
+  {
+    "component": "accordion",
+    "scope": ".accordion",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Expanded state uses the raised surface to preserve hierarchy.",
+    "mappings": [
+      { "source": "--kroma-color-surface", "target": "--bs-accordion-bg", "state": "default" },
+      { "source": "--kroma-color-surface-raised", "target": "--bs-accordion-active-bg", "state": "expanded" },
+      { "source": "--kroma-color-border-default", "target": "--bs-accordion-border-color", "state": "default" }
+    ]
+  },
+  {
+    "component": "modal",
+    "scope": ".modal-content",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Header and footer borders inherit the global border color.",
+    "mappings": [
+      { "source": "--kroma-color-surface", "target": "--bs-modal-bg", "state": "default" },
+      { "source": "--kroma-color-content-primary", "target": "--bs-modal-color", "state": "default" },
+      { "source": "--kroma-color-border-default", "target": "--bs-modal-border-color", "state": "default" }
+    ]
+  },
+  {
+    "component": "offcanvas",
+    "scope": ".offcanvas",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Uses the same surface and border contract as other overlays.",
+    "mappings": [
+      { "source": "--kroma-color-surface", "target": "--bs-offcanvas-bg", "state": "default" },
+      { "source": "--kroma-color-content-primary", "target": "--bs-offcanvas-color", "state": "default" }
+    ]
+  },
+  {
+    "component": "toast",
+    "scope": ".toast",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Header uses the raised surface and body uses the default surface.",
+    "mappings": [
+      { "source": "--kroma-color-surface", "target": "--bs-toast-bg", "state": "default" },
+      { "source": "--kroma-color-surface-raised", "target": "--bs-toast-header-bg", "state": "default" }
+    ]
+  },
+  {
+    "component": "list group",
+    "scope": ".list-group",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Active items use the action role and its computed foreground.",
+    "mappings": [
+      { "source": "--kroma-color-surface", "target": "--bs-list-group-bg", "state": "default" },
+      { "source": "--kroma-color-action-primary", "target": "--bs-list-group-active-bg", "state": "active" },
+      { "source": "--kroma-color-on-primary", "target": "--bs-list-group-active-color", "state": "active" }
+    ]
+  },
+  {
+    "component": "pagination",
+    "scope": ".pagination",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Default, hover, active and disabled states share the same semantic roles.",
+    "mappings": [
+      { "source": "--kroma-color-link", "target": "--bs-pagination-color", "state": "default" },
+      { "source": "--kroma-color-surface-raised", "target": "--bs-pagination-hover-bg", "state": "hover" },
+      { "source": "--kroma-color-action-primary", "target": "--bs-pagination-active-bg", "state": "active" }
+    ]
+  },
+  {
+    "component": "progress",
+    "scope": ".progress",
+    "scopes": [".progress", ".progress-bar"],
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "The track and bar publish separate contracts.",
+    "mappings": [
+      { "source": "--kroma-color-surface-raised", "target": "--bs-progress-bg", "state": "default" }
+    ]
+  },
+  {
+    "component": "popover",
+    "scope": ".popover",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Raised surface communicates an overlay above the page.",
+    "mappings": [
+      { "source": "--kroma-color-surface-raised", "target": "--bs-popover-bg", "state": "default" },
+      { "source": "--kroma-color-content-primary", "target": "--bs-popover-body-color", "state": "default" }
+    ]
+  },
+  {
+    "component": "tooltip",
+    "scope": ".tooltip",
+    "inherits": false,
+    "mechanism": "runtime local CSS variables",
+    "expansion": "Inverts the content surface to guarantee contrast in every theme.",
+    "mappings": [
+      { "source": "--kroma-color-content-primary", "target": "--bs-tooltip-bg", "state": "default" },
+      { "source": "--kroma-color-surface", "target": "--bs-tooltip-color", "state": "default" }
+    ]
+  }
 ]

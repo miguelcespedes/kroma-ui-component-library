@@ -1,203 +1,26 @@
-// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
-// CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorización explícita.
-// RESPONSABILIDAD: adaptar la semántica clara de Kroma Entrepreneur a Bootstrap 5.3.8.
+﻿// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorizaciÃ³n explÃ­cita.
+// RESPONSABILIDAD: adaptar la semÃ¡ntica clara de Kroma Entrepreneur a Bootstrap 5.3.8.
 // PERMITIDO: CSS runtime Bootstrap acotado al selector Kroma Entrepreneur light.
 // PROHIBIDO: crear primitivas o nuevos estilos de layout del cheatsheet.
 // DEPENDENCIAS: consume las primitivas y roles de Kroma; Bootstrap se compila una sola vez en app.scss.
 
-$semantic-light: (
-  "primary": $blue-700,
-  "secondary": $gray-600,
-  "success": $green-600,
-  "info": $cyan-500,
-  "warning": $yellow-500,
-  "danger": $red-600,
-  "light": $gray-100,
-  "dark": $gray-800,
-  "body-bg": $gray-100,
-  "body-color": $gray-800,
-  "border-color": $gray-300,
-  "link-color": $blue-700,
-  "headings-color": $gray-800,
-  "link-hover-color": $blue-700,
-  "component-active-bg": $blue-700,
-  "component-active-color": $white,
-  "dropdown-bg": $white,
-  "dropdown-border-color": $gray-300,
-  "dropdown-link-color": $gray-800,
-  "dropdown-link-hover-bg": $blue-100,
-  "dropdown-link-active-bg": $blue-700,
-  "dropdown-link-active-color": $white,
-  "nav-link-color": $gray-800,
-  "nav-link-hover-color": $blue-700,
-  "card-bg": $white,
-  "card-cap-bg": $gray-100,
-  "border-radius": $radius-md,
-  "border-radius-sm": $radius-sm,
-  "border-radius-lg": $radius-lg,
-  "font-family-base": $font-family-system,
-  "font-family-sans-serif": $font-family-system,
-  "font-size-base": $font-size-100,
-  "font-weight-normal": $font-weight-400,
-  "font-weight-semibold": $font-weight-600,
-  "font-weight-bold": $font-weight-700,
-  "line-height-base": $line-height-normal,
-  "headings-font-weight": $font-weight-600,
-  "btn-border-radius": $radius-md,
-  "btn-border-radius-sm": $radius-sm,
-  "btn-border-radius-lg": $radius-lg,
-  "input-border-radius": $radius-md,
-  "input-border-radius-sm": $radius-sm,
-  "input-border-radius-lg": $radius-lg,
-  "card-border-radius": $radius-md,
-  "card-border-color": $gray-300,
-  "navbar-toggler-border-radius": $radius-md,
-  "form-control-border-color": $gray-600-alt,
-  "form-select-border-color": $gray-600-alt,
-  "input-bg": $white,
-  "input-color": $gray-800,
-  "input-placeholder-color": $gray-600,
-  "input-focus-bg": $white,
-  "input-focus-color": $gray-800,
-  "input-disabled-bg": $gray-100,
-  "input-disabled-color": $gray-600,
-  "input-disabled-border-color": $gray-300,
-  "input-focus-border-color": $blue-700,
-  "input-focus-box-shadow": 0 0 0 0.25rem rgba($blue-700, 0.25),
-  "form-select-border-radius": $radius-md,
-  "form-select-color": $gray-800,
-  "form-select-bg": $white,
-  "input-group-addon-color": $gray-800,
-  "input-group-addon-bg": $gray-100,
-  "input-group-addon-border-color": $gray-600-alt,
-  "form-file-button-color": $gray-800,
-  "form-file-button-bg": $gray-100,
-  "form-range-track-bg": $gray-300,
-  "form-range-thumb-bg": $blue-700,
-  "form-range-thumb-disabled-bg": $gray-600,
-  "form-range-thumb-focus-box-shadow": (0 0 0 1px $white, 0 0 0 0.25rem rgba($blue-700, 0.25)),
-  "accordion-border-radius": $radius-md,
-  "accordion-button-active-bg": $blue-100,
-  "accordion-button-active-color": $blue-700,
-  "modal-content-border-radius": $radius-lg,
-  "toast-border-radius": $radius-md,
-  "toast-background-color": rgba($white, 0.96),
-  "toast-border-color": $gray-300,
-  "toast-header-background-color": $gray-100,
-  "toast-header-border-color": $gray-300,
-  "toast-header-color": $gray-800,
-  "toast-color": $gray-800,
-  "toast-box-shadow": 0 0.5rem 1rem rgba(11, 10, 43, 0.12)
-);
+$body-bg: $gray-100;
+$body-color: $gray-800;
+$headings-color: $gray-800;
+$border-color: $gray-300;
+$link-color: $blue-700;
+$link-hover-color: $blue-700;
+$primary: $blue-700;
+$dropdown-bg: $white;
+$dropdown-border-color: $gray-300;
+$dropdown-link-color: $gray-800;
+$dropdown-link-hover-bg: $blue-100;
+$dropdown-link-active-bg: $blue-700;
+$dropdown-link-active-color: $white;
+$card-bg: $white;
+$card-cap-bg: $gray-100;
 
-$theme-semantic-color-tokens: (
-  "primary": $blue-700,
-  "link": $blue-700,
-  "success": $green-600,
-  "info": $cyan-500,
-  "warning": $yellow-500,
-  "danger": $red-600,
-  "body": $gray-100,
-  "surface": $white,
-  "content": $gray-800,
-  "muted-content": $gray-600,
-  "border": $gray-300
-);
-
-$theme-semantic-light-color-tokens: $theme-semantic-color-tokens;
-
-// Variables Sass claras que Bootstrap consume antes de generar sus estilos.
-$primary: map-get($semantic-light, "primary");
-$secondary: map-get($semantic-light, "secondary");
-$success: map-get($semantic-light, "success");
-$info: map-get($semantic-light, "info");
-$warning: map-get($semantic-light, "warning");
-$danger: map-get($semantic-light, "danger");
-$light: map-get($semantic-light, "light");
-$dark: map-get($semantic-light, "dark");
-
-$body-bg: map-get($semantic-light, "body-bg");
-$body-color: map-get($semantic-light, "body-color");
-$border-color: map-get($semantic-light, "border-color");
-$link-color: map-get($semantic-light, "link-color");
-$headings-color: map-get($semantic-light, "headings-color");
-$link-hover-color: map-get($semantic-light, "link-hover-color");
-$component-active-bg: map-get($semantic-light, "component-active-bg");
-$component-active-color: map-get($semantic-light, "component-active-color");
-
-$dropdown-bg: map-get($semantic-light, "dropdown-bg");
-$dropdown-border-color: map-get($semantic-light, "dropdown-border-color");
-$dropdown-link-color: map-get($semantic-light, "dropdown-link-color");
-$dropdown-link-hover-bg: map-get($semantic-light, "dropdown-link-hover-bg");
-$dropdown-link-active-bg: map-get($semantic-light, "dropdown-link-active-bg");
-$dropdown-link-active-color: map-get($semantic-light, "dropdown-link-active-color");
-$nav-link-color: map-get($semantic-light, "nav-link-color");
-$nav-link-hover-color: map-get($semantic-light, "nav-link-hover-color");
-$card-bg: map-get($semantic-light, "card-bg");
-$card-cap-bg: map-get($semantic-light, "card-cap-bg");
-
-$border-radius: map-get($semantic-light, "border-radius");
-$border-radius-sm: map-get($semantic-light, "border-radius-sm");
-$border-radius-lg: map-get($semantic-light, "border-radius-lg");
-
-// Integración tipográfica con Bootstrap.
-$font-family-base: $font-family-system;
-$font-family-sans-serif: $font-family-base;
-$font-size-base: $font-size-100;
-$font-weight-normal: $font-weight-400;
-$font-weight-semibold: $font-weight-600;
-$font-weight-bold: $font-weight-700;
-$line-height-base: $line-height-normal;
-$headings-font-weight: $font-weight-semibold;
-
-// Configuración compartida de componentes Bootstrap.
-$btn-border-radius: $radius-md;
-$btn-border-radius-sm: $radius-sm;
-$btn-border-radius-lg: $radius-lg;
-$input-border-radius: $radius-md;
-$input-border-radius-sm: $radius-sm;
-$input-border-radius-lg: $radius-lg;
-$card-border-radius: $radius-md;
-$card-border-color: $border-color;
-$navbar-toggler-border-radius: $radius-md;
-$form-control-border-color: $gray-600-alt;
-$form-select-border-color: $gray-600-alt;
-$input-bg: $white;
-$input-color: $body-color;
-$input-placeholder-color: $gray-600;
-$input-focus-bg: $white;
-$input-focus-color: $body-color;
-$input-disabled-bg: $gray-100;
-$input-disabled-color: $gray-600;
-$input-disabled-border-color: $gray-300;
-$input-focus-border-color: $primary;
-$input-focus-box-shadow: 0 0 0 0.25rem rgba($blue-700, 0.25);
-$form-select-border-radius: $radius-md;
-$form-select-color: $body-color;
-$form-select-bg: $white;
-$input-group-addon-color: $body-color;
-$input-group-addon-bg: $gray-100;
-$input-group-addon-border-color: $gray-600-alt;
-$form-file-button-color: $body-color;
-$form-file-button-bg: $gray-100;
-$form-range-track-bg: $gray-300;
-$form-range-thumb-bg: $primary;
-$form-range-thumb-disabled-bg: $gray-600;
-$form-range-thumb-focus-box-shadow: 0 0 0 1px $white, 0 0 0 0.25rem rgba($blue-700, 0.25);
-$accordion-border-radius: $radius-md;
-$accordion-button-active-bg: $blue-100;
-$accordion-button-active-color: $primary;
-$modal-content-border-radius: $radius-lg;
-$toast-border-radius: $radius-md;
-$toast-background-color: rgba($white, 0.96);
-$toast-border-color: $border-color;
-$toast-header-background-color: $gray-100;
-$toast-header-border-color: $border-color;
-$toast-header-color: $body-color;
-$toast-color: $body-color;
-$toast-box-shadow: 0 0.5rem 1rem rgba(11, 10, 43, 0.12);
-
-// Variables CSS runtime del tema claro.
 [data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] {
   --bs-body-bg: #{$body-bg};
   --bs-body-color: #{$body-color};
@@ -226,15 +49,13 @@ $toast-box-shadow: 0 0.5rem 1rem rgba(11, 10, 43, 0.12);
   --bs-dropdown-link-active-color: #{$dropdown-link-active-color};
   --bs-nav-pills-link-active-color: #{$white};
   --bs-nav-pills-link-active-bg: #{$primary};
-  --bs-nav-link-active-color: #{$white};
   --bs-accordion-color: #{$body-color};
   --bs-accordion-bg: #{$white};
   --bs-accordion-border-color: #{$border-color};
-  --bs-accordion-button-color: #{$body-color};
-  --bs-accordion-button-bg: #{$white};
-  --bs-accordion-button-active-bg: var(--bs-primary-bg-subtle);
-  --bs-accordion-button-active-color: #{$blue-dark-950};
-  --bs-accordion-btn-focus-border-color: #{$blue-300};
+  --bs-accordion-btn-color: #{$body-color};
+  --bs-accordion-btn-bg: #{$white};
+  --bs-accordion-active-bg: var(--bs-primary-bg-subtle);
+  --bs-accordion-active-color: #{$blue-dark-950};
   --bs-accordion-btn-focus-box-shadow: 0 0 0 .25rem #{rgba($blue-700, .25)};
 
   --bs-table-color: var(--bs-emphasis-color);

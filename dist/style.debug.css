@@ -11859,8 +11859,7 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
-[data-kroma-theme=dracula],
-[data-kroma-theme=kroma-entrepreneur] {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) {
   --bs-body-bg: var(--kroma-color-surface-canvas);
   --bs-body-bg-rgb: var(--kroma-color-body-rgb);
   --bs-body-color: var(--kroma-color-content-primary);
@@ -11886,8 +11885,7 @@ textarea.form-control-lg {
   --bs-tertiary-bg-rgb: var(--kroma-color-surface-rgb);
 }
 
-[data-kroma-theme=dracula] .btn-primary,
-[data-kroma-theme=kroma-entrepreneur] .btn-primary {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .btn-primary {
   --bs-btn-color: var(--kroma-button-primary-fg);
   --bs-btn-bg: var(--kroma-button-primary-bg);
   --bs-btn-border-color: var(--kroma-button-primary-bg);
@@ -11900,14 +11898,12 @@ textarea.form-control-lg {
   --bs-btn-focus-shadow-rgb: var(--kroma-color-primary-rgb);
 }
 
-[data-kroma-theme=dracula] .card,
-[data-kroma-theme=kroma-entrepreneur] .card {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .card {
   --bs-card-bg: var(--kroma-card-bg);
   --bs-card-border-color: var(--kroma-card-border);
 }
 
-[data-kroma-theme=dracula] .dropdown-menu,
-[data-kroma-theme=kroma-entrepreneur] .dropdown-menu {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .dropdown-menu {
   --bs-dropdown-bg: var(--kroma-color-surface-raised);
   --bs-dropdown-color: var(--kroma-color-content-primary);
   --bs-dropdown-border-color: var(--kroma-color-border-default);
@@ -11915,66 +11911,122 @@ textarea.form-control-lg {
   --bs-dropdown-link-active-bg: var(--kroma-color-action-primary);
 }
 
-[data-kroma-theme=dracula] .form-control,
-[data-kroma-theme=kroma-entrepreneur] .form-control,
-[data-kroma-theme=dracula] .form-select,
-[data-kroma-theme=kroma-entrepreneur] .form-select {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .form-control,
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .form-select {
   color: var(--kroma-color-content-primary);
   background-color: var(--kroma-input-bg);
   border-color: var(--kroma-input-border);
 }
-[data-kroma-theme=dracula] .form-control:focus,
-[data-kroma-theme=kroma-entrepreneur] .form-control:focus,
-[data-kroma-theme=dracula] .form-select:focus,
-[data-kroma-theme=kroma-entrepreneur] .form-select:focus {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .form-control:focus,
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .form-select:focus {
   color: var(--kroma-color-content-primary);
   background-color: var(--kroma-input-bg);
   border-color: var(--kroma-input-focus-border);
 }
 
-[data-kroma-theme=dracula] .table,
-[data-kroma-theme=kroma-entrepreneur] .table {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .table {
   --bs-table-color: var(--kroma-color-content-primary);
   --bs-table-bg: var(--kroma-color-surface);
   --bs-table-border-color: var(--kroma-color-border-default);
 }
 
-[data-kroma-theme=dracula] .badge.bg-primary,
-[data-kroma-theme=dracula] .badge.text-bg-primary,
-[data-kroma-theme=kroma-entrepreneur] .badge.bg-primary,
-[data-kroma-theme=kroma-entrepreneur] .badge.text-bg-primary {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .nav {
+  --bs-nav-link-color: var(--kroma-color-content-primary);
+  --bs-nav-link-hover-color: var(--kroma-color-link);
+  --bs-nav-link-disabled-color: var(--kroma-color-disabled);
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .navbar {
+  --bs-navbar-color: var(--kroma-color-content-primary);
+  --bs-navbar-hover-color: var(--kroma-color-link);
+  --bs-navbar-brand-color: var(--kroma-color-content-primary);
+  --bs-navbar-brand-hover-color: var(--kroma-color-link);
+  --bs-navbar-disabled-color: var(--kroma-color-disabled);
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .accordion {
+  --bs-accordion-color: var(--kroma-color-content-primary);
+  --bs-accordion-bg: var(--kroma-color-surface);
+  --bs-accordion-border-color: var(--kroma-color-border-default);
+  --bs-accordion-btn-color: var(--kroma-color-content-primary);
+  --bs-accordion-btn-bg: var(--kroma-color-surface);
+  --bs-accordion-active-bg: var(--kroma-color-surface-raised);
+  --bs-accordion-active-color: var(--kroma-color-content-primary);
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .modal-content {
+  --bs-modal-bg: var(--kroma-color-surface);
+  --bs-modal-color: var(--kroma-color-content-primary);
+  --bs-modal-border-color: var(--kroma-color-border-default);
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .offcanvas {
+  --bs-offcanvas-bg: var(--kroma-color-surface);
+  --bs-offcanvas-color: var(--kroma-color-content-primary);
+  --bs-offcanvas-border-color: var(--kroma-color-border-default);
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .toast {
+  --bs-toast-bg: var(--kroma-color-surface);
+  --bs-toast-color: var(--kroma-color-content-primary);
+  --bs-toast-border-color: var(--kroma-color-border-default);
+  --bs-toast-header-bg: var(--kroma-color-surface-raised);
+  --bs-toast-header-color: var(--kroma-color-content-primary);
+  --bs-toast-header-border-color: var(--kroma-color-border-default);
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .list-group {
+  --bs-list-group-bg: var(--kroma-color-surface);
+  --bs-list-group-color: var(--kroma-color-content-primary);
+  --bs-list-group-border-color: var(--kroma-color-border-default);
+  --bs-list-group-action-hover-bg: var(--kroma-color-surface-raised);
+  --bs-list-group-active-bg: var(--kroma-color-action-primary);
+  --bs-list-group-active-color: var(--kroma-color-on-primary);
+  --bs-list-group-active-border-color: var(--kroma-color-action-primary);
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .pagination {
+  --bs-pagination-color: var(--kroma-color-link);
+  --bs-pagination-bg: var(--kroma-color-surface);
+  --bs-pagination-border-color: var(--kroma-color-border-default);
+  --bs-pagination-hover-color: var(--kroma-color-link);
+  --bs-pagination-hover-bg: var(--kroma-color-surface-raised);
+  --bs-pagination-hover-border-color: var(--kroma-color-border-default);
+  --bs-pagination-active-color: var(--kroma-color-on-primary);
+  --bs-pagination-active-bg: var(--kroma-color-action-primary);
+  --bs-pagination-active-border-color: var(--kroma-color-action-primary);
+  --bs-pagination-disabled-color: var(--kroma-color-disabled);
+  --bs-pagination-disabled-bg: var(--kroma-color-surface);
+  --bs-pagination-disabled-border-color: var(--kroma-color-border-default);
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .progress {
+  --bs-progress-bg: var(--kroma-color-surface-raised);
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .progress-bar {
+  --bs-progress-bar-bg: var(--kroma-color-action-primary);
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .popover {
+  --bs-popover-bg: var(--kroma-color-surface-raised);
+  --bs-popover-body-color: var(--kroma-color-content-primary);
+  --bs-popover-border-color: var(--kroma-color-border-default);
+  --bs-popover-header-bg: var(--kroma-color-surface);
+  --bs-popover-header-color: var(--kroma-color-content-primary);
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .tooltip {
+  --bs-tooltip-bg: var(--kroma-color-content-primary);
+  --bs-tooltip-color: var(--kroma-color-surface);
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .badge.bg-primary,
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .badge.text-bg-primary {
   color: var(--kroma-color-on-primary) !important;
 }
 
-[data-kroma-theme=dracula] .badge.bg-success,
-[data-kroma-theme=dracula] .badge.text-bg-success,
-[data-kroma-theme=kroma-entrepreneur] .badge.bg-success,
-[data-kroma-theme=kroma-entrepreneur] .badge.text-bg-success {
-  color: var(--kroma-color-on-success) !important;
-}
-
-[data-kroma-theme=dracula] .badge.bg-danger,
-[data-kroma-theme=dracula] .badge.text-bg-danger,
-[data-kroma-theme=kroma-entrepreneur] .badge.bg-danger,
-[data-kroma-theme=kroma-entrepreneur] .badge.text-bg-danger {
-  color: var(--kroma-color-on-danger) !important;
-}
-
-[data-kroma-theme=dracula] .badge.bg-info,
-[data-kroma-theme=dracula] .badge.text-bg-info,
-[data-kroma-theme=kroma-entrepreneur] .badge.bg-info,
-[data-kroma-theme=kroma-entrepreneur] .badge.text-bg-info {
-  color: var(--kroma-color-on-info) !important;
-}
-
-[data-kroma-theme=dracula] .badge.bg-warning,
-[data-kroma-theme=dracula] .badge.text-bg-warning,
-[data-kroma-theme=kroma-entrepreneur] .badge.bg-warning,
-[data-kroma-theme=kroma-entrepreneur] .badge.text-bg-warning {
-  color: var(--kroma-color-on-warning) !important;
-}
-
-[data-kroma-theme=dracula] .btn-outline-primary {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .btn-outline-primary {
   --bs-btn-color: var(--kroma-color-primary);
   --bs-btn-border-color: var(--kroma-color-primary);
   --bs-btn-hover-color: var(--kroma-color-on-primary);
@@ -11988,7 +12040,12 @@ textarea.form-control-lg {
   --bs-btn-focus-shadow-rgb: var(--kroma-color-primary-rgb);
 }
 
-[data-kroma-theme=dracula] .btn-outline-success {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .badge.bg-success,
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .badge.text-bg-success {
+  color: var(--kroma-color-on-success) !important;
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .btn-outline-success {
   --bs-btn-color: var(--kroma-color-success);
   --bs-btn-border-color: var(--kroma-color-success);
   --bs-btn-hover-color: var(--kroma-color-on-success);
@@ -12002,7 +12059,12 @@ textarea.form-control-lg {
   --bs-btn-focus-shadow-rgb: var(--kroma-color-success-rgb);
 }
 
-[data-kroma-theme=dracula] .btn-outline-danger {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .badge.bg-danger,
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .badge.text-bg-danger {
+  color: var(--kroma-color-on-danger) !important;
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .btn-outline-danger {
   --bs-btn-color: var(--kroma-color-danger);
   --bs-btn-border-color: var(--kroma-color-danger);
   --bs-btn-hover-color: var(--kroma-color-on-danger);
@@ -12016,7 +12078,12 @@ textarea.form-control-lg {
   --bs-btn-focus-shadow-rgb: var(--kroma-color-danger-rgb);
 }
 
-[data-kroma-theme=dracula] .btn-outline-info {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .badge.bg-info,
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .badge.text-bg-info {
+  color: var(--kroma-color-on-info) !important;
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .btn-outline-info {
   --bs-btn-color: var(--kroma-color-info);
   --bs-btn-border-color: var(--kroma-color-info);
   --bs-btn-hover-color: var(--kroma-color-on-info);
@@ -12030,7 +12097,12 @@ textarea.form-control-lg {
   --bs-btn-focus-shadow-rgb: var(--kroma-color-info-rgb);
 }
 
-[data-kroma-theme=dracula] .btn-outline-warning {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .badge.bg-warning,
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .badge.text-bg-warning {
+  color: var(--kroma-color-on-warning) !important;
+}
+
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) .btn-outline-warning {
   --bs-btn-color: var(--kroma-color-warning);
   --bs-btn-border-color: var(--kroma-color-warning);
   --bs-btn-hover-color: var(--kroma-color-on-warning);
@@ -12551,5 +12623,20 @@ body {
   }
   .bd-cheatsheet {
     padding-top: 1rem;
+  }
+}
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--kroma-focus-ring-width, 2px) solid var(--kroma-color-focus-indicator);
+  outline-offset: var(--kroma-focus-ring-offset, 2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-kroma-theme]:not([data-kroma-theme=bootstrap]) *,
+  [data-kroma-theme]:not([data-kroma-theme=bootstrap]) *::before,
+  [data-kroma-theme]:not([data-kroma-theme=bootstrap]) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

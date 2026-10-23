@@ -1,0 +1,83 @@
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// RESPONSABILIDAD: primitivas del tema de certificación; no se publica en el selector.
+// PERMITIDO: colores, tipografía, espaciado, forma, elevación y movimiento.
+// PROHIBIDO: variables Bootstrap, selectores o reglas de componentes.
+// DEPENDENCIAS: las capas semánticas consumen estos valores.
+
+$fixture-primary: #0b5cff;
+$fixture-link: #0047cc;
+$fixture-success: #167a43;
+$fixture-info: #006a7a;
+$fixture-warning: #8a5a00;
+$fixture-danger: #b42318;
+$fixture-canvas: #f4f7ff;
+$fixture-surface: #ffffff;
+$fixture-surface-raised: #e8eefb;
+$fixture-text: #101828;
+$fixture-text-muted: #475467;
+$fixture-border: #b8c4d9;
+
+$fixture-dark-primary: #9ec1ff;
+$fixture-dark-link: #c7dbff;
+$fixture-dark-success: #75d6a0;
+$fixture-dark-info: #7fe0ef;
+$fixture-dark-warning: #ffd166;
+$fixture-dark-danger: #ff9b8f;
+$fixture-dark-canvas: #0a1020;
+$fixture-dark-surface: #121a2e;
+$fixture-dark-surface-raised: #1a2540;
+$fixture-dark-text: #eef3ff;
+$fixture-dark-text-muted: #a9b6cf;
+$fixture-dark-border: #31405f;
+
+$primitive-shared: (
+  "font-family-system": (system-ui, -apple-system, "Segoe UI", sans-serif),
+  "font-size-100": 1rem,
+  "font-weight-400": 400,
+  "font-weight-600": 600,
+  "font-weight-700": 700,
+  "line-height-normal": 1.5,
+  "space-1": .25rem,
+  "space-2": .5rem,
+  "space-3": 1rem,
+  "space-4": 1.5rem,
+  "radius-sm": .25rem,
+  "radius-md": .5rem,
+  "radius-lg": .75rem,
+  "shadow-1": (0 .125rem .25rem rgba(#000000, .12)),
+  "shadow-2": (0 .5rem 1rem rgba(#000000, .2)),
+  "duration-fast": 100ms,
+  "duration-normal": 180ms,
+  "easing-standard": cubic-bezier(.2, 0, 0, 1),
+  "easing-emphasized": cubic-bezier(.2, 0, 0, 1)
+);
+
+$primitive-light: (
+  "primary": $fixture-primary,
+  "link": $fixture-link,
+  "success": $fixture-success,
+  "info": $fixture-info,
+  "warning": $fixture-warning,
+  "danger": $fixture-danger,
+  "canvas": $fixture-canvas,
+  "surface": $fixture-surface,
+  "surface-raised": $fixture-surface-raised,
+  "text": $fixture-text,
+  "text-muted": $fixture-text-muted,
+  "border": $fixture-border
+);
+
+$primitive-dark: (
+  "primary": $fixture-dark-primary,
+  "link": $fixture-dark-link,
+  "success": $fixture-dark-success,
+  "info": $fixture-dark-info,
+  "warning": $fixture-dark-warning,
+  "danger": $fixture-dark-danger,
+  "canvas": $fixture-dark-canvas,
+  "surface": $fixture-dark-surface,
+  "surface-raised": $fixture-dark-surface-raised,
+  "text": $fixture-dark-text,
+  "text-muted": $fixture-dark-text-muted,
+  "border": $fixture-dark-border
+);

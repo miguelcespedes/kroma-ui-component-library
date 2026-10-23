@@ -451,3 +451,20 @@ body {
     padding-top: 1rem;
   }
 }
+
+// Accesibilidad del catálogo.
+[data-kroma-theme]:not([data-kroma-theme="bootstrap"]) :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--kroma-focus-ring-width, 2px) solid var(--kroma-color-focus-indicator);
+  outline-offset: var(--kroma-focus-ring-offset, 2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-kroma-theme]:not([data-kroma-theme="bootstrap"]) *,
+  [data-kroma-theme]:not([data-kroma-theme="bootstrap"]) *::before,
+  [data-kroma-theme]:not([data-kroma-theme="bootstrap"]) *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}

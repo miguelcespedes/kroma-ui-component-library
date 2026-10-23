@@ -16,8 +16,14 @@ const readMap = (value, theme, group) => {
   });
 };
 
+const metadata = (directory) => {
+  const file = path.join(directory, "theme.json");
+  return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : {};
+};
+
 const themes = fs.readdirSync(themesRoot, { withFileTypes: true })
   .filter((entry) => entry.isDirectory() && fs.existsSync(path.join(themesRoot, entry.name, "theme.scss")))
+  .filter((entry) => metadata(path.join(themesRoot, entry.name)).fixture !== true)
   .map((entry) => {
     const directory = path.join(themesRoot, entry.name);
     const catalog = { id: entry.name };

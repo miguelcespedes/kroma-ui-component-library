@@ -27,7 +27,10 @@ Los roles visuales no incluyen el modo en su nombre: el selector de tema y contr
 npx tsc --noEmit
 npm run test:theme-layers
 npm run build:debug
-node scripts/test-theme-browser.mjs
+npm run test:theme-browser
+npm run test:theme-browser:all
+npm run test:negative
+npm run metrics:architecture
 npm run build:min
 git diff --check -- .
 ```
@@ -45,3 +48,15 @@ No introducir `@layer` solo en CSS Kroma dejando Bootstrap sin capa: reglas sin 
 ## Estado de la migración
 
 Los selectores propios del catálogo (`.bd-*`, `.scrollspy-example`) se concentran en `src/cheatsheet/app.scss` y consumen `--kroma-*` con fallback Bootstrap. `src/adapters/bootstrap/themes/` conserva únicamente adaptaciones de variables y componentes Bootstrap por tema. La semántica canónica en `src/themes/` y el runtime de `src/design-system/` no dependen de Bootstrap.
+
+## Contrato de temas y tokens
+
+Cada tema declara primitivas en `_tokens.scss` y roles en `_semantic-{light,dark}.scss`. El runtime publica, además de colores, tokens estables de tipografía (`--kroma-font-*`), espaciado (`--kroma-space-*`), forma (`--kroma-radius-*`), elevación (`--kroma-elevation-*`) y movimiento (`--kroma-motion-*`). Los adaptadores por tema pueden seguir afinando componentes, pero el adaptador compartido es genérico: aplica a cualquier `data-kroma-theme` distinto de `bootstrap`.
+
+La matriz `compatibility.json` declara componente, scope, fuente Kroma, destino Bootstrap, estado, mecanismo y estrategia de expansión. `npm run test:theme-layers` compila el adaptador, comprueba que cada mapping llega a una declaración real y que cada destino `--bs-*` existe en Bootstrap 5.3.8.
+
+`src/themes/kroma-certification/` es un fixture: `theme.json` lo excluye del manifiesto y del catálogo, pero se compila en los tests para demostrar que un tema nuevo funciona sin tocar el adaptador. La prueba browser lo inyecta, valida light/dark y verifica que un tema no registrado no hereda tokens Kroma.
+
+## CI
+
+`.github/workflows/quality.yml` ejecuta TypeScript, arquitectura y pruebas negativas de compatibilidad, builds, matriz Playwright (Chromium, Firefox y WebKit), métricas y whitespace. El workflow de Pages usa esa verificación como job previo antes de desplegar. `metrics/architecture-baseline.json` fija el baseline en `945129a`; las métricas comparan contra ese archivo, no contra `HEAD`.

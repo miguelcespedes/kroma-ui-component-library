@@ -1,8 +1,11 @@
-// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
-// RESPONSABILIDAD: traducir contratos Kroma a puntos de extensión de Bootstrap 5.3.8.
-// Las variables locales se aplican al elemento que las define Bootstrap, no solo a la raíz.
-[data-kroma-theme="dracula"],
-[data-kroma-theme="kroma-entrepreneur"] {
+﻿// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// RESPONSABILIDAD: traducir contratos Kroma a puntos de extension de Bootstrap 5.3.8.
+// Las variables locales se aplican al elemento que las define Bootstrap, no solo a la raiz.
+// El adaptador es generico: cualquier tema Kroma registrado usa este mismo contrato.
+
+$kroma-theme-scope: '[data-kroma-theme]:not([data-kroma-theme="bootstrap"])';
+
+#{$kroma-theme-scope} {
   --bs-body-bg: var(--kroma-color-surface-canvas);
   --bs-body-bg-rgb: var(--kroma-color-body-rgb);
   --bs-body-color: var(--kroma-color-content-primary);
@@ -28,8 +31,7 @@
   --bs-tertiary-bg-rgb: var(--kroma-color-surface-rgb);
 }
 
-[data-kroma-theme="dracula"] .btn-primary,
-[data-kroma-theme="kroma-entrepreneur"] .btn-primary {
+#{$kroma-theme-scope} .btn-primary {
   --bs-btn-color: var(--kroma-button-primary-fg);
   --bs-btn-bg: var(--kroma-button-primary-bg);
   --bs-btn-border-color: var(--kroma-button-primary-bg);
@@ -42,14 +44,12 @@
   --bs-btn-focus-shadow-rgb: var(--kroma-color-primary-rgb);
 }
 
-[data-kroma-theme="dracula"] .card,
-[data-kroma-theme="kroma-entrepreneur"] .card {
+#{$kroma-theme-scope} .card {
   --bs-card-bg: var(--kroma-card-bg);
   --bs-card-border-color: var(--kroma-card-border);
 }
 
-[data-kroma-theme="dracula"] .dropdown-menu,
-[data-kroma-theme="kroma-entrepreneur"] .dropdown-menu {
+#{$kroma-theme-scope} .dropdown-menu {
   --bs-dropdown-bg: var(--kroma-color-surface-raised);
   --bs-dropdown-color: var(--kroma-color-content-primary);
   --bs-dropdown-border-color: var(--kroma-color-border-default);
@@ -57,10 +57,8 @@
   --bs-dropdown-link-active-bg: var(--kroma-color-action-primary);
 }
 
-[data-kroma-theme="dracula"] .form-control,
-[data-kroma-theme="kroma-entrepreneur"] .form-control,
-[data-kroma-theme="dracula"] .form-select,
-[data-kroma-theme="kroma-entrepreneur"] .form-select {
+#{$kroma-theme-scope} .form-control,
+#{$kroma-theme-scope} .form-select {
   color: var(--kroma-color-content-primary);
   background-color: var(--kroma-input-bg);
   border-color: var(--kroma-input-border);
@@ -72,24 +70,110 @@
   }
 }
 
-[data-kroma-theme="dracula"] .table,
-[data-kroma-theme="kroma-entrepreneur"] .table {
+#{$kroma-theme-scope} .table {
   --bs-table-color: var(--kroma-color-content-primary);
   --bs-table-bg: var(--kroma-color-surface);
   --bs-table-border-color: var(--kroma-color-border-default);
 }
 
-@each $name in ("primary", "success", "danger", "info", "warning") {
-  [data-kroma-theme="dracula"] .badge.bg-#{$name},
-  [data-kroma-theme="dracula"] .badge.text-bg-#{$name},
-  [data-kroma-theme="kroma-entrepreneur"] .badge.bg-#{$name},
-  [data-kroma-theme="kroma-entrepreneur"] .badge.text-bg-#{$name} {
-    color: var(--kroma-color-on-#{$name}) !important;
-  }
+#{$kroma-theme-scope} .nav {
+  --bs-nav-link-color: var(--kroma-color-content-primary);
+  --bs-nav-link-hover-color: var(--kroma-color-link);
+  --bs-nav-link-disabled-color: var(--kroma-color-disabled);
+}
+
+#{$kroma-theme-scope} .navbar {
+  --bs-navbar-color: var(--kroma-color-content-primary);
+  --bs-navbar-hover-color: var(--kroma-color-link);
+  --bs-navbar-brand-color: var(--kroma-color-content-primary);
+  --bs-navbar-brand-hover-color: var(--kroma-color-link);
+  --bs-navbar-disabled-color: var(--kroma-color-disabled);
+}
+
+#{$kroma-theme-scope} .accordion {
+  --bs-accordion-color: var(--kroma-color-content-primary);
+  --bs-accordion-bg: var(--kroma-color-surface);
+  --bs-accordion-border-color: var(--kroma-color-border-default);
+  --bs-accordion-btn-color: var(--kroma-color-content-primary);
+  --bs-accordion-btn-bg: var(--kroma-color-surface);
+  --bs-accordion-active-bg: var(--kroma-color-surface-raised);
+  --bs-accordion-active-color: var(--kroma-color-content-primary);
+}
+
+#{$kroma-theme-scope} .modal-content {
+  --bs-modal-bg: var(--kroma-color-surface);
+  --bs-modal-color: var(--kroma-color-content-primary);
+  --bs-modal-border-color: var(--kroma-color-border-default);
+}
+
+#{$kroma-theme-scope} .offcanvas {
+  --bs-offcanvas-bg: var(--kroma-color-surface);
+  --bs-offcanvas-color: var(--kroma-color-content-primary);
+  --bs-offcanvas-border-color: var(--kroma-color-border-default);
+}
+
+#{$kroma-theme-scope} .toast {
+  --bs-toast-bg: var(--kroma-color-surface);
+  --bs-toast-color: var(--kroma-color-content-primary);
+  --bs-toast-border-color: var(--kroma-color-border-default);
+  --bs-toast-header-bg: var(--kroma-color-surface-raised);
+  --bs-toast-header-color: var(--kroma-color-content-primary);
+  --bs-toast-header-border-color: var(--kroma-color-border-default);
+}
+
+#{$kroma-theme-scope} .list-group {
+  --bs-list-group-bg: var(--kroma-color-surface);
+  --bs-list-group-color: var(--kroma-color-content-primary);
+  --bs-list-group-border-color: var(--kroma-color-border-default);
+  --bs-list-group-action-hover-bg: var(--kroma-color-surface-raised);
+  --bs-list-group-active-bg: var(--kroma-color-action-primary);
+  --bs-list-group-active-color: var(--kroma-color-on-primary);
+  --bs-list-group-active-border-color: var(--kroma-color-action-primary);
+}
+
+#{$kroma-theme-scope} .pagination {
+  --bs-pagination-color: var(--kroma-color-link);
+  --bs-pagination-bg: var(--kroma-color-surface);
+  --bs-pagination-border-color: var(--kroma-color-border-default);
+  --bs-pagination-hover-color: var(--kroma-color-link);
+  --bs-pagination-hover-bg: var(--kroma-color-surface-raised);
+  --bs-pagination-hover-border-color: var(--kroma-color-border-default);
+  --bs-pagination-active-color: var(--kroma-color-on-primary);
+  --bs-pagination-active-bg: var(--kroma-color-action-primary);
+  --bs-pagination-active-border-color: var(--kroma-color-action-primary);
+  --bs-pagination-disabled-color: var(--kroma-color-disabled);
+  --bs-pagination-disabled-bg: var(--kroma-color-surface);
+  --bs-pagination-disabled-border-color: var(--kroma-color-border-default);
+}
+
+#{$kroma-theme-scope} .progress {
+  --bs-progress-bg: var(--kroma-color-surface-raised);
+}
+
+#{$kroma-theme-scope} .progress-bar {
+  --bs-progress-bar-bg: var(--kroma-color-action-primary);
+}
+
+#{$kroma-theme-scope} .popover {
+  --bs-popover-bg: var(--kroma-color-surface-raised);
+  --bs-popover-body-color: var(--kroma-color-content-primary);
+  --bs-popover-border-color: var(--kroma-color-border-default);
+  --bs-popover-header-bg: var(--kroma-color-surface);
+  --bs-popover-header-color: var(--kroma-color-content-primary);
+}
+
+#{$kroma-theme-scope} .tooltip {
+  --bs-tooltip-bg: var(--kroma-color-content-primary);
+  --bs-tooltip-color: var(--kroma-color-surface);
 }
 
 @each $name in ("primary", "success", "danger", "info", "warning") {
-  [data-kroma-theme="dracula"] .btn-outline-#{$name} {
+  #{$kroma-theme-scope} .badge.bg-#{$name},
+  #{$kroma-theme-scope} .badge.text-bg-#{$name} {
+    color: var(--kroma-color-on-#{$name}) !important;
+  }
+
+  #{$kroma-theme-scope} .btn-outline-#{$name} {
     --bs-btn-color: var(--kroma-color-#{$name});
     --bs-btn-border-color: var(--kroma-color-#{$name});
     --bs-btn-hover-color: var(--kroma-color-on-#{$name});

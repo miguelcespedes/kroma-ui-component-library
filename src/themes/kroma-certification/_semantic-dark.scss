@@ -1,0 +1,18 @@
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// RESPONSABILIDAD: roles de color dark del tema de certificación.
+// DEPENDENCIAS: únicamente las primitivas de _tokens.scss.
+
+$theme-semantic-dark-color-tokens: (
+  "primary": map-get($primitive-dark, "primary"),
+  "link": map-get($primitive-dark, "link"),
+  "success": map-get($primitive-dark, "success"),
+  "info": map-get($primitive-dark, "info"),
+  "warning": map-get($primitive-dark, "warning"),
+  "danger": map-get($primitive-dark, "danger"),
+  "body": map-get($primitive-dark, "canvas"),
+  "surface": map-get($primitive-dark, "surface"),
+  "surface-subtle": map-get($primitive-dark, "surface-raised"),
+  "content": map-get($primitive-dark, "text"),
+  "muted-content": map-get($primitive-dark, "text-muted"),
+  "border": map-get($primitive-dark, "border")
+);

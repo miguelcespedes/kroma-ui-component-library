@@ -1,0 +1,4 @@
+{
+  "fixture": true,
+  "description": "Automated certification theme. Never loaded by the production theme selector."
+}

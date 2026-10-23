@@ -1,151 +1,24 @@
-// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
-// CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorización explícita.
-// RESPONSABILIDAD: adaptar la semántica clara de Dracula a Bootstrap 5.3.8.
+﻿// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorizaciÃ³n explÃ­cita.
+// RESPONSABILIDAD: adaptar la semÃ¡ntica clara de Dracula a Bootstrap 5.3.8.
 // PERMITIDO: CSS runtime Bootstrap acotado al selector Dracula light.
 // PROHIBIDO: crear primitivas o nuevos estilos de layout del cheatsheet.
 // DEPENDENCIAS: consume las primitivas y roles de Dracula; Bootstrap se compila una sola vez en app.scss.
 
-$theme-semantic-color-tokens: (
-  "primary": $dracula-light-primary,
-  "link": $dracula-light-link,
-  "success": $dracula-light-success,
-  "info": $dracula-light-info,
-  "warning": $dracula-light-warning,
-  "danger": $dracula-light-danger,
-  "body": $dracula-light-canvas,
-  "surface": $dracula-light-surface,
-  "content": $dracula-light-text,
-  "muted-content": $dracula-light-text-muted,
-  "border": $dracula-light-border
-);
-
-$theme-semantic-light-color-tokens: $theme-semantic-color-tokens;
-
-$semantic-light: (
-  "primary": $dracula-light-primary,
-  "secondary": $dracula-light-text-muted,
-  "success": $dracula-light-success,
-  "info": $dracula-light-info,
-  "warning": $dracula-light-warning,
-  "danger": $dracula-light-danger,
-  "light": $dracula-light-surface-raised,
-  "dark": $dracula-light-text,
-  "body-bg": $dracula-light-canvas,
-  "body-color": $dracula-light-text,
-  "border-color": $dracula-light-border,
-  "link-color": $dracula-light-link,
-  "headings-color": $dracula-light-text,
-  "link-hover-color": $dracula-light-link-hover,
-  "component-active-bg": $dracula-light-primary,
-  "component-active-color": $dracula-light-surface,
-  "dropdown-bg": $dracula-light-surface,
-  "dropdown-border-color": $dracula-light-border,
-  "dropdown-link-color": $dracula-light-text,
-  "dropdown-link-hover-bg": $dracula-light-surface-raised,
-  "dropdown-link-active-bg": $dracula-light-primary,
-  "dropdown-link-active-color": $dracula-light-surface,
-  "nav-link-color": $dracula-light-text,
-  "nav-link-hover-color": $dracula-light-link-hover,
-  "card-bg": $dracula-light-surface,
-  "card-cap-bg": $dracula-light-surface-raised,
-  "border-radius": $radius-md,
-  "border-radius-sm": $radius-sm,
-  "border-radius-lg": $radius-lg,
-  "font-family-base": $font-family-system,
-  "font-family-sans-serif": $font-family-system,
-  "font-size-base": $font-size-100,
-  "font-weight-normal": $font-weight-400,
-  "font-weight-semibold": $font-weight-600,
-  "font-weight-bold": $font-weight-700,
-  "line-height-base": $line-height-normal,
-  "headings-font-weight": $font-weight-600,
-  "btn-border-radius": $radius-md,
-  "btn-border-radius-sm": $radius-sm,
-  "btn-border-radius-lg": $radius-lg,
-  "input-border-radius": $radius-md,
-  "input-border-radius-sm": $radius-sm,
-  "input-border-radius-lg": $radius-lg,
-  "card-border-radius": $radius-md,
-  "card-border-color": $dracula-light-border,
-  "navbar-toggler-border-radius": $radius-md,
-  "form-control-border-color": $dracula-light-border,
-  "form-select-border-color": $dracula-light-border,
-  "input-bg": $dracula-foreground,
-  "input-color": $dracula-light-text,
-  "input-placeholder-color": $dracula-current-line,
-  "input-focus-bg": $dracula-foreground,
-  "input-focus-color": $dracula-light-text,
-  "input-focus-border-color": $dracula-light-primary,
-  "accordion-border-radius": $radius-md,
-  "accordion-button-active-bg": $dracula-selection,
-  "accordion-button-active-color": $dracula-foreground,
-  "modal-content-border-radius": $radius-lg,
-  "toast-border-radius": $radius-md
-);
-
-$primary: map-get($semantic-light, "primary");
-$secondary: map-get($semantic-light, "secondary");
-$success: map-get($semantic-light, "success");
-$info: map-get($semantic-light, "info");
-$warning: map-get($semantic-light, "warning");
-$danger: map-get($semantic-light, "danger");
-$light: map-get($semantic-light, "light");
-$dark: map-get($semantic-light, "dark");
-
-$body-bg: map-get($semantic-light, "body-bg");
-$body-color: map-get($semantic-light, "body-color");
-$border-color: map-get($semantic-light, "border-color");
-$link-color: map-get($semantic-light, "link-color");
-$headings-color: map-get($semantic-light, "headings-color");
-$link-hover-color: map-get($semantic-light, "link-hover-color");
-$component-active-bg: map-get($semantic-light, "component-active-bg");
-$component-active-color: map-get($semantic-light, "component-active-color");
-
+$body-bg: $dracula-light-canvas;
+$body-color: $dracula-light-text;
+$headings-color: $dracula-light-text;
+$border-color: $dracula-light-border;
+$link-color: $dracula-light-link;
+$link-hover-color: $dracula-light-link-hover;
+$card-bg: $dracula-light-surface;
+$card-cap-bg: $dracula-light-surface-raised;
 $dropdown-bg: $dracula-light-surface;
-$dropdown-border-color: $border-color;
-$dropdown-link-color: $body-color;
+$dropdown-border-color: $dracula-light-border;
+$dropdown-link-color: $dracula-light-text;
 $dropdown-link-hover-bg: $dracula-light-surface-raised;
 $dropdown-link-active-bg: $dracula-light-primary;
 $dropdown-link-active-color: $dracula-light-surface;
-$nav-link-color: $body-color;
-$nav-link-hover-color: $link-hover-color;
-$card-bg: $dracula-light-surface;
-$card-cap-bg: $dracula-light-surface-raised;
-
-$border-radius: $radius-md;
-$border-radius-sm: $radius-sm;
-$border-radius-lg: $radius-lg;
-$font-family-base: $font-family-system;
-$font-family-sans-serif: $font-family-base;
-$font-size-base: $font-size-100;
-$font-weight-normal: $font-weight-400;
-$font-weight-semibold: $font-weight-600;
-$font-weight-bold: $font-weight-700;
-$line-height-base: $line-height-normal;
-$headings-font-weight: $font-weight-semibold;
-
-$btn-border-radius: $radius-md;
-$btn-border-radius-sm: $radius-sm;
-$btn-border-radius-lg: $radius-lg;
-$input-border-radius: $radius-md;
-$input-border-radius-sm: $radius-sm;
-$input-border-radius-lg: $radius-lg;
-$card-border-radius: $radius-md;
-$card-border-color: $border-color;
-$navbar-toggler-border-radius: $radius-md;
-$form-control-border-color: $border-color;
-$form-select-border-color: $border-color;
-$input-bg: $dracula-foreground;
-$input-color: $body-color;
-$input-placeholder-color: $dracula-current-line;
-$input-focus-bg: $dracula-foreground;
-$input-focus-color: $body-color;
-$input-focus-border-color: $primary;
-$accordion-border-radius: $radius-md;
-$accordion-button-active-bg: $dracula-selection;
-$accordion-button-active-color: $dracula-foreground;
-$modal-content-border-radius: $radius-lg;
-$toast-border-radius: $radius-md;
 
 [data-kroma-theme="dracula"][data-bs-theme="light"] {
   --bs-body-bg: #{$body-bg};
@@ -177,7 +50,6 @@ $toast-border-radius: $radius-md;
   --bs-nav-tabs-link-active-color: #{$dracula-light-text};
   --bs-nav-pills-link-active-color: #{$dracula-light-surface};
   --bs-nav-pills-link-active-bg: #{$dracula-light-primary};
-  --bs-form-control-bg: #{$dracula-light-surface};
   --bs-focus-ring-color: #{rgba($dracula-light-primary, .25)};
   --bs-table-striped-bg: #{rgba($dracula-light-primary, .06)};
   --bs-table-hover-bg: #{rgba($dracula-light-link, .07)};

@@ -6,6 +6,10 @@
   "scripts": {
     "dev": "vite --config vite.config.js",
     "test:theme-layers": "node scripts/check-theme-layers.mjs",
+    "test:theme-browser": "node scripts/test-theme-browser.mjs",
+    "test:theme-browser:all": "node scripts/test-theme-browser.mjs --all",
+    "test:negative": "node scripts/test-negative.mjs",
+    "metrics:architecture": "node scripts/report-architecture-metrics.mjs",
     "build:min": "node scripts/clean-dist.mjs && vite build --config vite.config.js --mode min",
     "build:debug": "node scripts/clean-dist.mjs && vite build --config vite.config.js --mode debug",
     "start": "vite preview --config vite.config.js"
