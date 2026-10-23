@@ -1,0 +1,608 @@
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorización explícita.
+// RESPONSABILIDAD: adaptar la semántica oscura de Kroma Entrepreneur a Bootstrap 5.3.8.
+// PERMITIDO: CSS runtime Bootstrap acotado al selector Kroma Entrepreneur dark.
+// PROHIBIDO: repetir primitivas o añadir nuevos selectores del cheatsheet.
+// DEPENDENCIAS: consume las primitivas y roles de Kroma; Bootstrap se compila una sola vez en app.scss.
+
+$semantic-dark: (
+  "enable-dark-mode": true,
+  "surface-canvas-dark": $blue-dark-950,
+  "surface-default-dark": $blue-dark-900,
+  "surface-raised-dark": $blue-dark-850,
+  "surface-overlay-dark": $blue-dark-800,
+  "surface-muted-dark": $blue-dark-750,
+  "content-primary-dark": $white,
+  "content-secondary-dark": $blue-dark-200,
+  "content-tertiary-dark": $blue-dark-300,
+  "content-disabled-dark": $gray-500,
+  "border-default-dark": $blue-dark-700,
+  "border-subtle-dark": rgba($white, $opacity-hover),
+  "accordion-button-active-bg": $blue-dark-850,
+  "accordion-button-active-color": $blue-300,
+  "body-color-dark": $white,
+  "body-bg-dark": $blue-dark-950,
+  "body-secondary-color-dark": rgba($blue-dark-200, .78),
+  "body-secondary-bg-dark": $blue-dark-900,
+  "body-tertiary-color-dark": rgba($blue-dark-200, .58),
+  "body-tertiary-bg-dark": $blue-dark-950,
+  "body-emphasis-color-dark": $white,
+  "border-color-dark": $blue-dark-700,
+  "border-color-translucent-dark": rgba($white, .175),
+  "headings-color-dark": $white,
+  "link-color-dark": $blue-300,
+  "link-hover-color-dark": $blue-200,
+  "code-color-dark": $blue-200,
+  "mark-color-dark": $white,
+  "mark-bg-dark": $yellow-800,
+  "primary-text-emphasis-dark": $blue-300,
+  "secondary-text-emphasis-dark": $gray-300,
+  "success-text-emphasis-dark": $green-600,
+  "info-text-emphasis-dark": $cyan-500,
+  "warning-text-emphasis-dark": $yellow-500,
+  "danger-text-emphasis-dark": $red-600,
+  "light-text-emphasis-dark": $gray-100,
+  "dark-text-emphasis-dark": $gray-300,
+  "primary-bg-subtle-dark": rgba($blue-700, $opacity-active),
+  "secondary-bg-subtle-dark": $blue-dark-850,
+  "success-bg-subtle-dark": rgba($green-600, $opacity-active),
+  "info-bg-subtle-dark": rgba($cyan-500, $opacity-active),
+  "warning-bg-subtle-dark": rgba($yellow-500, $opacity-active),
+  "danger-bg-subtle-dark": rgba($red-600, $opacity-active),
+  "light-bg-subtle-dark": $blue-dark-850,
+  "dark-bg-subtle-dark": $blue-dark-950,
+  "primary-border-subtle-dark": $blue-300,
+  "secondary-border-subtle-dark": $blue-dark-700,
+  "success-border-subtle-dark": $green-600,
+  "info-border-subtle-dark": $cyan-500,
+  "warning-border-subtle-dark": $yellow-500,
+  "danger-border-subtle-dark": $red-600,
+  "light-border-subtle-dark": $blue-dark-700,
+  "dark-border-subtle-dark": $blue-dark-850,
+  "form-select-indicator-color-dark": $gray-300,
+  "input-placeholder-color-dark": $gray-300,
+  "form-switch-color-dark": rgba($white, .25),
+  "form-valid-color-dark": $green-600,
+  "form-valid-border-color-dark": $green-600,
+  "form-invalid-color-dark": $red-600,
+  "form-invalid-border-color-dark": $red-600,
+  "accordion-icon-color-dark": $blue-300,
+  "accordion-icon-active-color-dark": $blue-300,
+  "carousel-indicator-active-bg-dark": $white,
+  "carousel-caption-color-dark": $white,
+  "carousel-control-icon-filter-dark": invert(1) grayscale(100),
+  "btn-close-filter-dark": invert(1) grayscale(100) brightness(200%)
+);
+
+$theme-semantic-color-tokens: (
+  "primary": $blue-dark-700,
+  "link": $blue-dark-300,
+  "success": $green-600,
+  "info": $cyan-500,
+  "warning": $yellow-500,
+  "danger": $red-600,
+  "body": $blue-dark-950,
+  "surface": $blue-dark-900,
+  "content": $blue-dark-200,
+  "muted-content": $blue-dark-300,
+  "border": $blue-dark-750
+);
+
+$theme-semantic-dark-color-tokens: $theme-semantic-color-tokens;
+
+// Variables Sass dark oficiales de Bootstrap.
+$enable-dark-mode: map-get($semantic-dark, "enable-dark-mode");
+
+// Superficies semánticas del modo oscuro.
+$surface-canvas-dark: map-get($semantic-dark, "surface-canvas-dark");
+$surface-default-dark: map-get($semantic-dark, "surface-default-dark");
+$surface-raised-dark: map-get($semantic-dark, "surface-raised-dark");
+$surface-overlay-dark: map-get($semantic-dark, "surface-overlay-dark");
+$surface-muted-dark: map-get($semantic-dark, "surface-muted-dark");
+$content-primary-dark: map-get($semantic-dark, "content-primary-dark");
+$content-secondary-dark: map-get($semantic-dark, "content-secondary-dark");
+$content-tertiary-dark: map-get($semantic-dark, "content-tertiary-dark");
+$content-disabled-dark: map-get($semantic-dark, "content-disabled-dark");
+$border-default-dark: map-get($semantic-dark, "border-default-dark");
+$border-subtle-dark: map-get($semantic-dark, "border-subtle-dark");
+$accordion-button-active-bg: map-get($semantic-dark, "accordion-button-active-bg");
+$accordion-button-active-color: map-get($semantic-dark, "accordion-button-active-color");
+
+$body-color-dark: $white;
+$body-bg-dark: $surface-canvas-dark;
+$body-secondary-color-dark: rgba($blue-dark-200, .78);
+$body-secondary-bg-dark: $surface-default-dark;
+$body-tertiary-color-dark: rgba($blue-dark-200, .58);
+$body-tertiary-bg-dark: $surface-canvas-dark;
+$body-emphasis-color-dark: $content-primary-dark;
+$border-color-dark: $border-default-dark;
+$border-color-translucent-dark: rgba($white, .175);
+$headings-color-dark: $content-primary-dark;
+$link-color-dark: $blue-300;
+$link-hover-color-dark: $blue-200;
+$code-color-dark: $blue-200;
+$mark-color-dark: $white;
+$mark-bg-dark: $yellow-800;
+
+$primary-text-emphasis-dark: $blue-300;
+$secondary-text-emphasis-dark: $gray-300;
+$success-text-emphasis-dark: $green-600;
+$info-text-emphasis-dark: $cyan-500;
+$warning-text-emphasis-dark: $yellow-500;
+$danger-text-emphasis-dark: $red-600;
+$light-text-emphasis-dark: $gray-100;
+$dark-text-emphasis-dark: $gray-300;
+
+$primary-bg-subtle-dark: rgba($blue-700, $opacity-active);
+$secondary-bg-subtle-dark: $blue-dark-850;
+$success-bg-subtle-dark: rgba($green-600, $opacity-active);
+$info-bg-subtle-dark: rgba($cyan-500, $opacity-active);
+$warning-bg-subtle-dark: rgba($yellow-500, $opacity-active);
+$danger-bg-subtle-dark: rgba($red-600, $opacity-active);
+$light-bg-subtle-dark: $surface-raised-dark;
+$dark-bg-subtle-dark: $surface-canvas-dark;
+
+$primary-border-subtle-dark: $blue-300;
+$secondary-border-subtle-dark: $blue-dark-700;
+$success-border-subtle-dark: $green-600;
+$info-border-subtle-dark: $cyan-500;
+$warning-border-subtle-dark: $yellow-500;
+$danger-border-subtle-dark: $red-600;
+$light-border-subtle-dark: $border-default-dark;
+$dark-border-subtle-dark: $surface-raised-dark;
+
+$form-select-indicator-color-dark: $gray-300;
+$form-select-indicator-dark: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='#{$form-select-indicator-color-dark}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>");
+$input-placeholder-color-dark: $gray-300;
+$form-switch-color-dark: rgba($white, .25);
+$form-switch-bg-image-dark: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='3' fill='#{$form-switch-color-dark}'/></svg>");
+$form-valid-color-dark: $green-600;
+$form-valid-border-color-dark: $green-600;
+$form-invalid-color-dark: $red-600;
+$form-invalid-border-color-dark: $red-600;
+$accordion-icon-color-dark: $blue-300;
+$accordion-icon-active-color-dark: $blue-300;
+$carousel-indicator-active-bg-dark: $white;
+$carousel-caption-color-dark: $white;
+$carousel-control-icon-filter-dark: invert(1) grayscale(100);
+$btn-close-filter-dark: invert(1) grayscale(100) brightness(200%);
+
+// Variables CSS runtime específicas de componentes y tablas.
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] {
+  .accordion-button {
+    color: $blue-dark-300;
+    background-color: $surface-default-dark;
+    border-color: $border-default-dark;
+
+    &:not(.collapsed) {
+      color: $white;
+      background-color: $surface-raised-dark;
+      border-color: $border-default-dark;
+    }
+  }
+
+  .accordion-body {
+    background-color: $surface-default-dark;
+  }
+
+  @supports selector(::-webkit-scrollbar) {
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      width: .625rem;
+      height: .625rem;
+    }
+
+    html::-webkit-scrollbar-track,
+    body::-webkit-scrollbar-track {
+      border-radius: $radius-sm;
+      background: $blue-dark-950;
+    }
+
+    html::-webkit-scrollbar-thumb,
+    body::-webkit-scrollbar-thumb {
+      border: .125rem solid $blue-dark-950;
+      border-radius: $radius-sm;
+      background: $blue-dark-600;
+    }
+
+    html::-webkit-scrollbar-thumb:hover,
+    body::-webkit-scrollbar-thumb:hover {
+      background: $blue-dark-300;
+    }
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    html,
+    body {
+      scrollbar-color: $blue-dark-600 $blue-dark-950;
+      scrollbar-width: thin;
+    }
+  }
+
+  .btn-secondary {
+    --bs-btn-color: #{$white};
+    --bs-btn-bg: #{$blue-dark-700};
+    --bs-btn-border-color: #{$blue-dark-600};
+    --bs-btn-hover-color: #{$white};
+    --bs-btn-hover-bg: #{$blue-dark-600};
+    --bs-btn-hover-border-color: #{$blue-dark-700};
+    --bs-btn-active-color: #{$white};
+    --bs-btn-active-bg: #{$blue-dark-600};
+    --bs-btn-active-border-color: #{$blue-dark-700};
+    --bs-btn-disabled-color: #{$gray-300};
+    --bs-btn-disabled-bg: #{$surface-muted-dark};
+    --bs-btn-disabled-border-color: #{$surface-muted-dark};
+  }
+
+  .card {
+    --bs-card-bg: #{$surface-default-dark};
+    --bs-card-color: #{$content-primary-dark};
+    --bs-card-border-color: #{$border-default-dark};
+    --bs-card-cap-bg: #{$surface-raised-dark};
+    background-color: $surface-default-dark;
+    color: $content-primary-dark;
+    border-color: $border-default-dark;
+
+    .card-header,
+    .card-footer {
+      background-color: $surface-raised-dark;
+      color: $content-primary-dark;
+      border-color: $border-default-dark;
+    }
+
+    .card-body {
+      background-color: $surface-default-dark;
+      color: $content-primary-dark;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    body {
+      background: linear-gradient(
+        to right,
+        $surface-canvas-dark 0,
+        $surface-canvas-dark calc(100% - 20%),
+        $surface-default-dark calc(100% - 20%),
+        $surface-default-dark 100%
+      );
+    }
+  }
+
+  --bs-body-bg: #{$surface-canvas-dark};
+  --bs-body-color: #{$content-primary-dark};
+  --bs-secondary-rgb: #{red($blue-dark-700)}, #{green($blue-dark-700)}, #{blue($blue-dark-700)};
+  --bs-card-bg: #{$surface-default-dark};
+  --bs-card-color: #{$content-primary-dark};
+  --bs-card-border-color: #{$border-default-dark};
+  --bs-card-cap-bg: #{$surface-raised-dark};
+  --bs-secondary-bg: #{$surface-default-dark};
+  --bs-tertiary-bg: #{$surface-canvas-dark};
+  --bs-input-bg: #{$surface-default-dark};
+  --bs-input-color: #{$content-primary-dark};
+  --bs-input-placeholder-color: #{$content-tertiary-dark};
+  --bs-input-group-addon-bg: #{$surface-overlay-dark};
+  --bs-input-group-addon-color: #{$content-primary-dark};
+  --bs-input-group-addon-border-color: #{$border-default-dark};
+  --bs-form-check-bg: #{$surface-default-dark};
+  --bs-form-select-bg-img: #{$form-select-indicator-dark};
+  --kroma-header-bg: #{$surface-default-dark};
+  --kroma-header-color: #{$content-primary-dark};
+  --kroma-header-border: #{$border-default-dark};
+  --kroma-header-control-bg: #{$surface-overlay-dark};
+  --bs-nav-link-color: #{$blue-dark-300};
+  --bs-nav-link-hover-color: #{$blue-dark-200};
+  --bs-nav-link-disabled-color: #{rgba($blue-dark-300, .46)};
+  --bs-link-color: #{$blue-dark-300};
+  --bs-link-hover-color: #{$blue-dark-200};
+  --bs-secondary-color: #{$blue-dark-300};
+  --bs-nav-tabs-border-color: #{$blue-dark-700};
+  --bs-nav-tabs-link-hover-border-color: #{$blue-dark-700};
+  --bs-nav-tabs-link-active-color: #{$white};
+  --bs-nav-tabs-link-active-bg: #{$blue-700};
+  --bs-nav-tabs-link-active-border-color: #{$blue-700};
+  --bs-nav-pills-link-active-color: #{$white};
+  --bs-nav-pills-link-active-bg: #{$blue-700};
+  --bs-navbar-color: #{$blue-dark-300};
+  --bs-navbar-hover-color: #{$blue-dark-200};
+  --bs-navbar-disabled-color: #{rgba($blue-dark-300, .46)};
+  --bs-navbar-active-color: #{$white};
+  --bs-navbar-brand-color: #{$white};
+  --bs-navbar-brand-hover-color: #{$white};
+  --bs-navbar-toggler-border-color: #{rgba($blue-dark-300, .28)};
+  --bs-emphasis-color: #{$content-primary-dark};
+  --bs-pagination-color: #{$blue-300};
+  --bs-pagination-bg: #{$surface-default-dark};
+  --bs-pagination-border-color: #{$border-default-dark};
+  --bs-pagination-hover-color: #{$blue-200};
+  --bs-pagination-hover-bg: #{$surface-raised-dark};
+  --bs-pagination-hover-border-color: #{$border-default-dark};
+  --bs-pagination-focus-color: #{$blue-200};
+  --bs-pagination-focus-bg: #{$blue-dark-850};
+  --bs-pagination-active-color: #{$white};
+  --bs-pagination-active-bg: #{$blue-700};
+  --bs-pagination-active-border-color: #{$blue-700};
+  --bs-pagination-disabled-color: #{$gray-600-alt};
+  --bs-pagination-disabled-bg: #{$surface-raised-dark};
+  --bs-pagination-disabled-border-color: #{$border-default-dark};
+  --bs-accordion-color: #{$white};
+  --bs-accordion-bg: #{$surface-default-dark};
+  --bs-accordion-border-color: #{$border-default-dark};
+  --bs-accordion-button-bg: #{$surface-default-dark};
+  --bs-accordion-button-active-bg: #{$surface-raised-dark};
+  --bs-accordion-button-active-color: #{$white};
+  --bs-accordion-button-color: #{$blue-dark-300};
+  --bs-accordion-border-color: #{$border-default-dark};
+  --bs-accordion-btn-focus-border-color: #{$blue-dark-600};
+  --bs-accordion-btn-focus-box-shadow: 0 0 0 0.25rem #{rgba($blue-300, 0.25)};
+  --bs-carousel-indicator-active-bg: #{$white};
+  --bs-carousel-caption-color: #{$white};
+  --bs-carousel-control-icon-filter: invert(1) grayscale(100);
+  --bs-offcanvas-bg: #{$surface-default-dark};
+  --bs-offcanvas-color: #{$white};
+  --bs-offcanvas-border-color: #{$border-default-dark};
+  --bs-offcanvas-box-shadow: #{$shadow-dark};
+  --bs-card-bg: #{$surface-default-dark};
+  --bs-card-color: #{$white};
+  --bs-card-border-color: #{$border-default-dark};
+  --bs-card-cap-bg: #{$surface-raised-dark};
+  --bs-placeholder-color: #{$surface-muted-dark};
+  --bs-list-group-bg: #{$surface-default-dark};
+  --bs-list-group-color: #{$content-primary-dark};
+  --bs-list-group-border-color: #{$border-default-dark};
+  --bs-list-group-hover-bg: #{$surface-raised-dark};
+  --bs-list-group-action-hover-color: #{$white};
+  --bs-list-group-action-hover-bg: #{$surface-overlay-dark};
+  --bs-dropdown-bg: #{$surface-raised-dark};
+  --bs-dropdown-color: #{$white};
+  --bs-dropdown-border-color: #{$border-default-dark};
+  --bs-dropdown-link-color: #{$white};
+  --bs-dropdown-link-hover-bg: #{$surface-muted-dark};
+  --bs-dropdown-link-active-bg: #{$blue-700};
+  --bs-dropdown-link-active-color: #{$white};
+  --bs-dropdown-link-hover-color: #{$white};
+  --bs-dropdown-link-disabled-color: #{$gray-600};
+  --bs-dropdown-divider-bg: #{$border-default-dark};
+  --bs-dropdown-header-color: #{$content-secondary-dark};
+  --bs-modal-bg: #{$surface-default-dark};
+  --bs-modal-color: #{$white};
+  --bs-modal-border-color: #{$border-default-dark};
+  --bs-modal-header-border-color: #{$border-default-dark};
+  --bs-modal-footer-border-color: #{$border-default-dark};
+  --bs-popover-bg: #{$blue-700};
+  --bs-popover-body-color: #{$content-primary-dark};
+  --bs-popover-border-color: #{$blue-300};
+  --bs-popover-header-bg: #{rgba($blue-300, $opacity-active)};
+  --bs-popover-header-color: #{$content-primary-dark};
+  --bs-popover-box-shadow: #{$shadow-dark};
+  --bs-tooltip-color: #{$white};
+  --bs-tooltip-bg: #{$surface-overlay-dark};
+  --bs-toast-bg: #{rgba($surface-default-dark, $opacity-overlay)};
+  --bs-toast-color: #{$white};
+  --bs-toast-border-color: #{$border-default-dark};
+  --bs-toast-header-bg: #{$surface-raised-dark};
+  --bs-toast-header-color: #{$white};
+  --bs-toast-header-border-color: #{$border-default-dark};
+
+  .toast {
+    --bs-toast-bg: #{$surface-default-dark};
+    --bs-toast-color: #{$white};
+    --bs-toast-border-color: #{$border-default-dark};
+    --bs-toast-header-bg: #{$surface-raised-dark};
+    --bs-toast-header-color: #{$white};
+    --bs-toast-header-border-color: #{$border-default-dark};
+  }
+
+  --bs-table-color: var(--bs-emphasis-color);
+  --bs-table-bg: var(--bs-body-bg);
+  --bs-table-border-color: var(--bs-border-color);
+  --bs-table-accent-bg: transparent;
+  --bs-table-striped-color: var(--bs-emphasis-color);
+  --bs-table-active-color: var(--bs-emphasis-color);
+  --bs-table-active-bg: rgba(var(--bs-emphasis-color-rgb), 0.1);
+
+  --bs-table-bg-type: var(--bs-table-bg);
+  --bs-table-color-type: var(--bs-table-color);
+  --bs-table-striped-bg: #{rgba($blue-700, $opacity-hover)};
+  --bs-table-hover-bg: #{rgba($blue-300, $opacity-hover)};
+  --bs-table-hover-color: #{$content-primary-dark};
+
+  .form-control {
+    color: #{$white};
+    background-color: #{$surface-default-dark};
+    border-color: #{$border-default-dark};
+
+    &::file-selector-button {
+      color: #{$white};
+      background-color: #{$surface-overlay-dark};
+    }
+  }
+
+  .form-select {
+    color: #{$white};
+    background-color: #{$surface-default-dark};
+    border-color: #{$border-default-dark};
+  }
+
+  .input-group-text {
+    color: #{$white};
+    background-color: #{$surface-overlay-dark};
+    border-color: #{$border-default-dark};
+  }
+
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .dropdown-menu {
+  --bs-dropdown-color: #{$white};
+  --bs-dropdown-bg: #{$surface-default-dark};
+  --bs-dropdown-border-color: #{$border-default-dark};
+  --bs-dropdown-divider-bg: #{$border-default-dark};
+  --bs-dropdown-link-color: #{$white};
+  --bs-dropdown-link-hover-color: #{$white};
+  --bs-dropdown-link-hover-bg: #{$surface-overlay-dark};
+  --bs-dropdown-link-active-color: #{$white};
+  --bs-dropdown-link-active-bg: #{$blue-700};
+  --bs-dropdown-link-disabled-color: #{$gray-600};
+  --bs-dropdown-header-color: #{$content-secondary-dark};
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .popover {
+  --bs-popover-bg: #{$blue-700};
+  --bs-popover-body-color: #{$content-primary-dark};
+  --bs-popover-border-color: #{$blue-300};
+  --bs-popover-header-bg: #{rgba($blue-300, $opacity-active)};
+  --bs-popover-header-color: #{$content-primary-dark};
+  --bs-popover-box-shadow: #{$shadow-dark};
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .tooltip {
+  --bs-tooltip-color: #{$content-primary-dark};
+  --bs-tooltip-bg: #{$blue-700};
+  --bs-tooltip-border-radius: var(--bs-popover-border-radius);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .nav {
+  --bs-nav-link-color: #{$blue-dark-300};
+  --bs-nav-link-hover-color: #{$blue-dark-200};
+  --bs-nav-link-disabled-color: #{rgba($blue-dark-300, .46)};
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar {
+  --bs-navbar-color: #{$blue-dark-300};
+  --bs-navbar-hover-color: #{$blue-dark-200};
+  --bs-navbar-disabled-color: #{rgba($blue-dark-300, .46)};
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-body-tertiary {
+  --bs-navbar-color: #{$blue-dark-300};
+  --bs-navbar-hover-color: #{$blue-dark-200};
+  --bs-navbar-disabled-color: #{rgba($blue-dark-300, .46)};
+  --bs-navbar-brand-color: #{$content-primary-dark};
+  --bs-navbar-brand-hover-color: #{$white};
+  background-color: $surface-default-dark !important;
+  border: 1px solid $border-default-dark;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-body-tertiary .navbar-brand,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-body-tertiary .nav-link {
+  color: var(--bs-navbar-color);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-body-tertiary .nav-link:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-body-tertiary .nav-link:focus,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-body-tertiary .navbar-brand:hover {
+  color: var(--bs-navbar-hover-color);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-primary {
+  --bs-navbar-color: #{$white};
+  --bs-navbar-hover-color: #{$white};
+  --bs-navbar-disabled-color: #{rgba($white, .62)};
+  --bs-navbar-brand-color: #{$white};
+  --bs-navbar-brand-hover-color: #{$white};
+  background-color: $blue-700 !important;
+  border: 1px solid $blue-700;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-primary .navbar-brand,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-primary .nav-link {
+  color: var(--bs-navbar-color);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-primary .nav-link:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-primary .nav-link:focus,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-primary .navbar-brand:hover {
+  color: var(--bs-navbar-hover-color);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-body-tertiary .form-control,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-primary .form-control {
+  background-color: $surface-overlay-dark;
+  border-color: $border-default-dark;
+  color: $content-primary-dark;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-body-tertiary .form-control:focus,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar.bg-primary .form-control:focus {
+  border-color: $blue-300;
+  box-shadow: 0 0 0 .25rem rgba($blue-300, .25);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .btn-outline-dark {
+  --bs-btn-color: #{$blue-dark-300};
+  --bs-btn-border-color: #{$blue-dark-700};
+  --bs-btn-hover-color: #{$content-primary-dark};
+  --bs-btn-hover-bg: #{$blue-dark-700};
+  --bs-btn-hover-border-color: #{$blue-dark-700};
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .nav-link.disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .nav-link.disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .btn:disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .btn.disabled {
+  color: #{rgba($blue-dark-300, .46)};
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .nav-link.disabled:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .nav-link.disabled:focus,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .nav-link.disabled:focus-visible,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .nav-link.disabled:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .nav-link.disabled:focus,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .navbar .nav-link.disabled:focus-visible {
+  --bs-nav-link-color: #{rgba($blue-dark-300, .46)};
+  --bs-nav-link-hover-color: #{rgba($blue-dark-300, .46)};
+  color: rgba($blue-dark-300, .46);
+  text-decoration: none;
+  outline: none;
+  box-shadow: none;
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] button:disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] [aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .progress,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .progress-stacked {
+  --bs-progress-bg: #{rgba($blue-700, $opacity-surface)};
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .progress-bar-striped {
+  --bs-progress-bar-bg: #{$green-600};
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-primary,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-secondary,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-success,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-info,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-warning,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-danger,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-light,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-dark {
+  --bs-table-color: #{$content-primary-dark};
+  --bs-table-bg: #{$surface-default-dark};
+  --bs-table-border-color: #{$border-default-dark};
+  --bs-table-bg-type: var(--bs-table-bg);
+  --bs-table-striped-color: #{$content-primary-dark};
+  --bs-table-striped-bg: #{$surface-raised-dark};
+  --bs-table-active-color: #{$content-primary-dark};
+  --bs-table-active-bg: #{$surface-raised-dark};
+  --bs-table-hover-color: #{$content-primary-dark};
+  --bs-table-hover-bg: #{$surface-raised-dark};
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-primary { --bs-table-bg: #{rgba($blue-700, $opacity-active)}; }
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-success { --bs-table-bg: #{rgba($green-600, $opacity-active)}; }
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-info { --bs-table-bg: #{rgba($cyan-500, $opacity-active)}; }
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-warning { --bs-table-bg: #{rgba($yellow-500, $opacity-active)}; }
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-danger { --bs-table-bg: #{rgba($red-600, $opacity-active)}; }
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .table-borderless {
+  --bs-table-striped-bg: #{rgba($blue-700, $opacity-hover)};
+  --bs-table-hover-bg: #{rgba($blue-300, $opacity-hover)};
+}

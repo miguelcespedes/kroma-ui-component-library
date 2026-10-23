@@ -1,138 +1,120 @@
 import fs from "node:fs";
 import path from "node:path";
+import * as sass from "sass";
+import postcss from "postcss";
 
-const packageJsonPath = path.resolve("package.json");
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-
-const themeRoot = path.resolve("src/themes");
-const themes = fs.readdirSync(themeRoot, { withFileTypes: true })
-  .filter((entry) => entry.isDirectory())
-  .map((entry) => path.join(themeRoot, entry.name));
-
+const root = process.cwd();
+const themesRoot = path.join(root, "src/themes");
 const errors = [];
-
-if (packageJson.private !== true) {
-  errors.push("package.json:1 el cheatsheet debe permanecer como paquete privado");
+const source = (file) => fs.readFileSync(path.join(root, file), "utf8");
+const fail = (file, message) => errors.push(`${file}: ${message}`);
+const themes = fs.readdirSync(themesRoot, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory() && fs.existsSync(path.join(themesRoot, entry.name, "theme.scss")))
+  .map((entry) => entry.name);
+const catalogFile = "src/components/theme-dropdown/theme-tokens.ts";
+const catalogSource = source(catalogFile);
+const catalog = JSON.parse(catalogSource.slice("export const themeTokens = ".length, catalogSource.lastIndexOf(" as const;")));
+const requiredRoles = ["primary", "link", "success", "info", "warning", "danger", "body", "surface", "content", "muted-content", "border"];
+const adapter = source("src/adapters/bootstrap/_adapter.scss");
+for (const item of JSON.parse(source("src/adapters/bootstrap/compatibility.json"))) {
+  if (!adapter.includes(item.source) || !adapter.includes(item.target)) {
+    fail("src/adapters/bootstrap/compatibility.json", `${item.component}: missing source ${item.source} or target ${item.target} in adapter`);
+  }
 }
 
-if (Object.hasOwn(packageJson, "exports")) {
-  errors.push("package.json:1 no debe declarar exports npm para rutas que no forman parte del bundle del cheatsheet");
+if (JSON.parse(source("package.json")).private !== true) fail("package.json", "the cheatsheet must remain private");
+const bootstrapImports = [];
+for (const file of ["src/cheatsheet/app.scss", ...themes.map((theme) => `src/themes/${theme}/theme.scss`)]) {
+  const imports = source(file).match(/@import\s+["']bootstrap\/scss\/bootstrap["']/g) ?? [];
+  bootstrapImports.push(...imports.map(() => file));
+}
+if (bootstrapImports.length !== 1 || bootstrapImports[0] !== "src/cheatsheet/app.scss") {
+  fail("src/cheatsheet/app.scss", `expected one shared Bootstrap compilation, found ${bootstrapImports.length}: ${bootstrapImports.join(", ")}`);
 }
 
-function relative(filePath) {
-  return path.relative(process.cwd(), filePath);
-}
-
-function addError(filePath, lineNumber, message) {
-  errors.push(`${relative(filePath)}:${lineNumber} ${message}`);
-}
-
-function isComment(line) {
-  return !line || line.startsWith("//") || line.startsWith("/*") || line.startsWith("*") || line.endsWith("*/");
-}
-
-function isSassVariable(line) {
-  return /^\$[a-z0-9-]+\s*:/.test(line);
-}
-
-function isCssVariable(line) {
-  return /^--bs-[a-z0-9-]+\s*:/.test(line);
-}
-
-function isLiteralColor(line) {
-  return /#[0-9a-f]{3,8}\b/i.test(line);
-}
-
-function checkTokens(filePath, lines) {
-  let mapDepth = 0;
-  lines.forEach((rawLine, index) => {
-    const line = rawLine.trim();
-    if (isComment(line)) return;
-
-    if (mapDepth > 0) {
-      mapDepth += (line.match(/\(/g) ?? []).length;
-      mapDepth -= (line.match(/\)/g) ?? []).length;
-      return;
-    }
-
-    if (/^\$[a-z0-9-]+\s*:\s*\($/.test(line)) {
-      mapDepth = 1;
-      return;
-    }
-
-    if (!isSassVariable(line) || !line.endsWith(";")) {
-      addError(filePath, index + 1, "_tokens.scss solo puede declarar primitivas Sass terminadas en punto y coma");
-    }
-  });
-}
-
-function checkSemantic(filePath, lines, mode) {
-  const source = lines.join("\n");
-  const themeName = path.basename(path.dirname(filePath));
-  const rootSelector = `[data-kroma-theme="${themeName}"][data-bs-theme="${mode}"]`;
-
-  lines.forEach((rawLine, index) => {
-    const line = rawLine.trim();
-    if (isComment(line)) return;
-    if (line.startsWith("@import")) addError(filePath, index + 1, "las capas semánticas no deben importar otras capas");
-  });
-
-  const runtimeSelectors = [...source.matchAll(/(^|\n)\s*([^@\n][^\n{]+)\{/g)].map((match) => match[2].trim());
-  for (const selector of runtimeSelectors) {
-    if (!selector.includes("data-kroma-theme")) continue;
-    if (!selector.startsWith(rootSelector)) {
-      addError(filePath, 1, `selector runtime no permitido en la capa semántica ${mode}`);
-    }
+for (const theme of themes) {
+  const prefix = `src/themes/${theme}`;
+  const entry = `${prefix}/theme.scss`;
+  const imports = [...source(entry).matchAll(/@import\s+["']([^"']+)["']/g)].map((match) => match[1]);
+  if (new Set(imports).size !== imports.length) fail(entry, "duplicate import");
+  if (imports.some((item) => item.includes("bootstrap/scss/bootstrap"))) fail(entry, "theme must not compile Bootstrap");
+  for (const layer of ["tokens", "semantic-light", "semantic-dark"]) {
+    const file = `${prefix}/_${layer}.scss`;
+    if (!fs.existsSync(path.join(root, file))) { fail(file, "required layer missing"); continue; }
+    const text = source(file);
+    if (/@import\b|--bs-|\.(?:bd-|btn|card|accordion|navbar)/.test(text)) fail(file, "core tokens must not depend on Bootstrap or the cheatsheet");
   }
 
-  if (mode === "light") {
-    lines.forEach((rawLine, index) => {
-      const line = rawLine.trim();
-      if (isComment(line) || line.startsWith("$")) return;
-      if (isLiteralColor(line) && !line.includes("$")) addError(filePath, index + 1, "los colores deben declararse en _tokens.scss y consumirse por referencia");
+  try {
+    const css = sass.compile(path.join(root, entry), { loadPaths: [path.join(root, "node_modules")], logger: sass.Logger.silent }).css;
+    const parsed = postcss.parse(css, { from: entry });
+    const data = catalog.find((item) => item.id === theme);
+    if (!data) fail(catalogFile, `${theme}: missing theme`);
+    for (const mode of ["light", "dark"]) {
+      const tokens = data?.[mode === "light" ? "semanticLight" : "semanticDark"] ?? [];
+      const selector = `[data-kroma-theme=${theme}][data-bs-theme=${mode}]`;
+      const roleRule = parsed.nodes.find((node) => node.type === "rule" && node.selector === selector && node.nodes.some((child) => child.prop?.startsWith("--kroma-color-")));
+      const properties = new Map(roleRule?.nodes.filter((node) => node.type === "decl" && node.prop.startsWith("--kroma-")).map((node) => [node.prop, node.value]));
+      const checked = new Set();
+      const checking = new Set();
+      const resolve = (name) => {
+        if (checking.has(name)) { fail(entry, `${theme}/${mode}: circular token ${name}`); return; }
+        if (checked.has(name)) return;
+        if (!properties.has(name)) { fail(entry, `${theme}/${mode}: unresolved token ${name}`); return; }
+        checking.add(name);
+        for (const [, dependency] of properties.get(name).matchAll(/var\((--kroma-[\w-]+)/g)) resolve(dependency);
+        checking.delete(name);
+        checked.add(name);
+      };
+      for (const key of properties.keys()) resolve(key);
+      for (const [name, value] of properties) {
+        if (name.startsWith("--kroma-button-") || name.startsWith("--kroma-card-") || name.startsWith("--kroma-input-")) {
+          if (!value.includes("var(--kroma-color-")) fail(entry, `${theme}/${mode}: ${name} must consume a semantic color role`);
+        }
+      }
+      for (const role of requiredRoles) {
+        const item = tokens.find((token) => token.name === role);
+        if (!item || item.type !== "color") fail(catalogFile, `${theme}/${mode}: missing color role ${role}`);
+        const declaration = roleRule?.nodes.find((node) => node.prop === `--kroma-color-${role}`);
+        if (item && declaration?.value !== item.value) fail(catalogFile, `${theme}/${mode}: ${role} differs from compiled CSS (${declaration?.value} vs ${item.value})`);
+      }
+    }
+    parsed.walk((node) => {
+      if (node.type === "rule") {
+        const selectors = node.selectors ?? [node.selector];
+        for (const selector of selectors) {
+          if (!selector.includes(`[data-kroma-theme=${theme}]`) && !selector.includes(`[data-kroma-theme="${theme}"]`)) {
+            fail(entry, `unscoped rule: ${selector}`);
+          }
+        }
+        const declarations = new Map();
+        for (const child of node.nodes) {
+          if (child.type !== "decl") continue;
+          if (declarations.has(child.prop) && declarations.get(child.prop) !== child.value) {
+            fail(entry, `contradictory ${child.prop} in ${node.selector}: ${declarations.get(child.prop)} vs ${child.value}`);
+          }
+          declarations.set(child.prop, child.value);
+        }
+      }
+      if (node.type === "decl" && /\$[a-z][a-z0-9-]*/i.test(node.value)) {
+        fail(entry, `unresolved Sass value ${node.prop}: ${node.value}`);
+      }
     });
+    if (css.includes("Bootstrap v5")) fail(entry, "theme contains a full Bootstrap build");
+  } catch (error) { fail(entry, `Sass/PostCSS compilation failed: ${error.message}`); }
+}
+
+if (fs.existsSync(path.join(root, "dist/index.html"))) {
+  const html = source("dist/index.html");
+  if (!html.includes("style.debug.css") && !html.includes("style.min.css")) fail("dist/index.html", "base stylesheet missing");
+  for (const theme of themes) {
+    const file = `dist/themes/${theme}.css`;
+    if (!fs.existsSync(path.join(root, file))) { fail(file, "theme CSS asset missing"); continue; }
+    if (source(file).includes("Bootstrap v5")) fail(file, "theme asset duplicates Bootstrap");
   }
 }
 
-function checkEntry(filePath) {
-  const lines = fs.readFileSync(filePath, "utf8")
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line && !line.startsWith("//"));
-  const expected = [
-    '@import "./tokens";',
-    '@import "./semantic-light";',
-    '@import "./semantic-dark";',
-    '@import "bootstrap/scss/bootstrap";',
-  ];
-
-  if (!lines.slice(0, 4).join("\n").includes(expected.join("\n"))) {
-    addError(filePath, 1, "theme.scss debe contener únicamente los cuatro imports obligatorios en orden");
-  }
-}
-
-for (const themePath of themes) {
-  const files = [
-    ["_tokens.scss", (filePath, lines) => checkTokens(filePath, lines)],
-    ["_semantic-light.scss", (filePath, lines) => checkSemantic(filePath, lines, "light")],
-    ["_semantic-dark.scss", (filePath, lines) => checkSemantic(filePath, lines, "dark")],
-  ];
-
-  for (const [fileName, check] of files) {
-    const filePath = path.join(themePath, fileName);
-    if (fs.existsSync(filePath)) check(filePath, fs.readFileSync(filePath, "utf8").split(/\r?\n/));
-    else addError(filePath, 1, `falta la capa obligatoria ${fileName}`);
-  }
-
-  const entryPath = path.join(themePath, "theme.scss");
-  if (fs.existsSync(entryPath)) checkEntry(entryPath);
-  else addError(entryPath, 1, "falta el entrypoint theme.scss");
-}
-
-if (errors.length > 0) {
-  console.error("Theme layer contract failed:");
-  errors.forEach((error) => console.error(`- ${error}`));
+if (errors.length) {
+  console.error(`Theme architecture failed (${errors.length}):\n${errors.map((error) => `- ${error}`).join("\n")}`);
   process.exitCode = 1;
-} else {
-  console.log(`Theme layer contract passed for ${themes.length} theme(s).`);
-}
+} else console.log(`Theme architecture passed for ${themes.length} themes; one shared Bootstrap compilation.`);

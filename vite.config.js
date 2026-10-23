@@ -19,7 +19,11 @@ export default defineConfig(({ mode }) => ({
       input: "src/cheatsheet/index.html",
       output: {
         entryFileNames: mode === "min" ? "main.min.js" : "main.js",
-        assetFileNames: (assetInfo) => assetInfo.name?.endsWith(".css") ? (mode === "min" ? "style.min.css" : "style.debug.css") : "[name][extname]"
+        assetFileNames: (assetInfo) => {
+          const source = assetInfo.originalFileNames?.find((file) => file.includes("/themes/"));
+          if (source) return `themes/${source.split("/themes/")[1].split("/")[0]}.css`;
+          return assetInfo.name?.endsWith(".css") ? (mode === "min" ? "style.min.css" : "style.debug.css") : "[name][extname]";
+        }
       }
     },
     minify: mode === "min" ? "esbuild" : false,

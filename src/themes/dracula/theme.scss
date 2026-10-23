@@ -1,16 +1,18 @@
 // [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
 // CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorización explícita.
 // RESPONSABILIDAD: ser el único punto de entrada y controlar el orden de compilación.
-// PERMITIDO: importar tokens, semántica clara, semántica dark y Bootstrap.
-// PROHIBIDO: declarar tokens, selectores CSS o reglas específicas de componentes.
-// DEPENDENCIAS: conservar el orden tokens, semantic-light, semantic-dark y Bootstrap.
+// PERMITIDO: componer tokens, semántica Kroma y adaptaciones runtime.
+// PROHIBIDO: importar Bootstrap completo o definir layout del cheatsheet.
+// DEPENDENCIAS: conservar el orden tokens, semántica, adaptaciones y runtime Kroma.
 
 @import "./tokens";
 @import "./semantic-light";
 @import "./semantic-dark";
-@import "bootstrap/scss/bootstrap";
+@import "../../adapters/bootstrap/themes/dracula/light";
+@import "../../adapters/bootstrap/themes/dracula/dark";
+@import "../../design-system/runtime";
 
-// Los componentes del cheatsheet se declaran despues de Bootstrap para que
-// sus tokens de tabla y estados visuales prevalezcan sobre los defaults.
-@import "./semantic-light";
-@import "./semantic-dark";
+[data-kroma-theme="dracula"] {
+  @include kroma-mode(light, $theme-semantic-light-color-tokens, $primitive-light, $primitive-shared);
+  @include kroma-mode(dark, $theme-semantic-dark-color-tokens, $primitive-dark, $primitive-shared);
+}

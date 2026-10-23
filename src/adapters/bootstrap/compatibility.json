@@ -1,0 +1,10 @@
+[
+  { "component": "body", "source": "--kroma-color-surface-canvas", "target": "--bs-body-bg", "scope": "[data-kroma-theme]", "inherits": true, "state": "default", "mechanism": "runtime CSS" },
+  { "component": "utilities", "source": "--kroma-color-primary-rgb", "target": "--bs-primary-rgb", "scope": "[data-kroma-theme]", "inherits": true, "state": "default", "mechanism": "runtime CSS; RGB computed by Sass from the canonical color" },
+  { "component": "button", "source": "--kroma-button-primary-bg", "target": "--bs-btn-bg", "scope": ".btn-primary", "inherits": false, "state": "default/hover/active", "mechanism": "runtime local CSS variable" },
+  { "component": "card", "source": "--kroma-card-bg", "target": "--bs-card-bg", "scope": ".card", "inherits": false, "state": "default", "mechanism": "runtime local CSS variable" },
+  { "component": "dropdown", "source": "--kroma-color-surface-raised", "target": "--bs-dropdown-bg", "scope": ".dropdown-menu", "inherits": false, "state": "default", "mechanism": "runtime local CSS variable" },
+  { "component": "form control", "source": "--kroma-input-bg", "target": "background-color", "scope": ".form-control", "inherits": false, "state": "default/focus", "mechanism": "CSS property override; Bootstrap compiles $input-bg directly" },
+  { "component": "form select", "source": "--kroma-input-bg", "target": "background-color", "scope": ".form-select", "inherits": false, "state": "default/focus", "mechanism": "CSS property override; Bootstrap compiles $form-select-bg directly" },
+  { "component": "table", "source": "--kroma-color-surface", "target": "--bs-table-bg", "scope": ".table", "inherits": false, "state": "default", "mechanism": "runtime local CSS variable; variants require their own selector" }
+]

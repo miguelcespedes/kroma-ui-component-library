@@ -1,9 +1,7 @@
 import { themeTokens } from "../theme-dropdown/theme-tokens";
 
-type ThemeToken = { readonly name: string; readonly value: string };
+type ThemeToken = { readonly name: string; readonly value: string; readonly type: string };
 type TokenGroup = readonly [string, readonly ThemeToken[]];
-
-const colorPattern = /^(#|rgb\(|rgba\(|hsl\(|hsla\(|oklch\(|lab\(|lch\(|color\()/i;
 
 function getTextColor(value: string) {
   const hex = value.match(/^#([0-9a-f]{3,8})$/i)?.[1];
@@ -32,7 +30,7 @@ export function initializeColorTokenPalette() {
     ] : [];
 
     palette.innerHTML = groups.map(([title, tokens]) => {
-      const colors = tokens.filter((token) => colorPattern.test(token.value));
+      const colors = tokens.filter((token) => token.type === "color");
       if (!colors.length) return "";
       return `
         <div class="col-12"><h4 class="h6 mt-3">${title}</h4></div>

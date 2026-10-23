@@ -11859,6 +11859,191 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+[data-kroma-theme=dracula],
+[data-kroma-theme=kroma-entrepreneur] {
+  --bs-body-bg: var(--kroma-color-surface-canvas);
+  --bs-body-bg-rgb: var(--kroma-color-body-rgb);
+  --bs-body-color: var(--kroma-color-content-primary);
+  --bs-body-color-rgb: var(--kroma-color-content-rgb);
+  --bs-secondary-color: var(--kroma-color-content-secondary);
+  --bs-secondary-color-rgb: var(--kroma-color-muted-content-rgb);
+  --bs-secondary-bg: var(--kroma-color-surface-raised);
+  --bs-secondary-bg-rgb: var(--kroma-color-surface-rgb);
+  --bs-border-color: var(--kroma-color-border-default);
+  --bs-primary: var(--kroma-color-action-primary);
+  --bs-primary-rgb: var(--kroma-color-primary-rgb);
+  --bs-success: var(--kroma-color-success);
+  --bs-success-rgb: var(--kroma-color-success-rgb);
+  --bs-info: var(--kroma-color-info);
+  --bs-info-rgb: var(--kroma-color-info-rgb);
+  --bs-warning: var(--kroma-color-warning);
+  --bs-warning-rgb: var(--kroma-color-warning-rgb);
+  --bs-danger: var(--kroma-color-danger);
+  --bs-danger-rgb: var(--kroma-color-danger-rgb);
+  --bs-link-color: var(--kroma-color-link);
+  --bs-link-color-rgb: var(--kroma-color-link-rgb);
+  --bs-tertiary-bg: var(--kroma-color-surface-raised);
+  --bs-tertiary-bg-rgb: var(--kroma-color-surface-rgb);
+}
+
+[data-kroma-theme=dracula] .btn-primary,
+[data-kroma-theme=kroma-entrepreneur] .btn-primary {
+  --bs-btn-color: var(--kroma-button-primary-fg);
+  --bs-btn-bg: var(--kroma-button-primary-bg);
+  --bs-btn-border-color: var(--kroma-button-primary-bg);
+  --bs-btn-hover-color: var(--kroma-button-primary-fg);
+  --bs-btn-hover-bg: var(--kroma-button-primary-hover-bg);
+  --bs-btn-hover-border-color: var(--kroma-button-primary-hover-bg);
+  --bs-btn-active-color: var(--kroma-button-primary-fg);
+  --bs-btn-active-bg: var(--kroma-button-primary-bg);
+  --bs-btn-active-border-color: var(--kroma-button-primary-bg);
+  --bs-btn-focus-shadow-rgb: var(--kroma-color-primary-rgb);
+}
+
+[data-kroma-theme=dracula] .card,
+[data-kroma-theme=kroma-entrepreneur] .card {
+  --bs-card-bg: var(--kroma-card-bg);
+  --bs-card-border-color: var(--kroma-card-border);
+}
+
+[data-kroma-theme=dracula] .dropdown-menu,
+[data-kroma-theme=kroma-entrepreneur] .dropdown-menu {
+  --bs-dropdown-bg: var(--kroma-color-surface-raised);
+  --bs-dropdown-color: var(--kroma-color-content-primary);
+  --bs-dropdown-border-color: var(--kroma-color-border-default);
+  --bs-dropdown-link-color: var(--kroma-color-content-primary);
+  --bs-dropdown-link-active-bg: var(--kroma-color-action-primary);
+}
+
+[data-kroma-theme=dracula] .form-control,
+[data-kroma-theme=kroma-entrepreneur] .form-control,
+[data-kroma-theme=dracula] .form-select,
+[data-kroma-theme=kroma-entrepreneur] .form-select {
+  color: var(--kroma-color-content-primary);
+  background-color: var(--kroma-input-bg);
+  border-color: var(--kroma-input-border);
+}
+[data-kroma-theme=dracula] .form-control:focus,
+[data-kroma-theme=kroma-entrepreneur] .form-control:focus,
+[data-kroma-theme=dracula] .form-select:focus,
+[data-kroma-theme=kroma-entrepreneur] .form-select:focus {
+  color: var(--kroma-color-content-primary);
+  background-color: var(--kroma-input-bg);
+  border-color: var(--kroma-input-focus-border);
+}
+
+[data-kroma-theme=dracula] .table,
+[data-kroma-theme=kroma-entrepreneur] .table {
+  --bs-table-color: var(--kroma-color-content-primary);
+  --bs-table-bg: var(--kroma-color-surface);
+  --bs-table-border-color: var(--kroma-color-border-default);
+}
+
+[data-kroma-theme=dracula] .badge.bg-primary,
+[data-kroma-theme=dracula] .badge.text-bg-primary,
+[data-kroma-theme=kroma-entrepreneur] .badge.bg-primary,
+[data-kroma-theme=kroma-entrepreneur] .badge.text-bg-primary {
+  color: var(--kroma-color-on-primary) !important;
+}
+
+[data-kroma-theme=dracula] .badge.bg-success,
+[data-kroma-theme=dracula] .badge.text-bg-success,
+[data-kroma-theme=kroma-entrepreneur] .badge.bg-success,
+[data-kroma-theme=kroma-entrepreneur] .badge.text-bg-success {
+  color: var(--kroma-color-on-success) !important;
+}
+
+[data-kroma-theme=dracula] .badge.bg-danger,
+[data-kroma-theme=dracula] .badge.text-bg-danger,
+[data-kroma-theme=kroma-entrepreneur] .badge.bg-danger,
+[data-kroma-theme=kroma-entrepreneur] .badge.text-bg-danger {
+  color: var(--kroma-color-on-danger) !important;
+}
+
+[data-kroma-theme=dracula] .badge.bg-info,
+[data-kroma-theme=dracula] .badge.text-bg-info,
+[data-kroma-theme=kroma-entrepreneur] .badge.bg-info,
+[data-kroma-theme=kroma-entrepreneur] .badge.text-bg-info {
+  color: var(--kroma-color-on-info) !important;
+}
+
+[data-kroma-theme=dracula] .badge.bg-warning,
+[data-kroma-theme=dracula] .badge.text-bg-warning,
+[data-kroma-theme=kroma-entrepreneur] .badge.bg-warning,
+[data-kroma-theme=kroma-entrepreneur] .badge.text-bg-warning {
+  color: var(--kroma-color-on-warning) !important;
+}
+
+[data-kroma-theme=dracula] .btn-outline-primary {
+  --bs-btn-color: var(--kroma-color-primary);
+  --bs-btn-border-color: var(--kroma-color-primary);
+  --bs-btn-hover-color: var(--kroma-color-on-primary);
+  --bs-btn-hover-bg: var(--kroma-color-primary);
+  --bs-btn-hover-border-color: var(--kroma-color-primary);
+  --bs-btn-active-color: var(--kroma-color-on-primary);
+  --bs-btn-active-bg: var(--kroma-color-primary);
+  --bs-btn-active-border-color: var(--kroma-color-primary);
+  --bs-btn-disabled-color: var(--kroma-color-primary);
+  --bs-btn-disabled-border-color: var(--kroma-color-primary);
+  --bs-btn-focus-shadow-rgb: var(--kroma-color-primary-rgb);
+}
+
+[data-kroma-theme=dracula] .btn-outline-success {
+  --bs-btn-color: var(--kroma-color-success);
+  --bs-btn-border-color: var(--kroma-color-success);
+  --bs-btn-hover-color: var(--kroma-color-on-success);
+  --bs-btn-hover-bg: var(--kroma-color-success);
+  --bs-btn-hover-border-color: var(--kroma-color-success);
+  --bs-btn-active-color: var(--kroma-color-on-success);
+  --bs-btn-active-bg: var(--kroma-color-success);
+  --bs-btn-active-border-color: var(--kroma-color-success);
+  --bs-btn-disabled-color: var(--kroma-color-success);
+  --bs-btn-disabled-border-color: var(--kroma-color-success);
+  --bs-btn-focus-shadow-rgb: var(--kroma-color-success-rgb);
+}
+
+[data-kroma-theme=dracula] .btn-outline-danger {
+  --bs-btn-color: var(--kroma-color-danger);
+  --bs-btn-border-color: var(--kroma-color-danger);
+  --bs-btn-hover-color: var(--kroma-color-on-danger);
+  --bs-btn-hover-bg: var(--kroma-color-danger);
+  --bs-btn-hover-border-color: var(--kroma-color-danger);
+  --bs-btn-active-color: var(--kroma-color-on-danger);
+  --bs-btn-active-bg: var(--kroma-color-danger);
+  --bs-btn-active-border-color: var(--kroma-color-danger);
+  --bs-btn-disabled-color: var(--kroma-color-danger);
+  --bs-btn-disabled-border-color: var(--kroma-color-danger);
+  --bs-btn-focus-shadow-rgb: var(--kroma-color-danger-rgb);
+}
+
+[data-kroma-theme=dracula] .btn-outline-info {
+  --bs-btn-color: var(--kroma-color-info);
+  --bs-btn-border-color: var(--kroma-color-info);
+  --bs-btn-hover-color: var(--kroma-color-on-info);
+  --bs-btn-hover-bg: var(--kroma-color-info);
+  --bs-btn-hover-border-color: var(--kroma-color-info);
+  --bs-btn-active-color: var(--kroma-color-on-info);
+  --bs-btn-active-bg: var(--kroma-color-info);
+  --bs-btn-active-border-color: var(--kroma-color-info);
+  --bs-btn-disabled-color: var(--kroma-color-info);
+  --bs-btn-disabled-border-color: var(--kroma-color-info);
+  --bs-btn-focus-shadow-rgb: var(--kroma-color-info-rgb);
+}
+
+[data-kroma-theme=dracula] .btn-outline-warning {
+  --bs-btn-color: var(--kroma-color-warning);
+  --bs-btn-border-color: var(--kroma-color-warning);
+  --bs-btn-hover-color: var(--kroma-color-on-warning);
+  --bs-btn-hover-bg: var(--kroma-color-warning);
+  --bs-btn-hover-border-color: var(--kroma-color-warning);
+  --bs-btn-active-color: var(--kroma-color-on-warning);
+  --bs-btn-active-bg: var(--kroma-color-warning);
+  --bs-btn-active-border-color: var(--kroma-color-warning);
+  --bs-btn-disabled-color: var(--kroma-color-warning);
+  --bs-btn-disabled-border-color: var(--kroma-color-warning);
+  --bs-btn-focus-shadow-rgb: var(--kroma-color-warning-rgb);
+}
+
 .bd-mode-toggle .dropdown-menu {
   min-width: 0;
   width: max-content;
@@ -11975,11 +12160,64 @@ body {
 .bd-header.bd-header-primary {
   background-color: var(--bs-tertiary-bg);
   color: var(--bs-body-color);
+  border-color: var(--bs-border-color);
 }
 
 .bd-header.bd-header-alternative {
   background-color: var(--bs-primary);
   color: var(--bs-white);
+  border-color: var(--bs-primary);
+}
+
+.bd-header:not(.bd-header-primary):not(.bd-header-alternative) {
+  background-color: var(--kroma-header-bg, var(--bs-tertiary-bg));
+  color: var(--kroma-header-color, var(--bs-body-color));
+  border-color: var(--kroma-header-border, var(--bs-border-color));
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-header.bd-header-primary {
+  background-color: var(--kroma-color-surface) !important;
+  color: var(--bs-white);
+  border-color: var(--kroma-color-primary);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-header.bd-header-alternative {
+  background-color: var(--kroma-color-primary) !important;
+  color: var(--bs-white);
+  border-color: var(--kroma-color-primary);
+}
+
+[data-kroma-theme=dracula][data-bs-theme=light] .bd-header [data-theme-selector] {
+  --bs-btn-color: var(--kroma-color-primary);
+  --bs-btn-border-color: var(--kroma-color-primary);
+  --bs-btn-hover-color: var(--kroma-color-surface);
+  --bs-btn-hover-bg: var(--kroma-color-primary);
+  --bs-btn-hover-border-color: var(--kroma-color-primary);
+  --bs-btn-focus-shadow-rgb: var(--kroma-color-primary-rgb);
+  background-color: var(--kroma-header-control-bg);
+}
+
+[data-kroma-theme=kroma-entrepreneur] .bd-header [data-theme-selector] {
+  --bs-btn-color: var(--kroma-color-on-primary);
+  --bs-btn-bg: var(--kroma-color-primary);
+  --bs-btn-border-color: var(--kroma-color-primary);
+  --bs-btn-hover-color: var(--kroma-color-on-primary);
+  --bs-btn-hover-bg: var(--kroma-color-primary);
+  --bs-btn-hover-border-color: var(--kroma-color-primary);
+}
+
+[data-kroma-theme=dracula][data-bs-theme=light] .bd-header-logo {
+  filter: invert(1);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .bd-header-logo {
+  filter: brightness(0);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .bd-header .dropdown-item.active:hover,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=light] .bd-header .dropdown-item.active:focus {
+  color: var(--bs-white);
+  background-color: var(--kroma-color-primary);
 }
 
 .bd-header-alternative .text-body {
@@ -12083,6 +12321,64 @@ body {
 
 .bd-sidebar {
   min-width: 0;
+  background-color: var(--kroma-color-surface-subtle, var(--bs-tertiary-bg));
+}
+
+[data-kroma-theme=dracula] .bd-sidebar,
+[data-kroma-theme=kroma-entrepreneur] .bd-sidebar {
+  border-right: 1px solid var(--kroma-color-border-default);
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-heading a::before,
+[data-kroma-theme=dracula][data-bs-theme=dark] .bd-aside .btn::before,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-heading a::before,
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .bd-aside .btn::before {
+  filter: brightness(0) invert(1);
+}
+
+[data-kroma-theme=dracula] .bd-example,
+[data-kroma-theme=kroma-entrepreneur] .bd-example {
+  border: 1px solid var(--kroma-color-border-default);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--kroma-color-surface-canvas);
+}
+
+[data-kroma-theme=dracula] .bd-aside,
+[data-kroma-theme=kroma-entrepreneur] .bd-aside {
+  color: var(--kroma-color-content-secondary);
+  background-color: var(--kroma-color-surface-subtle);
+}
+
+[data-kroma-theme=dracula] .bd-aside a,
+[data-kroma-theme=dracula] .bd-aside .btn,
+[data-kroma-theme=kroma-entrepreneur] .bd-aside a,
+[data-kroma-theme=kroma-entrepreneur] .bd-aside .btn {
+  color: var(--kroma-color-content-secondary);
+}
+
+[data-kroma-theme=dracula] .bd-aside a:is(:hover, :focus),
+[data-kroma-theme=dracula] .bd-aside .btn:is(:hover, :focus),
+[data-kroma-theme=kroma-entrepreneur] .bd-aside a:is(:hover, :focus),
+[data-kroma-theme=kroma-entrepreneur] .bd-aside .btn:is(:hover, :focus) {
+  color: var(--kroma-color-content-primary);
+  background-color: var(--kroma-color-surface-raised);
+}
+
+[data-kroma-theme=dracula] .bd-aside .active,
+[data-kroma-theme=kroma-entrepreneur] .bd-aside .active {
+  font-weight: 600;
+  color: var(--kroma-color-content-primary);
+  background-color: var(--kroma-color-surface-raised);
+}
+
+[data-kroma-theme=dracula] .bd-aside .collapse,
+[data-kroma-theme=kroma-entrepreneur] .bd-aside .collapse {
+  border-left: 0.125rem solid var(--kroma-color-border-strong);
+}
+
+[data-kroma-theme=dracula] .bd-aside .btn:focus-visible,
+[data-kroma-theme=kroma-entrepreneur] .bd-aside .btn:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(var(--kroma-color-primary-rgb), 0.25);
 }
 
 .bd-heading a::before {
@@ -12124,6 +12420,56 @@ body {
 
 .scrollspy-example {
   height: 200px;
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .scrollspy-example {
+  scrollbar-color: var(--kroma-color-border) var(--kroma-color-surface-subtle);
+  scrollbar-width: thin;
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .scrollspy-example::-webkit-scrollbar {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .scrollspy-example::-webkit-scrollbar-track {
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--kroma-color-surface-subtle);
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .scrollspy-example::-webkit-scrollbar-thumb {
+  border: 0.125rem solid var(--kroma-color-surface-subtle);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--kroma-color-border);
+}
+
+[data-kroma-theme=dracula][data-bs-theme=dark] .scrollspy-example::-webkit-scrollbar-thumb:hover {
+  background: var(--kroma-color-primary);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .scrollspy-example {
+  scrollbar-color: var(--kroma-ref-blue-dark-600) var(--kroma-color-body);
+  scrollbar-width: thin;
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .scrollspy-example::-webkit-scrollbar {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .scrollspy-example::-webkit-scrollbar-track {
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--kroma-color-body);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .scrollspy-example::-webkit-scrollbar-thumb {
+  border: 0.125rem solid var(--kroma-color-body);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--kroma-ref-blue-dark-600);
+}
+
+[data-kroma-theme=kroma-entrepreneur][data-bs-theme=dark] .scrollspy-example::-webkit-scrollbar-thumb:hover {
+  background: var(--kroma-ref-blue-dark-300);
 }
 
 [id=modal] .bd-example .btn,

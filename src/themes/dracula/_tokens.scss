@@ -1,6 +1,6 @@
 // [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
 // CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorización explícita.
-// RESPONSABILIDAD: definir primitivas sin significado funcional o de modo.
+// RESPONSABILIDAD: definir primitivas sin significado funcional; agrupar por disponibilidad shared/light/dark.
 // PERMITIDO: modificar colores, tipografía, espaciado y radios reutilizables.
 // PROHIBIDO: añadir variables del framework, selectores CSS o reglas de componentes.
 // DEPENDENCIAS: las capas semánticas consumen estos valores y les asignan significado.
@@ -101,37 +101,4 @@ $primitive-dark: (
   "yellow": $dracula-yellow,
   "red": $dracula-red,
   "pink": $dracula-pink
-);
-
-$theme-semantic-light-color-tokens: (
-  "background": map-get($primitive-shared, "background"),
-  "current-line": map-get($primitive-shared, "current-line"),
-  "selection": map-get($primitive-shared, "selection"),
-  "foreground": map-get($primitive-shared, "foreground"),
-  "red": map-get($primitive-shared, "red"),
-  "orange": map-get($primitive-shared, "orange"),
-  "yellow": map-get($primitive-shared, "yellow"),
-  "green": map-get($primitive-shared, "green"),
-  "cyan": map-get($primitive-shared, "cyan"),
-  "purple": map-get($primitive-shared, "purple"),
-  "pink": map-get($primitive-shared, "pink"),
-  "background-deep": map-get($primitive-dark, "background-deep"),
-  "background-raised": map-get($primitive-dark, "background-raised"),
-  "foreground-muted": map-get($primitive-dark, "foreground-muted"),
-  "border": map-get($primitive-dark, "border"),
-  "light-canvas": map-get($primitive-light, "canvas"),
-  "light-surface": map-get($primitive-light, "surface"),
-  "light-surface-raised": map-get($primitive-light, "surface-raised"),
-  "light-surface-accent": map-get($primitive-light, "surface-accent"),
-  "light-text": map-get($primitive-light, "text"),
-  "light-text-muted": map-get($primitive-light, "text-muted"),
-  "light-border": map-get($primitive-light, "border"),
-  "light-primary": map-get($primitive-light, "primary"),
-  "light-primary-hover": map-get($primitive-light, "primary-hover"),
-  "light-link": map-get($primitive-light, "link"),
-  "light-link-hover": map-get($primitive-light, "link-hover"),
-  "light-success": map-get($primitive-light, "success"),
-  "light-info": map-get($primitive-light, "info"),
-  "light-warning": map-get($primitive-light, "warning"),
-  "light-danger": map-get($primitive-light, "danger")
 );

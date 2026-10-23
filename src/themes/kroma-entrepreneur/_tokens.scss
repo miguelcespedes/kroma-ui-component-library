@@ -1,6 +1,6 @@
 // [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
 // CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorización explícita.
-// RESPONSABILIDAD: definir primitivas sin significado funcional o de modo.
+// RESPONSABILIDAD: definir primitivas sin significado funcional; agrupar por disponibilidad shared/light/dark.
 // PERMITIDO: modificar colores, tipografía, espaciado y radios reutilizables.
 // PROHIBIDO: añadir variables del framework, selectores CSS o reglas de componentes.
 // DEPENDENCIAS: las capas semánticas consumen estos valores y les asignan significado.
@@ -96,40 +96,6 @@ $gray-850: map-get($primitive-shared, "gray-850");
 $gray-900: map-get($primitive-shared, "gray-900");
 $black: map-get($primitive-shared, "black");
 $white: map-get($primitive-shared, "white");
-
-$theme-color-tokens: (
-  "blue-700": $blue-700,
-  "blue-300": $blue-300,
-  "blue-200": $blue-200,
-  "blue-100": $blue-100,
-  "blue-dark-950": $blue-dark-950,
-  "blue-dark-900": $blue-dark-900,
-  "blue-dark-850": $blue-dark-850,
-  "blue-dark-800": $blue-dark-800,
-  "blue-dark-750": $blue-dark-750,
-  "blue-dark-700": $blue-dark-700,
-  "blue-dark-600": $blue-dark-600,
-  "blue-dark-300": $blue-dark-300,
-  "blue-dark-200": $blue-dark-200,
-  "green-600": $green-600,
-  "cyan-500": $cyan-500,
-  "yellow-500": $yellow-500,
-  "yellow-800": $yellow-800,
-  "red-600": $red-600,
-  "gray-100": $gray-100,
-  "gray-950": $gray-950,
-  "gray-300": $gray-300,
-  "gray-500": $gray-500,
-  "gray-600": $gray-600,
-  "gray-600-alt": $gray-600-alt,
-  "gray-700": $gray-700,
-  "gray-750": $gray-750,
-  "gray-800": $gray-800,
-  "gray-850": $gray-850,
-  "gray-900": $gray-900,
-  "black": $black,
-  "white": $white
-);
 
 // Primitivas de interacción y elevación.
 $opacity-hover: map-get($primitive-shared, "opacity-hover");

@@ -36,12 +36,37 @@ export function initializeThemeDropdown(bootstrap: BootstrapDropdown) {
     }
   };
 
-  const setTheme = (theme: string) => {
+  let selection = 0;
+  const setTheme = (theme: string, initial = false) => {
     const selectedTheme = availableThemes.some((item) => item.id === theme) ? theme : "bootstrap";
-    document.documentElement.setAttribute("data-kroma-theme", selectedTheme);
-
-    const themeStylesheet = document.querySelector<HTMLStyleElement>("#kroma-theme-stylesheet");
-    if (themeStylesheet) themeStylesheet.textContent = availableThemes.find((item) => item.id === selectedTheme)?.stylesheet || "";
+    const themeStylesheet = document.querySelector<HTMLLinkElement>("#kroma-theme-stylesheet");
+    const stylesheet = availableThemes.find((item) => item.id === selectedTheme)?.stylesheet;
+    const request = ++selection;
+    if (initial && stylesheet) document.documentElement.style.visibility = "hidden";
+    document.querySelectorAll<HTMLLinkElement>("[data-pending-kroma-theme]").forEach((link) => link.remove());
+    if (stylesheet && themeStylesheet && themeStylesheet.href !== new URL(stylesheet, document.baseURI).href) {
+      const pending = document.createElement("link");
+      pending.rel = "stylesheet";
+      pending.href = stylesheet;
+      pending.dataset.pendingKromaTheme = selectedTheme;
+      pending.addEventListener("load", () => {
+        if (request !== selection) return;
+        document.documentElement.setAttribute("data-kroma-theme", selectedTheme);
+        themeStylesheet.remove();
+        pending.id = "kroma-theme-stylesheet";
+        delete pending.dataset.pendingKromaTheme;
+        document.documentElement.style.visibility = "";
+      }, { once: true });
+      pending.addEventListener("error", () => {
+        pending.remove();
+        document.documentElement.style.visibility = "";
+      }, { once: true });
+      document.head.append(pending);
+    } else {
+      document.documentElement.setAttribute("data-kroma-theme", selectedTheme);
+      if (!stylesheet) themeStylesheet?.removeAttribute("href");
+      if (initial) document.documentElement.style.visibility = "";
+    }
 
     try {
       localStorage.setItem(storageKey, selectedTheme);
@@ -63,7 +88,7 @@ export function initializeThemeDropdown(bootstrap: BootstrapDropdown) {
     });
   };
 
-  setTheme(getStoredTheme());
+  setTheme(getStoredTheme(), true);
 
   document.querySelectorAll<HTMLElement>("[data-theme-value]").forEach((button) => {
     button.addEventListener("click", () => {

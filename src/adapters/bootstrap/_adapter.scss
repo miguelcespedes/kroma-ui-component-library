@@ -1,0 +1,105 @@
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// RESPONSABILIDAD: traducir contratos Kroma a puntos de extensión de Bootstrap 5.3.8.
+// Las variables locales se aplican al elemento que las define Bootstrap, no solo a la raíz.
+[data-kroma-theme="dracula"],
+[data-kroma-theme="kroma-entrepreneur"] {
+  --bs-body-bg: var(--kroma-color-surface-canvas);
+  --bs-body-bg-rgb: var(--kroma-color-body-rgb);
+  --bs-body-color: var(--kroma-color-content-primary);
+  --bs-body-color-rgb: var(--kroma-color-content-rgb);
+  --bs-secondary-color: var(--kroma-color-content-secondary);
+  --bs-secondary-color-rgb: var(--kroma-color-muted-content-rgb);
+  --bs-secondary-bg: var(--kroma-color-surface-raised);
+  --bs-secondary-bg-rgb: var(--kroma-color-surface-rgb);
+  --bs-border-color: var(--kroma-color-border-default);
+  --bs-primary: var(--kroma-color-action-primary);
+  --bs-primary-rgb: var(--kroma-color-primary-rgb);
+  --bs-success: var(--kroma-color-success);
+  --bs-success-rgb: var(--kroma-color-success-rgb);
+  --bs-info: var(--kroma-color-info);
+  --bs-info-rgb: var(--kroma-color-info-rgb);
+  --bs-warning: var(--kroma-color-warning);
+  --bs-warning-rgb: var(--kroma-color-warning-rgb);
+  --bs-danger: var(--kroma-color-danger);
+  --bs-danger-rgb: var(--kroma-color-danger-rgb);
+  --bs-link-color: var(--kroma-color-link);
+  --bs-link-color-rgb: var(--kroma-color-link-rgb);
+  --bs-tertiary-bg: var(--kroma-color-surface-raised);
+  --bs-tertiary-bg-rgb: var(--kroma-color-surface-rgb);
+}
+
+[data-kroma-theme="dracula"] .btn-primary,
+[data-kroma-theme="kroma-entrepreneur"] .btn-primary {
+  --bs-btn-color: var(--kroma-button-primary-fg);
+  --bs-btn-bg: var(--kroma-button-primary-bg);
+  --bs-btn-border-color: var(--kroma-button-primary-bg);
+  --bs-btn-hover-color: var(--kroma-button-primary-fg);
+  --bs-btn-hover-bg: var(--kroma-button-primary-hover-bg);
+  --bs-btn-hover-border-color: var(--kroma-button-primary-hover-bg);
+  --bs-btn-active-color: var(--kroma-button-primary-fg);
+  --bs-btn-active-bg: var(--kroma-button-primary-bg);
+  --bs-btn-active-border-color: var(--kroma-button-primary-bg);
+  --bs-btn-focus-shadow-rgb: var(--kroma-color-primary-rgb);
+}
+
+[data-kroma-theme="dracula"] .card,
+[data-kroma-theme="kroma-entrepreneur"] .card {
+  --bs-card-bg: var(--kroma-card-bg);
+  --bs-card-border-color: var(--kroma-card-border);
+}
+
+[data-kroma-theme="dracula"] .dropdown-menu,
+[data-kroma-theme="kroma-entrepreneur"] .dropdown-menu {
+  --bs-dropdown-bg: var(--kroma-color-surface-raised);
+  --bs-dropdown-color: var(--kroma-color-content-primary);
+  --bs-dropdown-border-color: var(--kroma-color-border-default);
+  --bs-dropdown-link-color: var(--kroma-color-content-primary);
+  --bs-dropdown-link-active-bg: var(--kroma-color-action-primary);
+}
+
+[data-kroma-theme="dracula"] .form-control,
+[data-kroma-theme="kroma-entrepreneur"] .form-control,
+[data-kroma-theme="dracula"] .form-select,
+[data-kroma-theme="kroma-entrepreneur"] .form-select {
+  color: var(--kroma-color-content-primary);
+  background-color: var(--kroma-input-bg);
+  border-color: var(--kroma-input-border);
+
+  &:focus {
+    color: var(--kroma-color-content-primary);
+    background-color: var(--kroma-input-bg);
+    border-color: var(--kroma-input-focus-border);
+  }
+}
+
+[data-kroma-theme="dracula"] .table,
+[data-kroma-theme="kroma-entrepreneur"] .table {
+  --bs-table-color: var(--kroma-color-content-primary);
+  --bs-table-bg: var(--kroma-color-surface);
+  --bs-table-border-color: var(--kroma-color-border-default);
+}
+
+@each $name in ("primary", "success", "danger", "info", "warning") {
+  [data-kroma-theme="dracula"] .badge.bg-#{$name},
+  [data-kroma-theme="dracula"] .badge.text-bg-#{$name},
+  [data-kroma-theme="kroma-entrepreneur"] .badge.bg-#{$name},
+  [data-kroma-theme="kroma-entrepreneur"] .badge.text-bg-#{$name} {
+    color: var(--kroma-color-on-#{$name}) !important;
+  }
+}
+
+@each $name in ("primary", "success", "danger", "info", "warning") {
+  [data-kroma-theme="dracula"] .btn-outline-#{$name} {
+    --bs-btn-color: var(--kroma-color-#{$name});
+    --bs-btn-border-color: var(--kroma-color-#{$name});
+    --bs-btn-hover-color: var(--kroma-color-on-#{$name});
+    --bs-btn-hover-bg: var(--kroma-color-#{$name});
+    --bs-btn-hover-border-color: var(--kroma-color-#{$name});
+    --bs-btn-active-color: var(--kroma-color-on-#{$name});
+    --bs-btn-active-bg: var(--kroma-color-#{$name});
+    --bs-btn-active-border-color: var(--kroma-color-#{$name});
+    --bs-btn-disabled-color: var(--kroma-color-#{$name});
+    --bs-btn-disabled-border-color: var(--kroma-color-#{$name});
+    --bs-btn-focus-shadow-rgb: var(--kroma-color-#{$name}-rgb);
+  }
+}

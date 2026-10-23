@@ -1,5 +1,5 @@
-import theme0 from "../../themes/dracula/theme.scss?inline";
-import theme1 from "../../themes/kroma-entrepreneur/theme.scss?inline";
+import theme0 from "../../themes/dracula/theme.scss?url";
+import theme1 from "../../themes/kroma-entrepreneur/theme.scss?url";
 
 export const themes = [
   { id: "dracula", label: "Dracula", stylesheet: theme0 },

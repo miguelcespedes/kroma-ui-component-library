@@ -6,8 +6,9 @@ import { initializeColorTokenPalette } from "../components/color-token-palette/c
 
 window.bootstrap = bootstrap;
 
-const themeStylesheet = document.createElement("style");
+const themeStylesheet = document.createElement("link");
 themeStylesheet.id = "kroma-theme-stylesheet";
+themeStylesheet.rel = "stylesheet";
 document.head.append(themeStylesheet);
 
 document.documentElement.setAttribute("data-kroma-theme", "bootstrap");

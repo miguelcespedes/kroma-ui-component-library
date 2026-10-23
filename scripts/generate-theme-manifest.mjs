@@ -10,11 +10,11 @@ const themes = fs.readdirSync(themesRoot, { withFileTypes: true })
   .map((entry) => ({
     id: entry.name,
     label: entry.name.replace(/(^|-)([a-z])/g, (_, separator, letter) => `${separator ? " " : ""}${letter.toUpperCase()}`),
-    importPath: `../../themes/${entry.name}/theme.scss?inline`,
+    importPath: `../../themes/${entry.name}/theme.scss?url`,
   }));
 
 const imports = themes.map((theme, index) => `import theme${index} from "${theme.importPath}";`).join("\n");
-const entries = themes.map((theme, index) => `  { id: "${theme.id}", label: "${theme.label}", stylesheet: theme${index} },`).join("\n");
+  const entries = themes.map((theme, index) => `  { id: "${theme.id}", label: "${theme.label}", stylesheet: theme${index} },`).join("\n");
 
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, `${imports}\n\nexport const themes = [\n${entries}\n] as const;\n`);

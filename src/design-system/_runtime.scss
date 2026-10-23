@@ -1,0 +1,72 @@
+@use "sass:math";
+
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// RESPONSABILIDAD: publicar primitivas, roles semánticos y contratos de componentes Kroma.
+// PROHIBIDO: utilizar variables Bootstrap o selectores del cheatsheet.
+@function kroma-channel($value) {
+  $channel: $value / 255;
+  @if $channel <= 0.04045 {
+    @return $channel / 12.92;
+  }
+  @return math.pow(($channel + 0.055) / 1.055, 2.4);
+}
+
+@function kroma-luminance($color) {
+  @return 0.2126 * kroma-channel(red($color)) + 0.7152 * kroma-channel(green($color)) + 0.0722 * kroma-channel(blue($color));
+}
+
+@function kroma-contrast($first, $second) {
+  $luminance-first: kroma-luminance($first);
+  $luminance-second: kroma-luminance($second);
+  @if $luminance-first > $luminance-second {
+    @return ($luminance-first + 0.05) / ($luminance-second + 0.05);
+  }
+  @return ($luminance-second + 0.05) / ($luminance-first + 0.05);
+}
+
+@mixin kroma-mode($mode, $colors, $primitives, $shared) {
+  $action: map-get($colors, "primary");
+  $on-action: if(kroma-contrast($action, #000) >= kroma-contrast($action, #fff), #000, #fff);
+  &[data-bs-theme="#{$mode}"] {
+    @each $name, $value in $shared {
+      @if not map-has-key($primitives, $name) {
+        --kroma-ref-#{$name}: #{$value};
+      }
+    }
+    @each $name, $value in $primitives {
+      --kroma-ref-#{$name}: #{$value};
+    }
+    @each $name, $value in $colors {
+      --kroma-color-#{$name}: #{$value};
+      --kroma-color-#{$name}-rgb: #{red($value)}, #{green($value)}, #{blue($value)};
+      @if index(("primary", "link", "success", "info", "warning", "danger"), $name) {
+        $on-color: if(kroma-contrast($value, #000) >= kroma-contrast($value, #fff), #000, #fff);
+        --kroma-color-on-#{$name}: #{$on-color};
+      }
+    }
+    --kroma-color-surface-canvas: var(--kroma-color-body);
+    --kroma-color-surface-raised: var(--kroma-color-surface);
+    @if not map-has-key($colors, "surface-subtle") {
+      --kroma-color-surface-subtle: var(--kroma-color-surface);
+    }
+    --kroma-color-content-primary: var(--kroma-color-content);
+    --kroma-color-content-secondary: var(--kroma-color-muted-content);
+    --kroma-color-border-default: var(--kroma-color-border);
+    --kroma-color-border-subtle: var(--kroma-color-border-default);
+    --kroma-color-border-strong: var(--kroma-color-content-secondary);
+    --kroma-color-action-primary: var(--kroma-color-primary);
+    --kroma-color-action-secondary: var(--kroma-color-content-secondary);
+    --kroma-color-action-primary-hover: var(--kroma-color-link);
+    --kroma-color-on-action: #{$on-action};
+    --kroma-color-focus-indicator: var(--kroma-color-primary);
+    --kroma-color-disabled: var(--kroma-color-muted-content);
+    --kroma-button-primary-bg: var(--kroma-color-action-primary);
+    --kroma-button-primary-fg: var(--kroma-color-on-action);
+    --kroma-button-primary-hover-bg: var(--kroma-color-action-primary-hover);
+    --kroma-card-bg: var(--kroma-color-surface);
+    --kroma-card-border: var(--kroma-color-border-default);
+    --kroma-input-bg: var(--kroma-color-surface);
+    --kroma-input-border: var(--kroma-color-border-default);
+    --kroma-input-focus-border: var(--kroma-color-focus-indicator);
+  }
+}

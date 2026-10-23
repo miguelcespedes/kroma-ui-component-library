@@ -1,0 +1,517 @@
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorización explícita.
+// RESPONSABILIDAD: adaptar la semántica oscura de Dracula a Bootstrap 5.3.8.
+// PERMITIDO: CSS runtime Bootstrap acotado al selector Dracula dark.
+// PROHIBIDO: repetir primitivas o añadir nuevos selectores del cheatsheet.
+// DEPENDENCIAS: consume las primitivas y roles de Dracula; Bootstrap se compila una sola vez en app.scss.
+
+$theme-semantic-color-tokens: (
+  "primary": $dracula-purple,
+  "link": $dracula-cyan,
+  "success": $dracula-green,
+  "info": $dracula-cyan,
+  "warning": $dracula-yellow,
+  "danger": $dracula-red,
+  "body": $dracula-background,
+  "surface": $dracula-background-raised,
+  "content": $dracula-foreground,
+  "muted-content": $dracula-foreground-muted,
+  "border": $dracula-border
+);
+
+$theme-semantic-dark-color-tokens: $theme-semantic-color-tokens;
+
+$semantic-dark: (
+  "enable-dark-mode": true,
+  "body-color-dark": $dracula-foreground,
+  "body-bg-dark": $dracula-background,
+  "body-secondary-color-dark": rgba($dracula-foreground-muted, .82),
+  "body-secondary-bg-dark": $dracula-background-deep,
+  "body-tertiary-color-dark": rgba($dracula-foreground-muted, .62),
+  "body-tertiary-bg-dark": $dracula-background,
+  "body-emphasis-color-dark": $dracula-foreground,
+  "border-color-dark": $dracula-border,
+  "border-color-translucent-dark": rgba($dracula-foreground, .16),
+  "headings-color-dark": $dracula-foreground,
+  "link-color-dark": $dracula-cyan,
+  "link-hover-color-dark": $dracula-pink,
+  "code-color-dark": $dracula-pink,
+  "mark-color-dark": $dracula-background-deep,
+  "mark-bg-dark": $dracula-yellow,
+  "primary-text-emphasis-dark": $dracula-purple,
+  "secondary-text-emphasis-dark": $dracula-foreground-muted,
+  "success-text-emphasis-dark": $dracula-green,
+  "info-text-emphasis-dark": $dracula-cyan,
+  "warning-text-emphasis-dark": $dracula-yellow,
+  "danger-text-emphasis-dark": $dracula-red,
+  "light-text-emphasis-dark": $dracula-foreground,
+  "dark-text-emphasis-dark": $dracula-foreground-muted,
+  "primary-bg-subtle-dark": rgba($dracula-purple, .18),
+  "secondary-bg-subtle-dark": $dracula-background-raised,
+  "success-bg-subtle-dark": rgba($dracula-green, .16),
+  "info-bg-subtle-dark": rgba($dracula-cyan, .16),
+  "warning-bg-subtle-dark": rgba($dracula-yellow, .16),
+  "danger-bg-subtle-dark": rgba($dracula-red, .16),
+  "light-bg-subtle-dark": $dracula-background-raised,
+  "dark-bg-subtle-dark": $dracula-background-deep,
+  "primary-border-subtle-dark": $dracula-purple,
+  "secondary-border-subtle-dark": $dracula-current-line,
+  "success-border-subtle-dark": $dracula-green,
+  "info-border-subtle-dark": $dracula-cyan,
+  "warning-border-subtle-dark": $dracula-yellow,
+  "danger-border-subtle-dark": $dracula-red,
+  "light-border-subtle-dark": $dracula-current-line,
+  "dark-border-subtle-dark": $dracula-background-raised,
+  "input-placeholder-color-dark": $dracula-foreground-muted,
+  "carousel-indicator-active-bg-dark": $dracula-foreground,
+  "carousel-caption-color-dark": $dracula-foreground,
+  "carousel-control-icon-filter-dark": invert(1) grayscale(100%),
+  "btn-close-filter-dark": invert(1) grayscale(100%) brightness(200%)
+);
+
+$enable-dark-mode: map-get($semantic-dark, "enable-dark-mode");
+$body-color-dark: map-get($semantic-dark, "body-color-dark");
+$body-bg-dark: map-get($semantic-dark, "body-bg-dark");
+$body-secondary-color-dark: map-get($semantic-dark, "body-secondary-color-dark");
+$body-secondary-bg-dark: map-get($semantic-dark, "body-secondary-bg-dark");
+$body-tertiary-color-dark: map-get($semantic-dark, "body-tertiary-color-dark");
+$body-tertiary-bg-dark: map-get($semantic-dark, "body-tertiary-bg-dark");
+$body-emphasis-color-dark: map-get($semantic-dark, "body-emphasis-color-dark");
+$border-color-dark: map-get($semantic-dark, "border-color-dark");
+$border-color-translucent-dark: map-get($semantic-dark, "border-color-translucent-dark");
+$headings-color-dark: map-get($semantic-dark, "headings-color-dark");
+$link-color-dark: map-get($semantic-dark, "link-color-dark");
+$link-hover-color-dark: map-get($semantic-dark, "link-hover-color-dark");
+$code-color-dark: map-get($semantic-dark, "code-color-dark");
+$mark-color-dark: map-get($semantic-dark, "mark-color-dark");
+$mark-bg-dark: map-get($semantic-dark, "mark-bg-dark");
+$primary-text-emphasis-dark: map-get($semantic-dark, "primary-text-emphasis-dark");
+$secondary-text-emphasis-dark: map-get($semantic-dark, "secondary-text-emphasis-dark");
+$success-text-emphasis-dark: map-get($semantic-dark, "success-text-emphasis-dark");
+$info-text-emphasis-dark: map-get($semantic-dark, "info-text-emphasis-dark");
+$warning-text-emphasis-dark: map-get($semantic-dark, "warning-text-emphasis-dark");
+$danger-text-emphasis-dark: map-get($semantic-dark, "danger-text-emphasis-dark");
+$light-text-emphasis-dark: map-get($semantic-dark, "light-text-emphasis-dark");
+$dark-text-emphasis-dark: map-get($semantic-dark, "dark-text-emphasis-dark");
+$primary-bg-subtle-dark: map-get($semantic-dark, "primary-bg-subtle-dark");
+$secondary-bg-subtle-dark: map-get($semantic-dark, "secondary-bg-subtle-dark");
+$success-bg-subtle-dark: map-get($semantic-dark, "success-bg-subtle-dark");
+$info-bg-subtle-dark: map-get($semantic-dark, "info-bg-subtle-dark");
+$warning-bg-subtle-dark: map-get($semantic-dark, "warning-bg-subtle-dark");
+$danger-bg-subtle-dark: map-get($semantic-dark, "danger-bg-subtle-dark");
+$light-bg-subtle-dark: map-get($semantic-dark, "light-bg-subtle-dark");
+$dark-bg-subtle-dark: map-get($semantic-dark, "dark-bg-subtle-dark");
+$primary-border-subtle-dark: map-get($semantic-dark, "primary-border-subtle-dark");
+$secondary-border-subtle-dark: map-get($semantic-dark, "secondary-border-subtle-dark");
+$success-border-subtle-dark: map-get($semantic-dark, "success-border-subtle-dark");
+$info-border-subtle-dark: map-get($semantic-dark, "info-border-subtle-dark");
+$warning-border-subtle-dark: map-get($semantic-dark, "warning-border-subtle-dark");
+$danger-border-subtle-dark: map-get($semantic-dark, "danger-border-subtle-dark");
+$light-border-subtle-dark: map-get($semantic-dark, "light-border-subtle-dark");
+$dark-border-subtle-dark: map-get($semantic-dark, "dark-border-subtle-dark");
+$input-placeholder-color-dark: map-get($semantic-dark, "input-placeholder-color-dark");
+$carousel-indicator-active-bg-dark: map-get($semantic-dark, "carousel-indicator-active-bg-dark");
+$carousel-caption-color-dark: map-get($semantic-dark, "carousel-caption-color-dark");
+$carousel-control-icon-filter-dark: map-get($semantic-dark, "carousel-control-icon-filter-dark");
+$btn-close-filter-dark: map-get($semantic-dark, "btn-close-filter-dark");
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] {
+  --kroma-header-bg: #{$dracula-purple};
+  --kroma-header-color: #{$dracula-background-deep};
+  --kroma-header-border: #{$dracula-current-line};
+  --kroma-header-control-bg: #{$dracula-background-deep};
+  --bs-navbar-bg: #{$dracula-background-raised};
+  --bs-navbar-color: #{$dracula-foreground};
+  --bs-navbar-hover-color: #{$dracula-pink};
+  --bs-navbar-border: #{$dracula-border};
+
+  .accordion-button {
+    color: $dracula-purple;
+    background-color: $dracula-background-deep;
+    border-color: $dracula-border;
+
+    &:not(.collapsed) {
+      color: $dracula-foreground;
+      background-color: $dracula-background-raised;
+    }
+  }
+
+  .accordion-body {
+    background-color: $dracula-background-deep;
+  }
+
+  .card {
+    --bs-card-bg: #{$dracula-background-deep};
+    --bs-card-color: #{$dracula-foreground};
+    --bs-card-border-color: #{$dracula-border};
+    --bs-card-cap-bg: #{$dracula-background-raised};
+  }
+
+  .btn-secondary {
+    --bs-btn-color: #{$dracula-foreground};
+    --bs-btn-bg: #{$dracula-current-line};
+    --bs-btn-border-color: #{$dracula-current-line};
+    --bs-btn-hover-color: #{$dracula-foreground};
+    --bs-btn-hover-bg: #{$dracula-purple};
+    --bs-btn-hover-border-color: #{$dracula-purple};
+    --bs-btn-active-color: #{$dracula-foreground};
+    --bs-btn-active-bg: #{$dracula-purple};
+    --bs-btn-active-border-color: #{$dracula-purple};
+    --bs-btn-disabled-color: #{$dracula-foreground-muted};
+    --bs-btn-disabled-bg: #{$dracula-background-raised};
+    --bs-btn-disabled-border-color: #{$dracula-background-raised};
+  }
+
+  .card {
+    background-color: $dracula-background-deep;
+    color: $dracula-foreground;
+    border-color: $dracula-border;
+
+    .card-header,
+    .card-footer {
+      background-color: $dracula-background-raised;
+      color: $dracula-foreground;
+      border-color: $dracula-border;
+    }
+
+    .card-body {
+      background-color: $dracula-background-deep;
+      color: $dracula-foreground;
+    }
+  }
+
+  --bs-body-bg: #{$dracula-background};
+  --bs-body-color: #{$dracula-foreground};
+  --bs-heading-color: #{$dracula-foreground};
+  --bs-border-color: #{$dracula-border};
+  --bs-link-color: #{$dracula-cyan};
+  --bs-link-hover-color: #{$dracula-pink};
+  --bs-secondary-bg: #{$dracula-background-deep};
+  --bs-tertiary-bg: #{$dracula-background};
+  --bs-secondary-color: #{$dracula-foreground-muted};
+  --bs-card-bg: #{$dracula-background-deep};
+  --bs-card-color: #{$dracula-foreground};
+  --bs-card-border-color: #{$dracula-border};
+  --bs-card-cap-bg: #{$dracula-background-raised};
+  --bs-primary-rgb: 189, 147, 249;
+  --bs-secondary-rgb: 98, 114, 164;
+  --bs-input-bg: #{$dracula-background-deep};
+  --bs-input-color: #{$dracula-foreground};
+  --bs-input-placeholder-color: #{$dracula-foreground-muted};
+  --bs-input-group-addon-bg: #{$dracula-background-raised};
+  --bs-input-group-addon-color: #{$dracula-foreground};
+  --bs-input-group-addon-border-color: #{$dracula-border};
+  --bs-form-check-bg: #{$dracula-background-deep};
+  --bs-nav-link-color: #{$dracula-purple};
+  --bs-nav-link-hover-color: #{$dracula-pink};
+  --bs-nav-link-disabled-color: #{rgba($dracula-foreground-muted, .46)};
+  --bs-nav-tabs-border-color: #{$dracula-border};
+  --bs-nav-tabs-link-hover-border-color: #{$dracula-current-line};
+  --bs-nav-tabs-link-active-color: #{$dracula-foreground};
+  --bs-nav-tabs-link-active-bg: #{$dracula-selection};
+  --bs-nav-tabs-link-active-border-color: #{$dracula-purple};
+  --bs-nav-pills-link-active-color: #{$dracula-background-deep};
+  --bs-nav-pills-link-active-bg: #{$dracula-purple};
+  --bs-navbar-color: #{$dracula-purple};
+  --bs-navbar-hover-color: #{$dracula-pink};
+  --bs-navbar-disabled-color: #{rgba($dracula-foreground-muted, .46)};
+  --bs-navbar-active-color: #{$dracula-foreground};
+  --bs-navbar-brand-color: #{$dracula-foreground};
+  --bs-navbar-brand-hover-color: #{$dracula-pink};
+  --bs-navbar-toggler-border-color: #{rgba($dracula-foreground-muted, .28)};
+  --bs-emphasis-color: #{$dracula-foreground};
+  --bs-pagination-color: #{$dracula-cyan};
+  --bs-pagination-bg: #{$dracula-background-deep};
+  --bs-pagination-border-color: #{$dracula-border};
+  --bs-pagination-hover-color: #{$dracula-pink};
+  --bs-pagination-hover-bg: #{$dracula-background-raised};
+  --bs-pagination-hover-border-color: #{$dracula-current-line};
+  --bs-pagination-active-color: #{$dracula-background-deep};
+  --bs-pagination-active-bg: #{$dracula-purple};
+  --bs-pagination-active-border-color: #{$dracula-purple};
+  --bs-accordion-color: #{$dracula-foreground};
+  --bs-accordion-bg: #{$dracula-background-deep};
+  --bs-accordion-border-color: #{$dracula-border};
+  --bs-accordion-button-color: #{$dracula-purple};
+  --bs-accordion-button-bg: #{$dracula-background-deep};
+  --bs-accordion-button-active-bg: #{$dracula-background-raised};
+  --bs-accordion-button-active-color: #{$dracula-foreground};
+  --bs-accordion-btn-focus-border-color: #{$dracula-purple};
+  --bs-carousel-control-icon-filter: invert(1) grayscale(100%);
+  --bs-offcanvas-bg: #{$dracula-background-deep};
+  --bs-offcanvas-color: #{$dracula-foreground};
+  --bs-offcanvas-border-color: #{$dracula-border};
+  --bs-dropdown-bg: #{$dracula-background-raised};
+  --bs-dropdown-color: #{$dracula-foreground};
+  --bs-dropdown-border-color: #{$dracula-border};
+  --bs-dropdown-link-color: #{$dracula-foreground};
+  --bs-dropdown-link-hover-bg: #{$dracula-selection};
+  --bs-dropdown-link-active-bg: #{$dracula-purple};
+  --bs-dropdown-link-active-color: #{$dracula-background-deep};
+  --bs-dropdown-link-hover-color: #{$dracula-foreground};
+  --bs-dropdown-divider-bg: #{$dracula-border};
+  --bs-dropdown-header-color: #{$dracula-foreground-muted};
+  --bs-modal-bg: #{$dracula-background-deep};
+  --bs-modal-color: #{$dracula-foreground};
+  --bs-modal-border-color: #{$dracula-border};
+  --bs-modal-header-border-color: #{$dracula-border};
+  --bs-modal-footer-border-color: #{$dracula-border};
+  --bs-tooltip-color: #{$dracula-foreground};
+  --bs-tooltip-bg: #{$dracula-background-raised};
+  --bs-toast-bg: #{rgba($dracula-background-deep, .96)};
+  --bs-toast-color: #{$dracula-foreground};
+  --bs-toast-border-color: #{$dracula-border};
+  --bs-toast-header-bg: #{$dracula-background-raised};
+  --bs-toast-header-color: #{$dracula-foreground};
+  --bs-toast-header-border-color: #{$dracula-border};
+  --bs-table-striped-bg: #{rgba($dracula-purple, .08)};
+  --bs-table-active-bg: #{rgba($dracula-purple, .14)};
+  --bs-table-hover-bg: #{rgba($dracula-cyan, .08)};
+
+  .form-control,
+  .form-select {
+    color: $dracula-foreground;
+    background-color: $dracula-background-deep;
+    border-color: $dracula-border;
+  }
+
+  .form-control::file-selector-button {
+    color: $dracula-foreground;
+    background-color: $dracula-background-raised;
+  }
+
+  .input-group-text {
+    color: $dracula-foreground;
+    background-color: $dracula-background-raised;
+    border-color: $dracula-border;
+  }
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary {
+  --bs-navbar-color: #{$dracula-foreground};
+  --bs-navbar-hover-color: #{$dracula-cyan};
+  --bs-navbar-disabled-color: #{rgba($dracula-foreground-muted, .62)};
+  --bs-navbar-brand-color: #{$dracula-foreground};
+  --bs-navbar-brand-hover-color: #{$dracula-pink};
+  background-color: #{$dracula-background-raised} !important;
+  border: 1px solid #{$dracula-border};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary .navbar-brand,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary .nav-link {
+  color: var(--bs-navbar-color);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary .nav-link:hover,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary .nav-link:focus,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary .navbar-brand:hover {
+  color: var(--bs-navbar-hover-color);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .nav-link.disabled,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .nav-link.disabled:hover,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .nav-link.disabled:focus,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .nav-link.disabled:focus-visible {
+  --bs-nav-link-color: #{rgba($dracula-foreground-muted, .46)};
+  --bs-nav-link-hover-color: #{rgba($dracula-foreground-muted, .46)};
+  color: rgba($dracula-foreground-muted, .46) !important;
+  cursor: not-allowed;
+  pointer-events: none;
+  text-decoration: none;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .nav-link.disabled {
+  --bs-nav-link-hover-color: #{rgba($dracula-foreground-muted, .46)} !important;
+  --bs-nav-link-color: #{rgba($dracula-foreground-muted, .46)} !important;
+  color: rgba($dracula-foreground-muted, .46) !important;
+  cursor: not-allowed !important;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-link.disabled,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .nav-link.disabled {
+  color: rgba($dracula-foreground-muted, .46) !important;
+  cursor: not-allowed !important;
+  pointer-events: auto;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-link.disabled[aria-disabled="true"],
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .nav-link.disabled[aria-disabled="true"] {
+  cursor: not-allowed !important;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar.bg-body-tertiary img {
+  filter: none;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar {
+  --bs-nav-link-color: #{$dracula-foreground};
+  --bs-nav-link-hover-color: #{$dracula-pink};
+  --bs-navbar-color: #{$dracula-foreground};
+  --bs-navbar-hover-color: #{$dracula-pink};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-tabs .nav-link:not(.active),
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-pills .nav-link:not(.active) {
+  color: #{$dracula-cyan};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-tabs .nav-link:not(.active):hover,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-pills .nav-link:not(.active):hover {
+  color: #{$dracula-pink};
+}
+
+@supports selector(::-webkit-scrollbar) {
+  [data-kroma-theme="dracula"][data-bs-theme="dark"] html::-webkit-scrollbar,
+  [data-kroma-theme="dracula"][data-bs-theme="dark"] body::-webkit-scrollbar {
+    width: .625rem;
+    height: .625rem;
+  }
+
+  [data-kroma-theme="dracula"][data-bs-theme="dark"] html::-webkit-scrollbar-track,
+  [data-kroma-theme="dracula"][data-bs-theme="dark"] body::-webkit-scrollbar-track {
+    border-radius: $radius-sm;
+    background: $dracula-background-deep;
+  }
+
+  [data-kroma-theme="dracula"][data-bs-theme="dark"] html::-webkit-scrollbar-thumb,
+  [data-kroma-theme="dracula"][data-bs-theme="dark"] body::-webkit-scrollbar-thumb {
+    border: .125rem solid $dracula-background-deep;
+    border-radius: $radius-sm;
+    background: $dracula-current-line;
+  }
+
+  [data-kroma-theme="dracula"][data-bs-theme="dark"] html::-webkit-scrollbar-thumb:hover,
+  [data-kroma-theme="dracula"][data-bs-theme="dark"] body::-webkit-scrollbar-thumb:hover {
+    background: $dracula-purple;
+  }
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  [data-kroma-theme="dracula"][data-bs-theme="dark"] html,
+  [data-kroma-theme="dracula"][data-bs-theme="dark"] body {
+    scrollbar-color: $dracula-current-line $dracula-background-deep;
+    scrollbar-width: thin;
+  }
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .popover {
+  --bs-popover-bg: #{$dracula-selection};
+  --bs-popover-body-color: #{$dracula-foreground};
+  --bs-popover-border-color: #{$dracula-purple};
+  --bs-popover-header-bg: #{rgba($dracula-purple, .14)};
+  --bs-popover-header-color: #{$dracula-foreground};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .tooltip {
+  --bs-tooltip-color: #{$dracula-foreground};
+  --bs-tooltip-bg: #{$dracula-selection};
+  --bs-tooltip-border-radius: var(--bs-popover-border-radius);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .btn-outline-dark {
+  --bs-btn-color: #{$dracula-purple};
+  --bs-btn-border-color: #{$dracula-border};
+  --bs-btn-hover-color: #{$dracula-foreground};
+  --bs-btn-hover-bg: #{$dracula-selection};
+  --bs-btn-hover-border-color: #{$dracula-purple};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-link.disabled,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .nav-link.disabled,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .disabled,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .btn:disabled,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .btn.disabled {
+  color: rgba($dracula-foreground-muted, .46);
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-link.disabled:hover,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-link.disabled:focus,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-link.disabled:focus-visible,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .nav-link.disabled:hover,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .nav-link.disabled:focus,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .navbar .nav-link.disabled:focus-visible {
+  --bs-nav-link-hover-color: #{rgba($dracula-foreground-muted, .46)};
+  --bs-nav-link-color: #{rgba($dracula-foreground-muted, .46)};
+  color: rgba($dracula-foreground-muted, .46);
+  text-decoration: none;
+  outline: none;
+  box-shadow: none;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-link.disabled,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-link.disabled:hover,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-link.disabled:focus,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-link.disabled:focus-visible {
+  --bs-nav-link-hover-color: #{rgba($dracula-foreground-muted, .46)};
+  --bs-nav-link-color: #{rgba($dracula-foreground-muted, .46)};
+  color: rgba($dracula-foreground-muted, .46);
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .nav-link.disabled {
+  position: relative;
+  z-index: 1;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] button:disabled,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .disabled,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] [aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .progress,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .progress-stacked {
+  --bs-progress-bg: #{rgba($dracula-purple, .26)};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .progress-bar-striped {
+  --bs-progress-bar-bg: #{$dracula-green};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table .table-primary,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table .table-secondary,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table .table-success,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table .table-info,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table .table-warning,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table .table-danger,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table .table-light,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table .table-dark {
+  --bs-table-color: #{$dracula-foreground};
+  --bs-table-bg: #{$dracula-background-deep};
+  --bs-table-border-color: #{$dracula-border};
+  --bs-table-striped-color: #{$dracula-foreground};
+  --bs-table-striped-bg: #{$dracula-background-raised};
+  --bs-table-active-color: #{$dracula-foreground};
+  --bs-table-active-bg: #{$dracula-background-raised};
+  --bs-table-hover-color: #{$dracula-foreground};
+  --bs-table-hover-bg: #{$dracula-background-raised};
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table .table-primary {
+  --bs-table-bg: rgba(189, 147, 249, .14);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table .table-success {
+  --bs-table-bg: rgba(80, 250, 123, .14);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table .table-info {
+  --bs-table-bg: rgba(139, 233, 253, .14);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table .table-warning {
+  --bs-table-bg: rgba(241, 250, 140, .14);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table .table-danger {
+  --bs-table-bg: rgba(255, 85, 85, .14);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] table.table-borderless {
+  --bs-table-striped-bg: #{rgba($dracula-purple, .08)};
+  --bs-table-hover-bg: #{rgba($dracula-cyan, .08)};
+}

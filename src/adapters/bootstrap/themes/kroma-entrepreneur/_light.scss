@@ -1,0 +1,363 @@
+// [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
+// CONSERVAR: no borrar, resumir ni mover esta cabecera sin autorización explícita.
+// RESPONSABILIDAD: adaptar la semántica clara de Kroma Entrepreneur a Bootstrap 5.3.8.
+// PERMITIDO: CSS runtime Bootstrap acotado al selector Kroma Entrepreneur light.
+// PROHIBIDO: crear primitivas o nuevos estilos de layout del cheatsheet.
+// DEPENDENCIAS: consume las primitivas y roles de Kroma; Bootstrap se compila una sola vez en app.scss.
+
+$semantic-light: (
+  "primary": $blue-700,
+  "secondary": $gray-600,
+  "success": $green-600,
+  "info": $cyan-500,
+  "warning": $yellow-500,
+  "danger": $red-600,
+  "light": $gray-100,
+  "dark": $gray-800,
+  "body-bg": $gray-100,
+  "body-color": $gray-800,
+  "border-color": $gray-300,
+  "link-color": $blue-700,
+  "headings-color": $gray-800,
+  "link-hover-color": $blue-700,
+  "component-active-bg": $blue-700,
+  "component-active-color": $white,
+  "dropdown-bg": $white,
+  "dropdown-border-color": $gray-300,
+  "dropdown-link-color": $gray-800,
+  "dropdown-link-hover-bg": $blue-100,
+  "dropdown-link-active-bg": $blue-700,
+  "dropdown-link-active-color": $white,
+  "nav-link-color": $gray-800,
+  "nav-link-hover-color": $blue-700,
+  "card-bg": $white,
+  "card-cap-bg": $gray-100,
+  "border-radius": $radius-md,
+  "border-radius-sm": $radius-sm,
+  "border-radius-lg": $radius-lg,
+  "font-family-base": $font-family-system,
+  "font-family-sans-serif": $font-family-system,
+  "font-size-base": $font-size-100,
+  "font-weight-normal": $font-weight-400,
+  "font-weight-semibold": $font-weight-600,
+  "font-weight-bold": $font-weight-700,
+  "line-height-base": $line-height-normal,
+  "headings-font-weight": $font-weight-600,
+  "btn-border-radius": $radius-md,
+  "btn-border-radius-sm": $radius-sm,
+  "btn-border-radius-lg": $radius-lg,
+  "input-border-radius": $radius-md,
+  "input-border-radius-sm": $radius-sm,
+  "input-border-radius-lg": $radius-lg,
+  "card-border-radius": $radius-md,
+  "card-border-color": $gray-300,
+  "navbar-toggler-border-radius": $radius-md,
+  "form-control-border-color": $gray-600-alt,
+  "form-select-border-color": $gray-600-alt,
+  "input-bg": $white,
+  "input-color": $gray-800,
+  "input-placeholder-color": $gray-600,
+  "input-focus-bg": $white,
+  "input-focus-color": $gray-800,
+  "input-disabled-bg": $gray-100,
+  "input-disabled-color": $gray-600,
+  "input-disabled-border-color": $gray-300,
+  "input-focus-border-color": $blue-700,
+  "input-focus-box-shadow": 0 0 0 0.25rem rgba($blue-700, 0.25),
+  "form-select-border-radius": $radius-md,
+  "form-select-color": $gray-800,
+  "form-select-bg": $white,
+  "input-group-addon-color": $gray-800,
+  "input-group-addon-bg": $gray-100,
+  "input-group-addon-border-color": $gray-600-alt,
+  "form-file-button-color": $gray-800,
+  "form-file-button-bg": $gray-100,
+  "form-range-track-bg": $gray-300,
+  "form-range-thumb-bg": $blue-700,
+  "form-range-thumb-disabled-bg": $gray-600,
+  "form-range-thumb-focus-box-shadow": (0 0 0 1px $white, 0 0 0 0.25rem rgba($blue-700, 0.25)),
+  "accordion-border-radius": $radius-md,
+  "accordion-button-active-bg": $blue-100,
+  "accordion-button-active-color": $blue-700,
+  "modal-content-border-radius": $radius-lg,
+  "toast-border-radius": $radius-md,
+  "toast-background-color": rgba($white, 0.96),
+  "toast-border-color": $gray-300,
+  "toast-header-background-color": $gray-100,
+  "toast-header-border-color": $gray-300,
+  "toast-header-color": $gray-800,
+  "toast-color": $gray-800,
+  "toast-box-shadow": 0 0.5rem 1rem rgba(11, 10, 43, 0.12)
+);
+
+$theme-semantic-color-tokens: (
+  "primary": $blue-700,
+  "link": $blue-700,
+  "success": $green-600,
+  "info": $cyan-500,
+  "warning": $yellow-500,
+  "danger": $red-600,
+  "body": $gray-100,
+  "surface": $white,
+  "content": $gray-800,
+  "muted-content": $gray-600,
+  "border": $gray-300
+);
+
+$theme-semantic-light-color-tokens: $theme-semantic-color-tokens;
+
+// Variables Sass claras que Bootstrap consume antes de generar sus estilos.
+$primary: map-get($semantic-light, "primary");
+$secondary: map-get($semantic-light, "secondary");
+$success: map-get($semantic-light, "success");
+$info: map-get($semantic-light, "info");
+$warning: map-get($semantic-light, "warning");
+$danger: map-get($semantic-light, "danger");
+$light: map-get($semantic-light, "light");
+$dark: map-get($semantic-light, "dark");
+
+$body-bg: map-get($semantic-light, "body-bg");
+$body-color: map-get($semantic-light, "body-color");
+$border-color: map-get($semantic-light, "border-color");
+$link-color: map-get($semantic-light, "link-color");
+$headings-color: map-get($semantic-light, "headings-color");
+$link-hover-color: map-get($semantic-light, "link-hover-color");
+$component-active-bg: map-get($semantic-light, "component-active-bg");
+$component-active-color: map-get($semantic-light, "component-active-color");
+
+$dropdown-bg: map-get($semantic-light, "dropdown-bg");
+$dropdown-border-color: map-get($semantic-light, "dropdown-border-color");
+$dropdown-link-color: map-get($semantic-light, "dropdown-link-color");
+$dropdown-link-hover-bg: map-get($semantic-light, "dropdown-link-hover-bg");
+$dropdown-link-active-bg: map-get($semantic-light, "dropdown-link-active-bg");
+$dropdown-link-active-color: map-get($semantic-light, "dropdown-link-active-color");
+$nav-link-color: map-get($semantic-light, "nav-link-color");
+$nav-link-hover-color: map-get($semantic-light, "nav-link-hover-color");
+$card-bg: map-get($semantic-light, "card-bg");
+$card-cap-bg: map-get($semantic-light, "card-cap-bg");
+
+$border-radius: map-get($semantic-light, "border-radius");
+$border-radius-sm: map-get($semantic-light, "border-radius-sm");
+$border-radius-lg: map-get($semantic-light, "border-radius-lg");
+
+// Integración tipográfica con Bootstrap.
+$font-family-base: $font-family-system;
+$font-family-sans-serif: $font-family-base;
+$font-size-base: $font-size-100;
+$font-weight-normal: $font-weight-400;
+$font-weight-semibold: $font-weight-600;
+$font-weight-bold: $font-weight-700;
+$line-height-base: $line-height-normal;
+$headings-font-weight: $font-weight-semibold;
+
+// Configuración compartida de componentes Bootstrap.
+$btn-border-radius: $radius-md;
+$btn-border-radius-sm: $radius-sm;
+$btn-border-radius-lg: $radius-lg;
+$input-border-radius: $radius-md;
+$input-border-radius-sm: $radius-sm;
+$input-border-radius-lg: $radius-lg;
+$card-border-radius: $radius-md;
+$card-border-color: $border-color;
+$navbar-toggler-border-radius: $radius-md;
+$form-control-border-color: $gray-600-alt;
+$form-select-border-color: $gray-600-alt;
+$input-bg: $white;
+$input-color: $body-color;
+$input-placeholder-color: $gray-600;
+$input-focus-bg: $white;
+$input-focus-color: $body-color;
+$input-disabled-bg: $gray-100;
+$input-disabled-color: $gray-600;
+$input-disabled-border-color: $gray-300;
+$input-focus-border-color: $primary;
+$input-focus-box-shadow: 0 0 0 0.25rem rgba($blue-700, 0.25);
+$form-select-border-radius: $radius-md;
+$form-select-color: $body-color;
+$form-select-bg: $white;
+$input-group-addon-color: $body-color;
+$input-group-addon-bg: $gray-100;
+$input-group-addon-border-color: $gray-600-alt;
+$form-file-button-color: $body-color;
+$form-file-button-bg: $gray-100;
+$form-range-track-bg: $gray-300;
+$form-range-thumb-bg: $primary;
+$form-range-thumb-disabled-bg: $gray-600;
+$form-range-thumb-focus-box-shadow: 0 0 0 1px $white, 0 0 0 0.25rem rgba($blue-700, 0.25);
+$accordion-border-radius: $radius-md;
+$accordion-button-active-bg: $blue-100;
+$accordion-button-active-color: $primary;
+$modal-content-border-radius: $radius-lg;
+$toast-border-radius: $radius-md;
+$toast-background-color: rgba($white, 0.96);
+$toast-border-color: $border-color;
+$toast-header-background-color: $gray-100;
+$toast-header-border-color: $border-color;
+$toast-header-color: $body-color;
+$toast-color: $body-color;
+$toast-box-shadow: 0 0.5rem 1rem rgba(11, 10, 43, 0.12);
+
+// Variables CSS runtime del tema claro.
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] {
+  --bs-body-bg: #{$body-bg};
+  --bs-body-color: #{$body-color};
+  --bs-heading-color: #{$headings-color};
+  --bs-border-color: #{$border-color};
+  --bs-link-color: #{$link-color};
+  --bs-link-hover-color: #{$link-hover-color};
+  --kroma-header-bg: #{$blue-100};
+  --kroma-header-color: #{$gray-800};
+  --kroma-header-border: #{$blue-300};
+  --kroma-header-control-bg: #{$white};
+  --bs-secondary-color: #{$gray-600};
+  --bs-tertiary-bg: #{$gray-100};
+  --bs-navbar-bg: #{$white};
+  --bs-navbar-color: #{$gray-800};
+  --bs-navbar-hover-color: #{$blue-700};
+  --bs-navbar-border: #{$gray-300};
+  --bs-card-bg: #{$card-bg};
+  --bs-card-cap-bg: #{$card-cap-bg};
+  --bs-dropdown-bg: #{$dropdown-bg};
+  --bs-dropdown-color: #{$body-color};
+  --bs-dropdown-border-color: #{$dropdown-border-color};
+  --bs-dropdown-link-color: #{$dropdown-link-color};
+  --bs-dropdown-link-hover-bg: #{$dropdown-link-hover-bg};
+  --bs-dropdown-link-active-bg: #{$dropdown-link-active-bg};
+  --bs-dropdown-link-active-color: #{$dropdown-link-active-color};
+  --bs-nav-pills-link-active-color: #{$white};
+  --bs-nav-pills-link-active-bg: #{$primary};
+  --bs-nav-link-active-color: #{$white};
+  --bs-accordion-color: #{$body-color};
+  --bs-accordion-bg: #{$white};
+  --bs-accordion-border-color: #{$border-color};
+  --bs-accordion-button-color: #{$body-color};
+  --bs-accordion-button-bg: #{$white};
+  --bs-accordion-button-active-bg: var(--bs-primary-bg-subtle);
+  --bs-accordion-button-active-color: #{$blue-dark-950};
+  --bs-accordion-btn-focus-border-color: #{$blue-300};
+  --bs-accordion-btn-focus-box-shadow: 0 0 0 .25rem #{rgba($blue-700, .25)};
+
+  --bs-table-color: var(--bs-emphasis-color);
+  --bs-table-bg: var(--bs-body-bg);
+  --bs-table-border-color: var(--bs-border-color);
+  --bs-table-accent-bg: transparent;
+  --bs-table-striped-color: var(--bs-emphasis-color);
+  --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb), 0.05);
+  --bs-table-active-color: var(--bs-emphasis-color);
+  --bs-table-active-bg: rgba(var(--bs-emphasis-color-rgb), 0.1);
+  --bs-table-hover-color: var(--bs-emphasis-color);
+  --bs-table-hover-bg: rgba(var(--bs-emphasis-color-rgb), 0.075);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .accordion-button {
+  color: $body-color;
+  background-color: $white;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .accordion-button:not(.collapsed) {
+  color: var(--bs-primary-text-emphasis) !important;
+  background-color: var(--bs-primary-bg-subtle) !important;
+  border: 1px solid var(--bs-primary-border-subtle) !important;
+  box-shadow: none !important;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .accordion-button:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .accordion-body {
+  color: $body-color;
+  background-color: $white;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .nav-link.active,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .nav-pills .nav-link.active {
+  color: $white !important;
+  background-color: $primary !important;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary {
+  --bs-navbar-color: #{$gray-800};
+  --bs-navbar-hover-color: #{$blue-700};
+  --bs-navbar-disabled-color: #{rgba($gray-800, .46)};
+  --bs-navbar-brand-color: #{$gray-800};
+  --bs-navbar-brand-hover-color: #{$blue-700};
+  background-color: $blue-100 !important;
+  border: 1px solid $blue-300;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .navbar-brand,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .nav-link {
+  color: var(--bs-navbar-color);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .nav-link:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .nav-link:focus,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .navbar-brand:hover {
+  color: var(--bs-navbar-hover-color);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary {
+  --bs-navbar-color: #{$white};
+  --bs-navbar-hover-color: #{$white};
+  --bs-navbar-disabled-color: #{rgba($white, .62)};
+  --bs-navbar-brand-color: #{$white};
+  --bs-navbar-brand-hover-color: #{$white};
+  background-color: $blue-700 !important;
+  border: 1px solid $blue-700;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary .navbar-brand,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary .nav-link {
+  color: var(--bs-navbar-color);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary .nav-link:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary .nav-link:focus,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary .navbar-brand:hover {
+  color: var(--bs-navbar-hover-color);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .form-control,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-primary .form-control {
+  background-color: $white;
+  border-color: $gray-600-alt;
+  color: $gray-800;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .nav-link.disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar .nav-link.disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar .disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar .btn:disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar .btn.disabled {
+  color: rgba($gray-800, .46);
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .nav-link.disabled:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .nav-link.disabled:focus,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .nav-link.disabled:focus-visible,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar .nav-link.disabled:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar .nav-link.disabled:focus,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar .nav-link.disabled:focus-visible {
+  --bs-nav-link-color: #{rgba($gray-800, .46)};
+  --bs-nav-link-hover-color: #{rgba($gray-800, .46)};
+  color: rgba($gray-800, .46);
+  text-decoration: none;
+  outline: none;
+  box-shadow: none;
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] button:disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .disabled,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] [aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .navbar.bg-body-tertiary .navbar-brand img {
+  filter: brightness(0);
+}

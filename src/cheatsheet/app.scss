@@ -1,16 +1,16 @@
 // [INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]
 // RESPONSABILIDAD: estructura, layout y comportamiento agnostico del cheatsheet.
-// PROHIBIDO: definir colores, fondos, bordes, sombras, filtros, estados visuales
-// o cualquier otra apariencia de marca. Esa responsabilidad pertenece a cada theme.
-// PERMITIDO: consumir variables Bootstrap genericas solo como fallback estructural.
-// Los overrides de color y apariencia deben vivir en _semantic-light.scss o
-// _semantic-dark.scss del theme activo y permanecer aislados por sus selectores.
+// PROHIBIDO: definir valores de marca o duplicar mapas de tema. La apariencia
+// se consume exclusivamente desde `--kroma-*` (o `--bs-*` ya adaptado).
+// PERMITIDO: consumir contratos publicados por el theme activo y usar fallbacks
+// estructurales de Bootstrap.
 // VALIDACION: las apariencias deben comprobarse en navegador con el theme activo;
 // un build exitoso no demuestra que el stylesheet inline haya sido aplicado.
-// PATRONES COMPARTIDOS: los estados disabled comunes deben vivir en una capa de
+// PATRONES COMPARTIDOS: los estados comunes deben vivir en una capa de
 // componentes compartida, no duplicarse en cada theme ni definirse en este archivo.
 
 @import "bootstrap/scss/bootstrap";
+@import "../adapters/bootstrap/adapter";
 
 @import "../components/contrast-dropdown/contrast-dropdown";
 @import "../components/theme-dropdown/theme-dropdown";
@@ -39,11 +39,64 @@ body {
 .bd-header.bd-header-primary {
   background-color: var(--bs-tertiary-bg);
   color: var(--bs-body-color);
+  border-color: var(--bs-border-color);
 }
 
 .bd-header.bd-header-alternative {
   background-color: var(--bs-primary);
   color: var(--bs-white);
+  border-color: var(--bs-primary);
+}
+
+.bd-header:not(.bd-header-primary):not(.bd-header-alternative) {
+  background-color: var(--kroma-header-bg, var(--bs-tertiary-bg));
+  color: var(--kroma-header-color, var(--bs-body-color));
+  border-color: var(--kroma-header-border, var(--bs-border-color));
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .bd-header.bd-header-primary {
+  background-color: var(--kroma-color-surface) !important;
+  color: var(--bs-white);
+  border-color: var(--kroma-color-primary);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .bd-header.bd-header-alternative {
+  background-color: var(--kroma-color-primary) !important;
+  color: var(--bs-white);
+  border-color: var(--kroma-color-primary);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-header [data-theme-selector] {
+  --bs-btn-color: var(--kroma-color-primary);
+  --bs-btn-border-color: var(--kroma-color-primary);
+  --bs-btn-hover-color: var(--kroma-color-surface);
+  --bs-btn-hover-bg: var(--kroma-color-primary);
+  --bs-btn-hover-border-color: var(--kroma-color-primary);
+  --bs-btn-focus-shadow-rgb: var(--kroma-color-primary-rgb);
+  background-color: var(--kroma-header-control-bg);
+}
+
+[data-kroma-theme="kroma-entrepreneur"] .bd-header [data-theme-selector] {
+  --bs-btn-color: var(--kroma-color-on-primary);
+  --bs-btn-bg: var(--kroma-color-primary);
+  --bs-btn-border-color: var(--kroma-color-primary);
+  --bs-btn-hover-color: var(--kroma-color-on-primary);
+  --bs-btn-hover-bg: var(--kroma-color-primary);
+  --bs-btn-hover-border-color: var(--kroma-color-primary);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="light"] .bd-header-logo {
+  filter: invert(1);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header-logo {
+  filter: brightness(0);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header .dropdown-item.active:hover,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="light"] .bd-header .dropdown-item.active:focus {
+  color: var(--bs-white);
+  background-color: var(--kroma-color-primary);
 }
 
 .bd-header-alternative .text-body {
@@ -148,6 +201,64 @@ body {
 
 .bd-sidebar {
   min-width: 0;
+  background-color: var(--kroma-color-surface-subtle, var(--bs-tertiary-bg));
+}
+
+[data-kroma-theme="dracula"] .bd-sidebar,
+[data-kroma-theme="kroma-entrepreneur"] .bd-sidebar {
+  border-right: 1px solid var(--kroma-color-border-default);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-heading a::before,
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .bd-aside .btn::before,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .bd-heading a::before,
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .bd-aside .btn::before {
+  filter: brightness(0) invert(1);
+}
+
+[data-kroma-theme="dracula"] .bd-example,
+[data-kroma-theme="kroma-entrepreneur"] .bd-example {
+  border: 1px solid var(--kroma-color-border-default);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--kroma-color-surface-canvas);
+}
+
+[data-kroma-theme="dracula"] .bd-aside,
+[data-kroma-theme="kroma-entrepreneur"] .bd-aside {
+  color: var(--kroma-color-content-secondary);
+  background-color: var(--kroma-color-surface-subtle);
+}
+
+[data-kroma-theme="dracula"] .bd-aside a,
+[data-kroma-theme="dracula"] .bd-aside .btn,
+[data-kroma-theme="kroma-entrepreneur"] .bd-aside a,
+[data-kroma-theme="kroma-entrepreneur"] .bd-aside .btn {
+  color: var(--kroma-color-content-secondary);
+}
+
+[data-kroma-theme="dracula"] .bd-aside a:is(:hover, :focus),
+[data-kroma-theme="dracula"] .bd-aside .btn:is(:hover, :focus),
+[data-kroma-theme="kroma-entrepreneur"] .bd-aside a:is(:hover, :focus),
+[data-kroma-theme="kroma-entrepreneur"] .bd-aside .btn:is(:hover, :focus) {
+  color: var(--kroma-color-content-primary);
+  background-color: var(--kroma-color-surface-raised);
+}
+
+[data-kroma-theme="dracula"] .bd-aside .active,
+[data-kroma-theme="kroma-entrepreneur"] .bd-aside .active {
+  font-weight: 600;
+  color: var(--kroma-color-content-primary);
+  background-color: var(--kroma-color-surface-raised);
+}
+
+[data-kroma-theme="dracula"] .bd-aside .collapse,
+[data-kroma-theme="kroma-entrepreneur"] .bd-aside .collapse {
+  border-left: .125rem solid var(--kroma-color-border-strong);
+}
+
+[data-kroma-theme="dracula"] .bd-aside .btn:focus-visible,
+[data-kroma-theme="kroma-entrepreneur"] .bd-aside .btn:focus-visible {
+  box-shadow: 0 0 0 .25rem rgba(var(--kroma-color-primary-rgb), .25);
 }
 
 // Navegación lateral.
@@ -194,6 +305,56 @@ body {
 // Ejemplos y componentes.
 .scrollspy-example {
   height: 200px;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .scrollspy-example {
+  scrollbar-color: var(--kroma-color-border) var(--kroma-color-surface-subtle);
+  scrollbar-width: thin;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .scrollspy-example::-webkit-scrollbar {
+  width: .625rem;
+  height: .625rem;
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .scrollspy-example::-webkit-scrollbar-track {
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--kroma-color-surface-subtle);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .scrollspy-example::-webkit-scrollbar-thumb {
+  border: .125rem solid var(--kroma-color-surface-subtle);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--kroma-color-border);
+}
+
+[data-kroma-theme="dracula"][data-bs-theme="dark"] .scrollspy-example::-webkit-scrollbar-thumb:hover {
+  background: var(--kroma-color-primary);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .scrollspy-example {
+  scrollbar-color: var(--kroma-ref-blue-dark-600) var(--kroma-color-body);
+  scrollbar-width: thin;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .scrollspy-example::-webkit-scrollbar {
+  width: .625rem;
+  height: .625rem;
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .scrollspy-example::-webkit-scrollbar-track {
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--kroma-color-body);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .scrollspy-example::-webkit-scrollbar-thumb {
+  border: .125rem solid var(--kroma-color-body);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--kroma-ref-blue-dark-600);
+}
+
+[data-kroma-theme="kroma-entrepreneur"][data-bs-theme="dark"] .scrollspy-example::-webkit-scrollbar-thumb:hover {
+  background: var(--kroma-ref-blue-dark-300);
 }
 
 [id="modal"] .bd-example .btn,
