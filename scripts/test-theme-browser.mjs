@@ -165,6 +165,409 @@ const assertFixtureLayout = async (page, browserName, mode) => {
   assertContrast(`${browserName}/fixture/${mode}: aside active`, fixture.activeColor, fixture.activeBackground);
 };
 
+const runChatChecks = async (browserName, browser) => {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await context.newPage();
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto(url);
+
+  const chat = page.locator("#chat kroma-chat");
+  await chat.waitFor();
+  assert.equal(await chat.evaluate((element) => element instanceof customElements.get("kroma-chat")), true, `${browserName}: kroma-chat custom element registration`);
+
+  const initial = await chat.evaluate((element) => ({
+    messageType: element.querySelector(".kroma-chat__message")?.dataset.messageType,
+    menuItems: element.querySelectorAll(".kroma-chat__journey-item").length,
+    messageId: element.querySelector(".kroma-chat__message")?.dataset.messageId,
+  }));
+  assert.equal(initial.messageType, "journey-menu", `${browserName}: demo must start with a JourneyMenu`);
+  assert.equal(initial.menuItems, 4, `${browserName}: JourneyMenu renders the entry actions`);
+  assert.ok(initial.messageId, `${browserName}: messages receive a stable id`);
+
+  const composerInput = chat.locator(".kroma-chat__input");
+  await composerInput.focus();
+  await page.waitForTimeout(180);
+  const focusState = await chat.evaluate((element) => {
+    const input = element.querySelector(".kroma-chat__input");
+    const composer = element.querySelector(".kroma-chat__composer");
+    return {
+      inputOutline: getComputedStyle(input).outlineStyle,
+      inputBorder: getComputedStyle(input).borderWidth,
+      inputShadow: getComputedStyle(input).boxShadow,
+      composerRing: getComputedStyle(composer).boxShadow,
+    };
+  });
+  assert.equal(focusState.inputOutline, "none", `${browserName}: textarea has no inner focus outline`);
+  assert.equal(focusState.inputBorder, "0px", `${browserName}: textarea has no inner border`);
+  assert.equal(focusState.inputShadow, "none", `${browserName}: textarea has no inner shadow`);
+  assert.notEqual(focusState.composerRing, "none", `${browserName}: composer retains an accessible focus ring`);
+  await composerInput.blur();
+
+  const optionHover = chat.locator(".kroma-chat__journey-item").first();
+  await optionHover.hover();
+  const hoveredOption = await optionHover.evaluate((button) => ({
+    background: getComputedStyle(button).backgroundColor,
+    border: getComputedStyle(button).borderColor,
+  }));
+  assert.ok(hoveredOption.background && hoveredOption.border, `${browserName}: journey action hover state is styled`);
+  await page.mouse.move(0, 0);
+
+  await chat.evaluate((element) => element.setComposerDisabled(true));
+  assert.equal(await composerInput.isDisabled(), true, `${browserName}: host can disable the composer`);
+  assert.equal(await chat.getByRole("button", { name: "Enviar mensaje" }).isDisabled(), true, `${browserName}: disabled composer disables send`);
+  await chat.evaluate((element) => element.setComposerDisabled(false));
+
+  await chat.evaluate((element) => {
+    element.__chatTestEvents = { sends: [], selections: [], actions: [], quantities: [], forms: [] };
+    element.addEventListener("kroma-chat-send", (event) => element.__chatTestEvents.sends.push(event.detail));
+    element.addEventListener("kroma-chat-option-select", (event) => element.__chatTestEvents.selections.push(event.detail));
+    element.addEventListener("kroma-chat-rich-action", (event) => element.__chatTestEvents.actions.push(event.detail));
+    element.addEventListener("kroma-chat-action", (event) => element.__chatTestEvents.actions.push(event.detail));
+    element.addEventListener("kroma-chat-quantity-change", (event) => element.__chatTestEvents.quantities.push(event.detail));
+    element.addEventListener("kroma-chat-form-submit", (event) => element.__chatTestEvents.forms.push(event.detail));
+  });
+
+  await chat.getByRole("button", { name: "Explorar productos" }).click();
+  await page.waitForSelector("#chat .kroma-chat__category-picker");
+  assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions[0])).control, "journey-menu");
+  await chat.locator(".kroma-chat__category").filter({ hasText: "Todos" }).click();
+  await page.waitForSelector("#chat .kroma-chat__product-carousel");
+  assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions[1])).control, "category-picker");
+
+  await chat.locator(".kroma-chat__product-track .kroma-chat__product-card").first().click();
+  await page.waitForSelector("#chat .kroma-chat__product-detail");
+  assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions[2])).control, "product-carousel");
+  assert.equal(await chat.locator(".kroma-chat__product-detail .kroma-chat__variant-selector input").count(), 3, `${browserName}: product variants are rendered`);
+  await chat.getByLabel("Talla M").focus();
+  await chat.getByLabel("Talla M").press("Space");
+  assert.equal(await chat.getByLabel("Talla M").isChecked(), true, `${browserName}: keyboard can select a product variant`);
+  const variantEvent = await chat.evaluate((element) => element.__chatTestEvents.actions.at(-1));
+  assert.equal(variantEvent.control, "product-variant-selector");
+  assert.equal(variantEvent.data.variantId, "polo-size-m");
+  await chat.locator(".kroma-chat__product-detail .kroma-chat__quantity-button").last().click();
+  const quantityEvent = await chat.evaluate((element) => element.__chatTestEvents.quantities.at(-1));
+  assert.equal(quantityEvent.quantity, 2, `${browserName}: QuantitySelector increments and emits its state`);
+  await chat.locator(".kroma-chat__product-add").click();
+  await page.waitForSelector("#chat .kroma-chat__message--assistant .kroma-chat__options");
+  const addEvent = await chat.evaluate((element) => element.__chatTestEvents.actions.at(-1));
+  assert.equal(addEvent.actionId, "add-to-cart");
+  assert.equal(addEvent.data.quantity, 2, `${browserName}: add action carries the selected quantity`);
+  assert.equal(addEvent.data.variantId, "polo-size-m", `${browserName}: add action carries the selected variant`);
+  await chat.getByRole("button", { name: "Seguir explorando" }).last().click();
+  await page.waitForFunction(() => document.querySelectorAll("#chat .kroma-chat__product-track .kroma-chat__product-card").length > 0);
+  await chat.locator(".kroma-chat__product-track .kroma-chat__product-card").nth(1).click();
+  await page.waitForFunction(() => [...document.querySelectorAll("#chat .kroma-chat__product-detail-title")].some((title) => title.textContent === "Casaca ligera"));
+  await chat.locator(".kroma-chat__product-add").last().click();
+  await page.waitForFunction(() => [...document.querySelectorAll("#chat .kroma-chat__option")].some((button) => button.textContent?.startsWith("Revisar selección (2)")));
+  await chat.getByRole("button", { name: "Revisar selección (2)" }).last().click();
+  await page.waitForSelector("#chat .kroma-chat__cart-summary");
+  assert.equal(await chat.locator(".kroma-chat__cart-item").count(), 2, `${browserName}: cart keeps multiple products`);
+  await chat.locator(".kroma-chat__cart-remove").first().click();
+  await page.waitForFunction(() => {
+    const summaries = document.querySelectorAll("#chat .kroma-chat__cart-summary");
+    const latest = summaries[summaries.length - 1];
+    return latest?.querySelectorAll(".kroma-chat__cart-item").length === 1;
+  });
+  await chat.getByRole("button", { name: "Continuar con mis datos" }).last().click();
+  await page.waitForSelector("#chat .kroma-chat__conversational-form");
+  const customerInputs = chat.locator(".kroma-chat__form-input");
+  assert.equal(await customerInputs.count(), 3, `${browserName}: customer form has the three requested fields`);
+  assert.equal(await chat.locator(".kroma-chat__form-fields").evaluate((form) => form.checkValidity()), false, `${browserName}: customer form validates required fields`);
+  await customerInputs.nth(0).fill("Miguel");
+  await customerInputs.nth(1).fill("miguel@example.test");
+  await customerInputs.nth(2).fill("Lima");
+  assert.equal(await chat.locator(".kroma-chat__form-fields").evaluate((form) => form.checkValidity()), true);
+  await chat.getByRole("button", { name: "Revisar solicitud" }).last().click();
+  await page.waitForSelector("#chat .kroma-chat__order-review");
+  assert.equal(await chat.locator(".kroma-chat__customer-details").innerText().then((text) => text.includes("Miguel")), true, `${browserName}: form values reach the in-memory review`);
+  await chat.getByRole("button", { name: "Editar datos" }).last().click();
+  await page.waitForFunction(() => document.querySelectorAll("#chat .kroma-chat__conversational-form").length >= 2);
+  assert.equal(await chat.locator(".kroma-chat__conversational-form").last().locator(".kroma-chat__form-input").first().inputValue(), "Miguel", `${browserName}: editing preserves entered details`);
+  await chat.getByRole("button", { name: "Revisar solicitud" }).last().click();
+  await page.waitForFunction(() => document.querySelectorAll("#chat .kroma-chat__order-review").length >= 2);
+  await chat.getByRole("button", { name: "Confirmar solicitud simulada" }).last().click();
+  await page.waitForSelector("#chat .kroma-chat__confirmation-title");
+  assert.equal(await chat.locator(".kroma-chat__confirmation-title").last().textContent(), "Solicitud simulada");
+  assert.match(await chat.locator(".kroma-chat__confirmation-description").last().textContent(), /No se ha registrado ningún pedido real/);
+  await chat.getByRole("button", { name: "Iniciar otra conversación" }).last().click();
+  await page.waitForFunction(() => document.querySelectorAll("#chat .kroma-chat__journey-menu").length >= 2);
+  assert.equal(await chat.locator(".kroma-chat__confirmation-title").count(), 1, `${browserName}: restart preserves the completed history`);
+  await chat.getByRole("button", { name: "Explorar productos" }).last().click();
+  await page.waitForFunction(() => document.querySelectorAll("#chat .kroma-chat__category-picker").length >= 2);
+  await chat.locator(".kroma-chat__category").filter({ hasText: "Accesorios" }).last().click();
+  await page.waitForSelector("#chat .kroma-chat__product-card-message");
+  await chat.locator(".kroma-chat__product-card-message .kroma-chat__product-card").click();
+  await page.waitForFunction(() => [...document.querySelectorAll("#chat .kroma-chat__product-detail-title")].some((title) => title.textContent === "Botella reutilizable"));
+
+  const firstIndependent = chat.evaluate((element) => element.addMessage({
+    id: "chat-independent-a",
+    author: "assistant",
+    type: "quick-replies",
+    text: "First group",
+    replies: [{ id: "first", label: "First", value: "first" }],
+  }));
+  const secondIndependent = chat.evaluate((element) => element.addMessage({
+    id: "chat-independent-b",
+    author: "assistant",
+    type: "quick-replies",
+    text: "Second group",
+    replies: [{ id: "second", label: "Second", value: "second" }],
+  }));
+  assert.equal(await firstIndependent, "chat-independent-a");
+  assert.equal(await secondIndependent, "chat-independent-b");
+  await chat.locator('[data-message-id="chat-independent-a"] .kroma-chat__option').click();
+  assert.equal(await chat.locator('[data-message-id="chat-independent-a"] .kroma-chat__option').isDisabled(), true);
+  assert.equal(await chat.locator('[data-message-id="chat-independent-b"] .kroma-chat__option').isDisabled(), false, `${browserName}: consuming one group leaves other messages' options enabled`);
+
+  const quickReplyCount = await chat.evaluate((element) => element.__chatTestEvents.selections.length);
+  await chat.locator('[data-message-id="chat-independent-a"] .kroma-chat__option').evaluate((button) => button.click());
+  assert.equal(await chat.evaluate((element) => element.__chatTestEvents.selections.length), quickReplyCount, `${browserName}: disabled QuickReply cannot fire twice`);
+
+  const hostileId = await chat.evaluate((element) => element.addMessage({
+    id: "chat-safe-rich",
+    author: "assistant",
+    type: "rich",
+    title: "<img src=x onerror=alert(1)>",
+    description: "<script>unsafe()</script>",
+    link: { label: "Unsafe link", href: "javascript:alert(1)" },
+    action: { id: "safe-action", label: "Safe action", value: "safe" },
+  }));
+  const safeRender = await chat.locator(`[data-message-id="${hostileId}"]`).evaluate((message) => ({
+    imageCount: message.querySelectorAll("img").length,
+    scriptCount: message.querySelectorAll("script").length,
+    linkCount: message.querySelectorAll("a").length,
+    title: message.querySelector(".kroma-chat__rich-title")?.textContent,
+    description: message.querySelector(".kroma-chat__rich-description")?.textContent,
+  }));
+  assert.deepEqual(safeRender, {
+    imageCount: 0,
+    scriptCount: 0,
+    linkCount: 0,
+    title: "<img src=x onerror=alert(1)>",
+    description: "<script>unsafe()</script>",
+  }, `${browserName}: RichMessage renders dynamic content as text and rejects javascript URLs`);
+  await chat.locator(`[data-message-id="${hostileId}"] .kroma-chat__rich-action`).click();
+  assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions.at(-1))).actionId, "safe-action");
+
+  const hostOptionMessage = await chat.evaluate((element) => element.addMessage({
+    id: "chat-host-options",
+    author: "assistant",
+    type: "options",
+    text: "Legacy options payload",
+    options: [
+      { id: "host-enabled", label: "Enabled", value: "enabled" },
+      { id: "host-disabled", label: "Disabled", disabled: true },
+    ],
+  }));
+  assert.equal(await chat.locator(`[data-message-id="${hostOptionMessage}"] .kroma-chat__option`).count(), 2, `${browserName}: legacy options messages remain supported`);
+  await chat.evaluate((element, id) => element.setOptionsDisabled(id, true), hostOptionMessage);
+  assert.equal(await chat.locator(`[data-message-id="${hostOptionMessage}"] .kroma-chat__option`).first().isDisabled(), true);
+  await chat.evaluate((element, id) => element.setOptionsDisabled(id, false), hostOptionMessage);
+  assert.equal(await chat.locator(`[data-message-id="${hostOptionMessage}"] .kroma-chat__option`).first().isDisabled(), false);
+  assert.equal(await chat.locator(`[data-message-id="${hostOptionMessage}"] .kroma-chat__option`).last().isDisabled(), true, `${browserName}: host re-enable preserves individually disabled options`);
+
+  await chat.evaluate((element) => element.addMessage({
+    author: "assistant",
+    type: "info",
+    title: "Legacy rich content",
+    description: "Legacy info messages remain readable.",
+  }));
+  assert.equal(await chat.locator(".kroma-chat__info-title").last().textContent(), "Legacy rich content", `${browserName}: legacy info payload remains supported`);
+  await chat.evaluate((element) => element.addMessage({ author: "system", type: "status", text: "Conversation updated", status: "neutral" }));
+  assert.equal(await chat.locator(".kroma-chat__status-message").last().textContent(), "Conversation updated", `${browserName}: status messages render`);
+
+  await chat.evaluate((element) => {
+    element.setTyping(true, "Assistant is typing");
+    element.setTyping(true, "Assistant is typing");
+  });
+  assert.equal(await chat.locator(".kroma-chat__message--typing").count(), 1, `${browserName}: typing state is idempotent`);
+  assert.equal(await chat.locator(".kroma-chat__message--typing .kroma-chat__sr-only").textContent(), "Assistant is typing");
+  await page.waitForTimeout(100);
+  assert.equal(await chat.locator(".kroma-chat__message--typing").count(), 1, `${browserName}: typing stays host-controlled`);
+  await chat.evaluate((element) => element.setTyping(false));
+  assert.equal(await chat.locator(".kroma-chat__message--typing").count(), 0);
+
+  const legacyMessageId = await chat.evaluate((element) => element.addMessage({ author: "assistant", text: "Legacy text message" }));
+  assert.ok(legacyMessageId, `${browserName}: addMessage still accepts legacy text messages`);
+  assert.equal(await chat.locator(`#${legacyMessageId} .kroma-chat__text`).textContent(), "Legacy text message");
+
+  const unsafeRichId = await chat.evaluate((element) => element.addMessage({
+    author: "assistant",
+    type: "rich",
+    title: "<img src=x onerror=alert(1)>",
+    description: "<script>unsafe()</script>",
+    link: { label: "Unsafe link", href: "javascript:alert(1)" },
+  }));
+  const unsafeRich = await chat.locator(`#${unsafeRichId}`).evaluate((message) => ({
+    images: message.querySelectorAll("img").length,
+    scripts: message.querySelectorAll("script").length,
+    links: message.querySelectorAll("a").length,
+    title: message.querySelector(".kroma-chat__rich-title")?.textContent,
+    description: message.querySelector(".kroma-chat__rich-description")?.textContent,
+  }));
+  assert.deepEqual(unsafeRich, {
+    images: 0,
+    scripts: 0,
+    links: 0,
+    title: "<img src=x onerror=alert(1)>",
+    description: "<script>unsafe()</script>",
+  }, `${browserName}: RichMessage escapes content and rejects script URLs`);
+
+  const input = chat.locator(".kroma-chat__input");
+  const measureComposer = () => chat.evaluate((element) => {
+    const textarea = element.querySelector(".kroma-chat__input");
+    const send = element.querySelector(".kroma-chat__send");
+    return {
+      rows: textarea.rows,
+      textareaHeight: textarea.getBoundingClientRect().height,
+      composerHeight: element.querySelector(".kroma-chat__composer").getBoundingClientRect().height,
+      scrollHeight: textarea.scrollHeight,
+      clientHeight: textarea.clientHeight,
+      sendHeight: send.getBoundingClientRect().height,
+      sendDisabled: send.disabled,
+    };
+  });
+  await input.fill("");
+  let composer = await measureComposer();
+  assert.equal(composer.rows, 1, `${browserName}: empty composer starts at one row`);
+  assert.ok(composer.textareaHeight >= 44 && composer.textareaHeight <= 48, `${browserName}: empty textarea height (${composer.textareaHeight}px)`);
+  assert.ok(composer.composerHeight <= 52, `${browserName}: compact composer height (${composer.composerHeight}px)`);
+  assert.equal(composer.sendDisabled, true, `${browserName}: empty send button disabled`);
+
+  await input.fill("One line");
+  composer = await measureComposer();
+  assert.equal(composer.rows, 1, `${browserName}: one line remains one row`);
+  assert.ok(composer.textareaHeight >= 44 && composer.textareaHeight <= 48);
+  assert.equal(composer.sendDisabled, false);
+
+  await input.fill("First line\nSecond line\nThird line");
+  composer = await measureComposer();
+  assert.ok(composer.rows >= 3 && composer.textareaHeight > 48 && composer.textareaHeight < 120, `${browserName}: multiline composer grows naturally`);
+
+  await input.fill("A long message to force the composer to grow and then use its own scrollbar. ".repeat(30));
+  composer = await measureComposer();
+  assert.equal(composer.rows, 6, `${browserName}: long composer is capped at six rows`);
+  assert.ok(composer.textareaHeight <= 120, `${browserName}: long textarea does not exceed the maximum height`);
+  assert.ok(composer.scrollHeight > composer.clientHeight, `${browserName}: long textarea scrolls internally`);
+
+  await input.fill("");
+  composer = await measureComposer();
+  assert.equal(composer.rows, 1, `${browserName}: clearing restores one row`);
+  assert.ok(composer.textareaHeight >= 44 && composer.textareaHeight <= 48, `${browserName}: clearing restores compact height`);
+
+  let sendEventCount = await chat.evaluate((element) => element.__chatTestEvents.sends.length);
+  await input.fill("Line before newline");
+  await input.press("Shift+Enter");
+  assert.equal(await chat.evaluate((element) => element.__chatTestEvents.sends.length), sendEventCount, `${browserName}: Shift+Enter does not send`);
+  assert.ok(await input.inputValue() .then((value) => value.includes("\n")), `${browserName}: Shift+Enter inserts a newline`);
+  await input.press("Enter");
+  await page.waitForFunction(() => document.querySelector("#chat kroma-chat .kroma-chat__input")?.value === "");
+  sendEventCount += 1;
+  assert.equal(await chat.evaluate((element) => element.__chatTestEvents.sends.length), sendEventCount, `${browserName}: Enter emits one text-send event`);
+  composer = await measureComposer();
+  assert.equal(composer.rows, 1, `${browserName}: sending resets the composer to one row`);
+  assert.ok(composer.textareaHeight >= 44 && composer.textareaHeight <= 48, `${browserName}: sending restores compact height`);
+
+  await chat.evaluate((element) => element.setError("User-facing error"));
+  assert.equal(await input.getAttribute("aria-invalid"), "true");
+  assert.equal(await chat.locator("[role=alert]").textContent(), "User-facing error");
+  await chat.evaluate((element) => element.setError(null));
+  assert.equal(await input.getAttribute("aria-invalid"), null);
+  await chat.evaluate((element) => element.setComposerDisabled(true));
+  assert.equal(await input.isDisabled(), true);
+  assert.equal(await chat.getByRole("button", { name: "Enviar mensaje" }).isDisabled(), true);
+  await chat.evaluate((element) => element.setComposerDisabled(false));
+
+  const legacyForms = await chat.locator("form").count();
+  const legacyMessages = await chat.locator(".kroma-chat__message").count();
+  await chat.evaluate((element) => {
+    const parent = element.parentElement;
+    element.remove();
+    parent.append(element);
+  });
+  assert.equal(await chat.locator("form").count(), legacyForms, `${browserName}: reconnect does not duplicate the composer`);
+  assert.equal(await chat.locator(".kroma-chat__message").count(), legacyMessages, `${browserName}: reconnect preserves history`);
+
+  await page.evaluate(() => {
+    const other = document.createElement("kroma-chat");
+    document.body.append(other);
+  });
+  const secondChat = page.locator("body > kroma-chat").last();
+  await secondChat.waitFor();
+  await secondChat.evaluate((element) => element.addMessage({ author: "assistant", text: "Isolated second instance" }));
+  const instanceIds = await page.evaluate(() => [...document.querySelectorAll("kroma-chat .kroma-chat__input")].map((input) => input.id));
+  assert.equal(new Set(instanceIds).size, instanceIds.length, `${browserName}: composer IDs are unique across instances`);
+  assert.equal(await secondChat.locator(".kroma-chat__message").count(), 1, `${browserName}: second instance owns an independent history`);
+  await secondChat.evaluate((element) => element.remove());
+
+  const isNeutralColor = (color) => {
+    const channels = color.match(/[\d.]+/g)?.slice(0, 3).map(Number);
+    if (!channels || channels.length !== 3) return false;
+    const scale = Math.max(...channels) <= 1 ? 1 : 255;
+    return Math.max(...channels) / scale - Math.min(...channels) / scale < .01;
+  };
+  for (const theme of ["bootstrap", "dracula", "kroma-entrepreneur"]) {
+    await page.locator(`[data-theme-value="${theme}"]`).evaluate((element) => element.click());
+    await page.waitForFunction((name) => document.documentElement.dataset.kromaTheme === name
+      && (name === "bootstrap" || document.querySelector("#kroma-theme-stylesheet")?.media === "all"), theme);
+    for (const mode of ["light", "dark"]) {
+      await page.locator(`[data-bs-theme-value="${mode}"]`).evaluate((element) => element.click());
+      await page.waitForTimeout(100);
+      const surfaces = await chat.evaluate((element) => {
+        const background = (selector) => getComputedStyle(element.querySelector(selector)).backgroundColor;
+        return {
+          header: background(".kroma-chat__header"),
+          history: background(".kroma-chat__messages"),
+          assistant: background(".kroma-chat__message--assistant .kroma-chat__bubble"),
+          composer: background(".kroma-chat__composer-area"),
+          options: background(".kroma-chat__journey-item"),
+          user: background(".kroma-chat__message--user .kroma-chat__bubble"),
+          relativeColors: CSS.supports("color", "hsl(from var(--chat-surface-token) 0 0% l)"),
+        };
+      });
+      assert.equal(surfaces.relativeColors, true, `${browserName}/${theme}/${mode}: semantic surface neutralization is supported`);
+      for (const key of ["header", "history", "assistant", "composer", "options"]) {
+        assert.ok(isNeutralColor(surfaces[key]), `${browserName}/${theme}/${mode}: Chat ${key} surface is neutral (${surfaces[key]})`);
+      }
+      assert.notEqual(surfaces.user, surfaces.header, `${browserName}/${theme}/${mode}: user bubble retains an action accent`);
+      passed += 1;
+    }
+  }
+
+  for (const viewport of [
+    { width: 320, height: 568 },
+    { width: 360, height: 780 },
+    { width: 375, height: 812 },
+    { width: 390, height: 844 },
+    { width: 430, height: 932 },
+    { width: 768, height: 900 },
+    { width: 1440, height: 900 },
+  ]) {
+    await page.setViewportSize(viewport);
+    const layout = await page.evaluate(() => {
+      const chatElement = document.querySelector("#chat kroma-chat");
+      const chatRect = chatElement.getBoundingClientRect();
+      const composerRect = chatElement.querySelector(".kroma-chat__composer-area").getBoundingClientRect();
+      return {
+        width: innerWidth,
+        documentWidth: document.documentElement.scrollWidth,
+        chatWidth: chatRect.width,
+        composerInside: composerRect.bottom <= chatRect.bottom + 1,
+        optionOverflow: [...chatElement.querySelectorAll(".kroma-chat__option")].some((button) => button.scrollWidth > button.clientWidth),
+      };
+    });
+    assert.equal(layout.documentWidth > layout.width + 1, false, `${browserName}: horizontal overflow at ${viewport.width}px`);
+    assert.ok(layout.chatWidth > 0, `${browserName}: Chat has a visible width at ${viewport.width}px`);
+    assert.equal(layout.composerInside, true, `${browserName}: composer remains inside Chat at ${viewport.width}px`);
+    assert.equal(layout.optionOverflow, false, `${browserName}: options do not clip at ${viewport.width}px`);
+  }
+
+  assert.deepEqual(errors, [], `${browserName}: Chat page errors`);
+  passed += 28;
+  await context.close();
+};
+
 const runThemeFailureChecks = async (browserName, browser) => {
   const openPage = async (initScript, routes = []) => {
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -532,12 +935,13 @@ try {
         await context.close();
       }
 
+      await runChatChecks(browserName, browser);
       await runThemeFailureChecks(browserName, browser);
     } finally {
       await browser.close();
     }
   }
-  console.log(`Browser checks passed: ${passed} cases across ${browserNames.join(", ")} (themes, modes, viewports, states, fixture, network failures).`);
+  console.log(`Browser checks passed: ${passed} cases across ${browserNames.join(", ")} (themes, modes, Chat controls, responsive layout, accessibility, fixture, network failures).`);
 } finally {
   server.kill();
 }
