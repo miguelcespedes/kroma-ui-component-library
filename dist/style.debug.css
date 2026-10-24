@@ -12349,6 +12349,12 @@ textarea.form-control-lg {
   font-weight: var(--kroma-font-weight-semibold, 600);
   line-height: 1.35;
 }
+.kroma-chat__subtitle {
+  margin: 0.1rem 0 0;
+  color: var(--chat-muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
 .kroma-chat__status {
   margin: 0.1rem 0 0;
   color: var(--chat-muted);
@@ -12357,6 +12363,26 @@ textarea.form-control-lg {
 }
 .kroma-chat__actions:empty {
   display: none;
+}
+.kroma-chat__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--chat-space-1);
+}
+.kroma-chat__header-action {
+  min-height: 2.5rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--chat-border);
+  border-radius: 999px;
+  background: var(--chat-surface);
+  color: var(--chat-content);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.kroma-chat__header-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 .kroma-chat__messages {
   display: flex;
@@ -12649,6 +12675,12 @@ textarea.form-control-lg {
 .kroma-chat__product-card-message {
   width: min(90%, 34rem);
 }
+.kroma-chat__product-list {
+  display: grid;
+  width: min(90%, 34rem);
+  gap: var(--chat-space-2);
+  margin-top: var(--chat-space-2);
+}
 .kroma-chat__product-card {
   display: flex;
   width: 100%;
@@ -12914,6 +12946,9 @@ textarea.form-control-lg {
   margin: 0;
   color: var(--chat-muted);
   font-size: 0.85rem;
+}
+.kroma-chat__price-entry--strong {
+  font-weight: var(--kroma-font-weight-semibold, 600);
 }
 .kroma-chat__conversational-form {
   display: grid;

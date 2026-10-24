@@ -80,6 +80,7 @@ export type ChatCartItem = {
   product: ChatProduct;
   variantLabel?: string;
   quantity: number;
+  actions?: ChatAction[];
   unitPrice?: ChatMoney;
   lineTotal?: ChatMoney;
   unitPriceLabel?: string;
@@ -90,17 +91,30 @@ export type ChatFormField = {
   id: string;
   name: string;
   label: string;
-  type: "text" | "email" | "tel";
+  type: "text" | "email" | "tel" | "number" | "date" | "url" | "search" | "password";
   value?: string;
   required?: boolean;
+  disabled?: boolean;
   placeholder?: string;
   autocomplete?: string;
+  min?: string | number;
+  max?: string | number;
+  pattern?: string;
+  errorMessage?: string;
 };
 
-export type ChatCustomerDetails = {
-  name: string;
-  contact: string;
-  delivery: string;
+export type ChatCustomerDetails = Record<string, string>;
+
+export type ChatPriceEntry = {
+  id: string;
+  label: string;
+  amount?: ChatMoney;
+  amountLabel?: string;
+  emphasis?: "normal" | "strong";
+};
+
+export type ChatPriceSummary = {
+  entries: ChatPriceEntry[];
 };
 
 export type ChatMessageBase = {
@@ -175,6 +189,13 @@ export type ProductCardMessage = ChatMessageBase & {
   actionLabel?: string;
 };
 
+export type ProductListMessage = ChatMessageBase & {
+  type: "product-list";
+  text: string;
+  products: ChatProduct[];
+  productActionLabel?: string;
+};
+
 export type ProductCarouselMessage = ChatMessageBase & {
   type: "product-carousel";
   text: string;
@@ -230,6 +251,7 @@ export type CartSummaryMessage = ChatMessageBase & {
   subtotal?: ChatMoney;
   subtotalTitle?: string;
   subtotalLabel?: string;
+  priceSummary?: ChatPriceSummary;
   continueLabel?: string;
   emptyLabel?: string;
   removeItemLabel?: string;
@@ -252,13 +274,15 @@ export type OrderReviewMessage = ChatMessageBase & {
   subtotal?: ChatMoney;
   subtotalTitle?: string;
   subtotalLabel?: string;
+  priceSummary?: ChatPriceSummary;
   removeItemLabel?: string;
   confirmLabel: string;
   editLabel?: string;
 };
 
 export type ConfirmationMessage = ChatMessageBase & {
-  type: "confirmation";
+  type: "confirmation" | "confirmation-card";
+  status?: "neutral" | "success" | "warning" | "error";
   title: string;
   description: string;
   reference?: string;
@@ -283,6 +307,7 @@ export type ChatMessage =
   | JourneyMenuMessage
   | CategoryPickerMessage
   | ProductCardMessage
+  | ProductListMessage
   | ProductCarouselMessage
   | ProductDetailMessage
   | ProductVariantSelectorMessage
@@ -325,9 +350,11 @@ export type ChatRichActionDetail = {
 };
 
 export type ChatActionControl =
+  | "header"
   | "journey-menu"
   | "category-picker"
   | "product-card"
+  | "product-list"
   | "product-carousel"
   | "product-detail"
   | "product-variant-selector"

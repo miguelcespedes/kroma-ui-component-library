@@ -175,6 +175,8 @@ const runChatChecks = async (browserName, browser) => {
   const chat = page.locator("#chat kroma-chat");
   await chat.waitFor();
   assert.equal(await chat.evaluate((element) => element instanceof customElements.get("kroma-chat")), true, `${browserName}: kroma-chat custom element registration`);
+  assert.equal(await chat.evaluate((element) => element.constructor.name), "KromaChat", `${browserName}: public class uses the KromaChat name`);
+  assert.equal(await chat.evaluate((element) => typeof element.addMessage === "function" && typeof element.setHeaderActions === "function"), true, `${browserName}: public facade exposes its documented methods`);
 
   const initial = await chat.evaluate((element) => ({
     messageType: element.querySelector(".kroma-chat__message")?.dataset.messageType,
@@ -232,12 +234,12 @@ const runChatChecks = async (browserName, browser) => {
   await page.waitForSelector("#chat .kroma-chat__category-picker");
   assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions[0])).control, "journey-menu");
   await chat.locator(".kroma-chat__category").filter({ hasText: "Todos" }).click();
-  await page.waitForSelector("#chat .kroma-chat__product-carousel");
+  await page.waitForSelector("#chat .kroma-chat__product-list");
   assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions[1])).control, "category-picker");
 
-  await chat.locator(".kroma-chat__product-track .kroma-chat__product-card").first().click();
+  await chat.locator(".kroma-chat__product-list .kroma-chat__product-card").first().click();
   await page.waitForSelector("#chat .kroma-chat__product-detail");
-  assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions[2])).control, "product-carousel");
+  assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions[2])).control, "product-list");
   assert.equal(await chat.locator(".kroma-chat__product-detail .kroma-chat__variant-selector input").count(), 3, `${browserName}: product variants are rendered`);
   await chat.getByLabel("Talla M").focus();
   await chat.getByLabel("Talla M").press("Space");
@@ -255,8 +257,8 @@ const runChatChecks = async (browserName, browser) => {
   assert.equal(addEvent.data.quantity, 2, `${browserName}: add action carries the selected quantity`);
   assert.equal(addEvent.data.variantId, "polo-size-m", `${browserName}: add action carries the selected variant`);
   await chat.getByRole("button", { name: "Seguir explorando" }).last().click();
-  await page.waitForFunction(() => document.querySelectorAll("#chat .kroma-chat__product-track .kroma-chat__product-card").length > 0);
-  await chat.locator(".kroma-chat__product-track .kroma-chat__product-card").nth(1).click();
+  await page.waitForFunction(() => document.querySelectorAll("#chat .kroma-chat__product-list").length >= 2);
+  await chat.locator(".kroma-chat__product-list").last().locator(".kroma-chat__product-card").nth(1).click();
   await page.waitForFunction(() => [...document.querySelectorAll("#chat .kroma-chat__product-detail-title")].some((title) => title.textContent === "Casaca ligera"));
   await chat.locator(".kroma-chat__product-add").last().click();
   await page.waitForFunction(() => [...document.querySelectorAll("#chat .kroma-chat__option")].some((button) => button.textContent?.startsWith("Revisar selección (2)")));
@@ -296,9 +298,71 @@ const runChatChecks = async (browserName, browser) => {
   await chat.getByRole("button", { name: "Explorar productos" }).last().click();
   await page.waitForFunction(() => document.querySelectorAll("#chat .kroma-chat__category-picker").length >= 2);
   await chat.locator(".kroma-chat__category").filter({ hasText: "Accesorios" }).last().click();
-  await page.waitForSelector("#chat .kroma-chat__product-card-message");
-  await chat.locator(".kroma-chat__product-card-message .kroma-chat__product-card").click();
+  await page.waitForFunction(() => document.querySelectorAll("#chat .kroma-chat__product-list").length >= 3);
+  await chat.locator(".kroma-chat__product-list").last().locator(".kroma-chat__product-card").click();
   await page.waitForFunction(() => [...document.querySelectorAll("#chat .kroma-chat__product-detail-title")].some((title) => title.textContent === "Botella reutilizable"));
+
+  await chat.evaluate((element) => element.addMessage({
+    id: "chat-product-card-contract",
+    author: "assistant",
+    type: "product-card",
+    actionLabel: "Open standalone card",
+    product: { id: "contract-card", name: "Standalone card", description: "Card contract", price: { amount: 4, currency: "USD" } },
+  }));
+  await chat.locator("#chat-product-card-contract .kroma-chat__product-card").click();
+  assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions.at(-1))).control, "product-card");
+
+  await chat.evaluate((element) => element.addMessage({
+    id: "chat-product-carousel-contract",
+    author: "assistant",
+    type: "product-carousel",
+    text: "Legacy carousel contract",
+    products: [
+      { id: "carousel-a", name: "Carousel A", description: "First item" },
+      { id: "carousel-b", name: "Carousel B", description: "Second item" },
+    ],
+  }));
+  await chat.locator("#chat-product-carousel-contract .kroma-chat__product-card").first().click();
+  assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions.at(-1))).control, "product-carousel");
+
+  await chat.evaluate((element) => element.addMessage({
+    id: "chat-standalone-variant",
+    author: "assistant",
+    type: "product-variant-selector",
+    controlId: "variant-contract",
+    label: "Size",
+    variants: [{ id: "variant-contract-one", label: "One size", value: "one" }],
+  }));
+  await chat.locator("#chat-standalone-variant input").focus();
+  await chat.locator("#chat-standalone-variant input").press("Space");
+  assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions.at(-1))).control, "product-variant-selector");
+
+  await chat.evaluate((element) => element.addMessage({
+    id: "chat-standalone-quantity",
+    author: "assistant",
+    type: "quantity-selector",
+    controlId: "quantity-contract",
+    label: "Units",
+    value: 1,
+    minimum: 0,
+    maximum: 2,
+  }));
+  await chat.locator("#chat-standalone-quantity .kroma-chat__quantity-button").last().click();
+  assert.equal((await chat.evaluate((element) => element.__chatTestEvents.quantities.at(-1))).quantity, 2);
+
+  await chat.evaluate((element) => element.addMessage({
+    id: "chat-confirmation-card-contract",
+    author: "assistant",
+    type: "confirmation-card",
+    status: "success",
+    title: "Generic confirmation",
+    description: "This confirmation is not an order receipt.",
+  }));
+  assert.equal(await chat.locator("#chat-confirmation-card-contract .kroma-chat__confirmation").getAttribute("data-status"), "success");
+  await chat.evaluate((element) => element.setHeaderActions([{ id: "header-help", label: "Help", value: "help" }]));
+  await chat.getByRole("button", { name: "Help" }).click();
+  assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions.at(-1))).control, "header");
+  await chat.evaluate((element) => element.setHeaderActions([]));
 
   const firstIndependent = chat.evaluate((element) => element.addMessage({
     id: "chat-independent-a",

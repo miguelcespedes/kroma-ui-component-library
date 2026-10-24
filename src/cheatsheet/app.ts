@@ -3,7 +3,7 @@ import "./app.scss";
 import { initializeContrastDropdown } from "../components/contrast-dropdown/contrast-dropdown";
 import { initializeThemeDropdown } from "../components/theme-dropdown/theme-dropdown";
 import { initializeColorTokenPalette } from "../components/color-token-palette/color-token-palette";
-import "../components/chat/chat";
+import "../components/chat";
 import type {
   ChatActionDetail,
   ChatCartItem,
@@ -18,8 +18,8 @@ import type {
   ChatQuantityChangeDetail,
   ChatSendDetail,
   JourneyMenuItem,
-  KromaChatElement,
-} from "../components/chat/chat";
+  KromaChat,
+} from "../components/chat";
 
 window.bootstrap = bootstrap;
 
@@ -34,7 +34,7 @@ document.documentElement.setAttribute("data-bs-theme", "dark");
 initializeThemeDropdown(bootstrap);
 initializeContrastDropdown(bootstrap);
 initializeColorTokenPalette();
-document.querySelectorAll<KromaChatElement>("kroma-chat[data-demo='commerce-journey']").forEach(initializeCommerceJourneyDemo);
+document.querySelectorAll<KromaChat>("kroma-chat[data-demo='commerce-journey']").forEach(initializeCommerceJourneyDemo);
 
 document.querySelectorAll<HTMLElement>('[data-bs-toggle="tooltip"]').forEach((element) => new bootstrap.Tooltip(element));
 document.querySelectorAll<HTMLElement>('[data-bs-toggle="popover"]').forEach((element) => new bootstrap.Popover(element));
@@ -180,7 +180,7 @@ function quickReplies(text: string, replies: ChatOption[]): ChatMessage {
   return { author: "assistant", type: "quick-replies", text, replies };
 }
 
-function renderJourney(chat: KromaChatElement, state: JourneyState) {
+function renderJourney(chat: KromaChat, state: JourneyState) {
   switch (state.step) {
     case "welcome":
       chat.addMessage(welcomeMessage());
@@ -203,12 +203,7 @@ function renderJourney(chat: KromaChatElement, state: JourneyState) {
         : state.categoryId === "accessories"
           ? "Este es un accesorio de ejemplo. Selecciónalo para ver sus características."
           : "Explora los productos ficticios disponibles en esta demostración.";
-      if (products.length === 1) {
-        chat.addMessage({ author: "assistant", type: "text", text: prompt });
-        chat.addMessage({ author: "assistant", type: "product-card", product: products[0], actionLabel: "Ver producto" });
-      } else {
-        chat.addMessage({ author: "assistant", type: "product-carousel", text: prompt, products, previousLabel: "Productos anteriores", nextLabel: "Productos siguientes", productActionLabel: "Ver producto" });
-      }
+      chat.addMessage({ author: "assistant", type: "product-list", text: prompt, products, productActionLabel: "Ver producto" });
       const replies: ChatOption[] = [
         { id: "categories", label: "Cambiar categoría", value: "back-categories" },
         { id: "home", label: "Volver al inicio", value: "home" },
@@ -309,7 +304,7 @@ function renderJourney(chat: KromaChatElement, state: JourneyState) {
   }
 }
 
-function initializeCommerceJourneyDemo(chat: KromaChatElement) {
+function initializeCommerceJourneyDemo(chat: KromaChat) {
   let state = freshJourney();
   renderJourney(chat, state);
   let pendingReply = 0;
@@ -342,6 +337,7 @@ function initializeCommerceJourneyDemo(chat: KromaChatElement) {
         if (detail.value === "all" || detail.value === "clothing" || detail.value === "accessories") transition({ type: "choose-category", categoryId: detail.value });
         break;
       case "product-card":
+      case "product-list":
       case "product-carousel":
         if (detail.data?.productId) transition({ type: "choose-product", productId: detail.data.productId });
         break;
