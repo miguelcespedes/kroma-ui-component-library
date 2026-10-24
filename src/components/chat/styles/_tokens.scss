@@ -1,0 +1,79 @@
+@mixin apply {
+  // KromaChat roles bind to the active theme. Bootstrap variables are explicit standalone fallbacks.
+  // Surface roles
+  --kroma-chat-surface-canvas: var(--kroma-color-surface-canvas, var(--bs-body-bg, #fff));
+  --kroma-chat-surface-header: var(--kroma-color-surface-raised, var(--bs-secondary-bg, #fff));
+  --kroma-chat-surface-composer: var(--kroma-color-surface-raised, var(--bs-body-bg, #fff));
+  --kroma-chat-message-assistant-surface: var(--kroma-color-surface-subtle, var(--bs-tertiary-bg, #f8f9fa));
+  --kroma-chat-message-user-surface: var(--kroma-color-action-primary, var(--bs-primary, #0d6efd));
+  --kroma-chat-control-surface: var(--kroma-color-surface-raised, var(--bs-body-bg, #fff));
+  --kroma-chat-control-hover-surface: var(--kroma-color-surface-subtle, var(--bs-tertiary-bg, #f8f9fa));
+  --kroma-chat-control-selected-surface: color-mix(in srgb, var(--kroma-color-action-primary, var(--bs-primary, #0d6efd)) 12%, var(--kroma-chat-control-surface));
+  --kroma-chat-card-surface: var(--kroma-color-surface-raised, var(--bs-body-bg, #fff));
+
+  // Content roles
+  --kroma-chat-text-primary: var(--kroma-color-content-primary, var(--bs-body-color, #212529));
+  --kroma-chat-text-secondary: var(--kroma-color-readable-secondary, var(--bs-secondary-color, #6c757d));
+  --kroma-chat-text-inverse: var(--kroma-color-on-action, var(--bs-white, #fff));
+  --kroma-chat-text-accent: var(--kroma-color-link, var(--bs-link-color, #0d6efd));
+  --kroma-chat-text-disabled: var(--kroma-color-disabled, var(--bs-secondary-color, #6c757d));
+
+  // Border, action and state roles
+  --kroma-chat-border-subtle: var(--kroma-color-border-subtle, var(--bs-border-color, #dee2e6));
+  --kroma-chat-border-interactive: var(--kroma-color-border-default, var(--bs-border-color, #dee2e6));
+  --kroma-chat-border-selected: var(--kroma-color-focus-indicator, var(--bs-primary, #0d6efd));
+
+  --kroma-chat-action-primary-surface: var(--kroma-button-primary-bg, var(--kroma-color-action-primary, var(--bs-primary, #0d6efd)));
+  --kroma-chat-action-primary-content: var(--kroma-button-primary-fg, var(--kroma-color-on-action, var(--bs-white, #fff)));
+  --kroma-chat-action-primary-hover: var(--kroma-button-primary-hover-bg, var(--kroma-color-action-primary-hover, var(--bs-primary, #0d6efd)));
+  --kroma-chat-action-primary-hover-content: var(--kroma-button-primary-hover-fg, var(--kroma-color-on-action-hover, var(--bs-white, #fff)));
+  --kroma-chat-action-primary-disabled: var(--kroma-button-primary-disabled-bg, var(--kroma-chat-surface-control));
+  --kroma-chat-action-primary-disabled-content: var(--kroma-button-primary-disabled-fg, var(--kroma-chat-text-disabled));
+  --kroma-chat-action-primary-disabled-border: var(--kroma-button-primary-disabled-border, var(--kroma-chat-border-subtle));
+  --kroma-chat-action-secondary-surface: var(--kroma-color-surface-raised, var(--bs-secondary-bg, #fff));
+  --kroma-chat-action-secondary-content: var(--kroma-color-content-primary, var(--bs-body-color, #212529));
+
+  --kroma-chat-state-success: var(--kroma-color-readable-success, var(--bs-success, #198754));
+  --kroma-chat-state-warning: var(--kroma-color-readable-warning, var(--bs-warning, #997404));
+  --kroma-chat-state-error: var(--kroma-color-readable-danger, var(--bs-danger, #dc3545));
+  --kroma-chat-state-focus: var(--kroma-color-focus-indicator, var(--bs-primary, #0d6efd));
+
+  // Shape, rhythm, type and motion roles
+  --kroma-chat-radius-shell: var(--kroma-radius-lg, 1.25rem);
+  --kroma-chat-radius-message: var(--kroma-radius-md, .9rem);
+  --kroma-chat-radius-card: var(--kroma-radius-md, .75rem);
+  --kroma-chat-radius-control: var(--kroma-radius-sm, .5rem);
+  --kroma-chat-radius-input: 1.4rem;
+  --kroma-chat-elevation-shell: var(--kroma-elevation-1, 0 .25rem 1rem rgb(27 35 52 / 8%));
+
+  --kroma-chat-spacing-message: var(--kroma-space-2, .5rem);
+  --kroma-chat-spacing-group: var(--kroma-space-2, .5rem);
+  --kroma-chat-spacing-section: var(--kroma-space-4, 1.5rem);
+  --kroma-chat-spacing-control: var(--kroma-space-2, .5rem);
+  --kroma-chat-spacing-card: var(--kroma-space-3, 1rem);
+
+  --kroma-chat-typography-body: var(--kroma-font-size-base, .925rem);
+  --kroma-chat-typography-secondary: .8125rem;
+  --kroma-chat-typography-label: .75rem;
+  --kroma-chat-typography-title: 1.1rem;
+  --kroma-chat-typography-price: 1rem;
+
+  --kroma-chat-motion-fast: var(--kroma-motion-duration-fast, .15s);
+  --kroma-chat-motion-standard: var(--kroma-motion-easing-standard, ease);
+
+  // Legacy selector aliases map existing BEM rules to the semantic layer above.
+  --chat-surface: var(--kroma-chat-surface-header);
+  --chat-history: var(--kroma-chat-surface-canvas);
+  --chat-assistant-bubble: var(--kroma-chat-message-assistant-surface);
+  --chat-border: var(--kroma-chat-border-subtle);
+  --chat-user-bubble: var(--kroma-chat-message-user-surface);
+  --chat-user-content: var(--kroma-chat-text-inverse);
+  --chat-content: var(--kroma-chat-text-primary);
+  --chat-muted: var(--kroma-chat-text-secondary);
+  --chat-focus: var(--kroma-chat-state-focus);
+  --chat-radius: var(--kroma-chat-radius-shell);
+  --chat-space-1: var(--kroma-space-1, .25rem);
+  --chat-space-2: var(--kroma-chat-spacing-control);
+  --chat-space-3: var(--kroma-chat-spacing-card);
+  --chat-space-4: var(--kroma-chat-spacing-section);
+}
