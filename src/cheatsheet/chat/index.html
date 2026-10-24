@@ -6,7 +6,7 @@
     <meta name="description" content="Demostración independiente de KromaChat">
     <title>KromaChat · Kroma</title>
   </head>
-  <body class="bg-body-tertiary kroma-chat-standalone">
+  <body class="kroma-chat-standalone">
     <main class="kroma-chat-page" data-chat-lab>
       <header class="kroma-chat-lab__toolbar" aria-label="Controles del laboratorio visual">
         <fieldset class="kroma-chat-lab__control">
@@ -25,6 +25,13 @@
             <option value="compact">Compacta</option>
           </select>
         </label>
+        <label class="kroma-chat-lab__control">
+          <span>Modo</span>
+          <select id="chat-mode" name="chat-mode" data-chat-mode aria-label="Modo de demostración">
+            <option value="default" selected>Recorrido comercial</option>
+            <option value="kitchen">Kitchen Mode</option>
+          </select>
+        </label>
         <div class="dropdown kroma-chat-lab__control" data-theme-dropdown aria-label="Tema de marca"></div>
         <div class="dropdown kroma-chat-lab__control kroma-chat-lab__contrast">
           <span>Contraste</span>
@@ -41,11 +48,13 @@
       <section class="kroma-chat-page__preview" data-chat-preview aria-label="Vista previa de KromaChat">
         <kroma-chat
           class="kroma-chat-page__device"
+          mode="default"
           data-demo="commerce-journey"
           data-density="comfortable"
+          avatar="K"
           aria-label="KromaChat: asistente conversacional"
-          chat-title="Asistente"
-          subtitle="Aquí para ayudarte"
+          chat-title="Asistente Kroma"
+          status="Disponible para ayudarte"
           messages-label="Mensajes"
           input-label="Escribe un mensaje"
           send-label="Enviar mensaje"

@@ -1,0 +1,169 @@
+.kroma-chat {
+  &__message {
+    display: flex;
+    width: 100%;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--kroma-chat-spacing-tight);
+    min-width: 0;
+  }
+
+  &__message--user { align-items: flex-end; }
+  &__message--system { align-items: center; }
+  &__message--grouped { margin-top: calc(var(--kroma-chat-spacing-group) * -.5); }
+
+  &__message--assistant {
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    column-gap: var(--kroma-chat-spacing-control);
+    row-gap: var(--kroma-chat-spacing-tight);
+    align-items: start;
+
+    > * { grid-column: 2; min-width: 0; }
+  }
+  &__message-avatar { display: grid; width: 1.5rem; height: 1.5rem; grid-column: 1; grid-row: 1; align-self: end; place-items: center; margin-bottom: .25rem; border-radius: 50%; background: var(--kroma-chat-surface-selected); color: var(--kroma-chat-text-accent); font-size: var(--kroma-chat-typography-caption); font-weight: var(--kroma-font-weight-bold, 700); }
+  &__message--assistant.kroma-chat__message--group-continuation &__message-avatar { visibility: hidden; }
+
+  &__bubble {
+    display: flex;
+    width: fit-content;
+    max-width: min(86%, 34rem);
+    min-width: 2.5rem;
+    flex-direction: column;
+    gap: var(--kroma-chat-spacing-tight);
+    padding: var(--kroma-chat-bubble-padding);
+    border: 0;
+    border-radius: var(--kroma-chat-radius-message) var(--kroma-chat-radius-message) var(--kroma-chat-radius-message) .25rem;
+    background: var(--kroma-chat-surface-assistant);
+    color: var(--kroma-chat-text-primary);
+    font-size: var(--kroma-chat-typography-body);
+    line-height: var(--kroma-chat-leading-body);
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  &__message--user &__bubble {
+    border-radius: var(--kroma-chat-radius-message) var(--kroma-chat-radius-message) .25rem var(--kroma-chat-radius-message);
+    background: var(--kroma-chat-accent);
+    color: var(--kroma-chat-on-accent);
+  }
+
+  &__text,
+  &__info-description { min-width: 0; overflow-wrap: anywhere; }
+  &__time { align-self: flex-end; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-caption); line-height: var(--kroma-chat-leading-caption); white-space: nowrap; }
+  &__message--user &__time { color: currentColor; opacity: .8; }
+
+  &__info-title,
+  &__rich-title { margin: 0; font-size: var(--kroma-chat-typography-title); font-weight: var(--kroma-font-weight-bold, 700); line-height: var(--kroma-chat-leading-heading); }
+  &__info-description { font-size: var(--kroma-chat-typography-body); line-height: var(--kroma-chat-leading-body); }
+  &__rich-description { margin: 0; font-size: var(--kroma-chat-typography-body); line-height: var(--kroma-chat-leading-body); overflow-wrap: anywhere; }
+
+  &__options {
+    display: flex;
+    width: min(100%, 34rem);
+    flex-wrap: wrap;
+    gap: var(--kroma-chat-spacing-control);
+    margin-top: var(--kroma-chat-spacing-tight);
+  }
+
+  &__quick-replies .kroma-chat__option { min-height: 2rem; padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control); border-radius: var(--kroma-chat-radius-pill); font-size: var(--kroma-chat-typography-body-small); }
+  &__choice-list { display: grid; width: min(100%, 34rem); grid-template-columns: minmax(0, 1fr); gap: var(--kroma-chat-spacing-tight); }
+
+  &__option {
+    display: inline-flex;
+    min-width: 0;
+    max-width: 100%;
+    min-height: var(--kroma-chat-control-height);
+    flex: 0 1 auto;
+    align-items: center;
+    justify-content: center;
+    gap: var(--kroma-chat-spacing-tight);
+    padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
+    border: 0;
+    border-radius: var(--kroma-chat-radius-pill, 999px);
+    background: var(--kroma-chat-surface-selected);
+    color: var(--kroma-chat-text-primary);
+    font: inherit;
+    font-size: var(--kroma-chat-typography-secondary);
+    line-height: var(--kroma-chat-leading-small);
+    text-align: center;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+    transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+
+    &:hover:not(:disabled) { background: var(--kroma-chat-surface-hover); }
+    &:active:not(:disabled) { background: var(--kroma-chat-surface-selected); }
+    &:disabled { color: var(--kroma-chat-text-disabled); cursor: default; }
+    &[aria-pressed="true"] { background: var(--kroma-chat-surface-selected); color: var(--kroma-chat-text-primary); font-weight: var(--kroma-font-weight-semibold, 600); }
+    &[aria-pressed="true"]::before { color: var(--kroma-chat-text-accent); content: "✓"; }
+  }
+
+  &__options--inactive .kroma-chat__option { cursor: default; }
+
+  &__choice {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--kroma-chat-spacing-tight);
+    padding: var(--kroma-chat-spacing-control) var(--kroma-chat-spacing-card);
+    border: 0;
+    border-radius: var(--kroma-chat-radius-control);
+    background: var(--kroma-chat-surface);
+    text-align: start;
+  }
+  &__choice-title { font-weight: var(--kroma-font-weight-semibold, 600); }
+  &__choice-description { color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-secondary); line-height: var(--kroma-chat-leading-small); }
+
+  &__rich-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--kroma-chat-spacing-control); }
+  &__rich-link,
+  &__rich-action {
+    display: inline-flex;
+    min-height: var(--kroma-chat-control-height);
+    align-items: center;
+    padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
+    border: 0;
+    border-radius: var(--kroma-chat-radius-control);
+    background: transparent;
+    color: var(--kroma-chat-text-accent);
+    font: inherit;
+    font-size: var(--kroma-chat-typography-secondary);
+    line-height: var(--kroma-chat-leading-small);
+    text-decoration: underline;
+    text-underline-offset: .15em;
+    cursor: pointer;
+
+    &:hover { background: var(--kroma-chat-surface-hover); }
+  }
+  &__rich-action { text-decoration: none; }
+
+  &__message--status { align-items: center; }
+  &__status-message {
+    display: inline-flex;
+    max-width: 92%;
+    align-items: center;
+    gap: var(--kroma-chat-spacing-tight);
+    margin: 0;
+    padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
+    border-radius: var(--kroma-chat-radius-control);
+    color: var(--kroma-chat-text-secondary);
+    font-size: var(--kroma-chat-typography-secondary);
+    line-height: var(--kroma-chat-leading-small);
+    text-align: center;
+  }
+  &__status-icon { width: 1rem; height: 1rem; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  &__message--status[data-status="neutral"] &__status-message { color: var(--kroma-chat-state-info); }
+  &__message--status[data-status="success"] &__status-message { color: var(--kroma-chat-state-success); }
+  &__message--status[data-status="success"] &__status-icon { color: var(--kroma-chat-state-success-mark); }
+  &__message--status[data-status="warning"] &__status-message { color: var(--kroma-chat-state-warning); }
+  &__message--status[data-status="warning"] &__status-icon { color: var(--kroma-chat-state-warning-mark); }
+  &__message--status[data-status="error"] &__status-message { color: var(--kroma-chat-state-error); }
+  &__message--status[data-status="error"] &__status-icon { color: var(--kroma-chat-state-error-mark); }
+
+  &__message--typing .kroma-chat__bubble { min-width: 3.5rem; min-height: 2.25rem; justify-content: center; padding: var(--kroma-chat-spacing-control) var(--kroma-chat-spacing-card); }
+  &__typing-dots { display: inline-flex; align-items: center; justify-content: center; gap: var(--kroma-chat-spacing-tight); }
+  &__typing-dots span { width: .3rem; height: .3rem; border-radius: 50%; background: currentColor; animation: kroma-chat-typing 1.2s var(--kroma-motion-easing-standard, ease-in-out) infinite; }
+  &__typing-dots span:nth-child(2) { animation-delay: .15s; }
+  &__typing-dots span:nth-child(3) { animation-delay: .3s; }
+}

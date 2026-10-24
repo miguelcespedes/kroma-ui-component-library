@@ -15,6 +15,7 @@ export type ChatMessageListCallbacks = {
   createMessageId: () => string;
   addUserMessage: (text: string) => void;
   consumedActions: Map<string, Set<string>>;
+  interactive: boolean;
   focusComposer: () => void;
   onAction: (detail: ChatActionDetail, userMessage?: string) => void;
   onRichAction: (detail: ChatRichActionDetail, action: ChatAction, userMessage?: string) => void;
@@ -67,7 +68,7 @@ export class ChatMessageList {
   }
 
   addMessage(message: ChatMessage, messageId: string): string {
-    if (message.type === "typing") {
+    if (message.type === "typing" && this.callbacks.interactive) {
       this.setTyping(true, message.label || "Assistant is typing", messageId);
       return messageId;
     }
@@ -79,10 +80,18 @@ export class ChatMessageList {
     item.dataset.messageId = messageId;
     item.dataset.author = message.author;
     item.dataset.messageType = message.type || "text";
+    if (message.author === "assistant") {
+      const avatar = document.createElement("span");
+      avatar.className = "kroma-chat__message-avatar";
+      avatar.setAttribute("aria-hidden", "true");
+      avatar.textContent = "K";
+      item.append(avatar);
+    }
     const previous = this.element.lastElementChild as HTMLLIElement | null;
     if (previous?.dataset.author === message.author && previous.dataset.messageType !== "status" && message.type !== "status") {
       previous.classList.add("kroma-chat__message--grouped");
       item.classList.add("kroma-chat__message--grouped");
+      item.classList.add("kroma-chat__message--group-continuation");
     }
 
     const handlers: ChatRendererHandlers = {
@@ -175,6 +184,7 @@ export class ChatMessageList {
       button.disabled = true;
       button.setAttribute("aria-pressed", String(button === selectedButton));
     });
+    if (!this.callbacks.interactive) return;
     this.callbacks.addUserMessage(selection.label);
     this.scrollToBottom();
     this.callbacks.focusComposer();
@@ -193,6 +203,7 @@ export class ChatMessageList {
   }
 
   private emitRichAction(messageId: string, action: ChatAction, userMessage?: string) {
+    if (!this.callbacks.interactive) return;
     const actionId = action.id || `${messageId}-action`;
     const button = this.findMessage(messageId)?.querySelector<HTMLButtonElement>(`.kroma-chat__rich-action[data-action-id="${CSS.escape(actionId)}"]`);
     if (button && !this.consumeButton(messageId, button, true)) return;
@@ -205,6 +216,7 @@ export class ChatMessageList {
   }
 
   private emitAction(detail: ChatActionDetail, userMessage?: string) {
+    if (!this.callbacks.interactive) return;
     if (!this.consumeAction(detail)) return;
     if (userMessage) {
       this.callbacks.addUserMessage(userMessage);

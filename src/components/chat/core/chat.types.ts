@@ -1,4 +1,5 @@
 export type ChatMessageAuthor = "assistant" | "user" | "system";
+export type ChatMode = "default" | "kitchen";
 
 export type ChatOption = {
   id?: string;

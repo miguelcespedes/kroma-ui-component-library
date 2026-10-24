@@ -1,0 +1,11 @@
+.kroma-chat {
+  &__confirmation { display: grid; width: min(100%, 34rem); min-width: 0; justify-items: center; gap: var(--kroma-chat-spacing-control); padding: var(--kroma-chat-spacing-section) var(--kroma-chat-spacing-card); border: 0; border-radius: var(--kroma-chat-radius-card); background: var(--kroma-chat-surface-card); text-align: center; }
+  &__confirmation-mark { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border-radius: 50%; background: var(--kroma-chat-surface-success); color: var(--kroma-chat-state-success-mark); }
+  &__confirmation-mark svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  &__confirmation[data-status="warning"] &__confirmation-mark { background: var(--kroma-chat-surface-warning); color: var(--kroma-chat-state-warning-mark); }
+  &__confirmation[data-status="error"] &__confirmation-mark { background: var(--kroma-chat-surface-error); color: var(--kroma-chat-state-error-mark); }
+  &__confirmation-title { margin: 0; font-size: var(--kroma-chat-typography-display); font-weight: var(--kroma-font-weight-bold, 700); line-height: var(--kroma-chat-leading-display); }
+  &__confirmation-description { max-width: 30rem; margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-body-small); line-height: var(--kroma-chat-leading-small); }
+  &__confirmation-reference { margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-caption); }
+  &__confirmation-summary { display: grid; width: 100%; gap: var(--kroma-chat-spacing-tight); margin: 0; padding-inline-start: 1.2rem; color: var(--kroma-chat-text-primary); text-align: start; font-size: var(--kroma-chat-typography-body-small); }
+}

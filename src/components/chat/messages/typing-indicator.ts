@@ -1,9 +1,4 @@
-export function createTypingIndicator(messageId: string, label: string) {
-  const item = document.createElement("li");
-  item.className = "kroma-chat__message kroma-chat__message--assistant kroma-chat__message--typing";
-  item.dataset.messageId = messageId;
-  item.dataset.messageType = "typing";
-  item.setAttribute("role", "status");
+export function createTypingBubble(label: string) {
   const bubble = document.createElement("div");
   bubble.className = "kroma-chat__bubble kroma-chat__typing-bubble";
   const announcement = document.createElement("span");
@@ -14,6 +9,19 @@ export function createTypingIndicator(messageId: string, label: string) {
   dots.setAttribute("aria-hidden", "true");
   dots.append(document.createElement("span"), document.createElement("span"), document.createElement("span"));
   bubble.append(announcement, dots);
-  item.append(bubble);
+  return bubble;
+}
+
+export function createTypingIndicator(messageId: string, label: string) {
+  const item = document.createElement("li");
+  item.className = "kroma-chat__message kroma-chat__message--assistant kroma-chat__message--typing";
+  item.dataset.messageId = messageId;
+  item.dataset.messageType = "typing";
+  item.setAttribute("role", "status");
+  const avatar = document.createElement("span");
+  avatar.className = "kroma-chat__message-avatar";
+  avatar.setAttribute("aria-hidden", "true");
+  avatar.textContent = "K";
+  item.append(avatar, createTypingBubble(label));
   return item;
 }

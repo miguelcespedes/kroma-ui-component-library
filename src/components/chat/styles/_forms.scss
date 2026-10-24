@@ -1,0 +1,29 @@
+.kroma-chat {
+  &__conversational-form { display: grid; width: min(100%, 34rem); min-width: 0; gap: var(--kroma-chat-spacing-control); }
+  &__form-title { margin: 0; font-size: var(--kroma-chat-typography-title); font-weight: var(--kroma-font-weight-semibold, 600); line-height: var(--kroma-chat-leading-heading); }
+  &__form-fields { display: grid; min-width: 0; gap: var(--kroma-chat-spacing-control); }
+  &__form-field { display: grid; min-width: 0; gap: var(--kroma-chat-spacing-tight); }
+  &__form-field label { color: var(--kroma-chat-text-primary); font-size: var(--kroma-chat-typography-body-small); font-weight: var(--kroma-font-weight-semibold, 600); }
+  &__form-input {
+    width: 100%;
+    min-width: 0;
+    min-height: 2.5rem;
+    padding: var(--kroma-chat-spacing-control) var(--kroma-chat-spacing-card);
+    border: 1px solid var(--kroma-chat-border-interactive);
+    border-radius: var(--kroma-chat-radius-input);
+    background: var(--kroma-chat-surface-control);
+    color: var(--kroma-chat-text-primary);
+    font: inherit;
+    font-size: var(--kroma-chat-typography-body);
+    line-height: var(--kroma-chat-leading-body);
+    transition: border-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), box-shadow var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+
+    &::placeholder { color: var(--kroma-chat-text-secondary); opacity: 1; }
+    &:focus-visible { border-color: var(--kroma-chat-state-focus); outline: 2px solid var(--kroma-chat-state-focus); outline-offset: 2px; }
+    &:disabled { border-color: var(--kroma-chat-border-subtle); background: var(--kroma-chat-surface); color: var(--kroma-chat-text-disabled); cursor: not-allowed; }
+    &[aria-invalid="true"] { border-color: var(--kroma-chat-state-error); }
+  }
+
+  &__form-submit { width: fit-content; min-width: 10rem; justify-self: start; }
+  &__error { margin: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-tight) 0; color: var(--kroma-chat-state-error); font-size: var(--kroma-chat-typography-body-small); line-height: var(--kroma-chat-leading-small); }
+}

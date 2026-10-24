@@ -1,0 +1,142 @@
+.kroma-chat {
+  display: flex;
+  width: min(100%, var(--kroma-chat-width, 26rem));
+  height: min(var(--kroma-chat-height, 39rem), var(--kroma-chat-max-height, 82dvh));
+  min-height: min(24rem, var(--kroma-chat-height, 39rem), var(--kroma-chat-max-height, 82dvh));
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--kroma-chat-border-subtle);
+  border-radius: var(--kroma-chat-radius-shell);
+  background: var(--kroma-chat-canvas);
+  color: var(--kroma-chat-text-primary);
+  font-family: var(--kroma-font-family-base, var(--bs-body-font-family, system-ui, sans-serif));
+  box-shadow: var(--kroma-chat-elevation-shell);
+  container-name: kroma-chat;
+  container-type: inline-size;
+
+  *, *::before, *::after { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+
+  &__header {
+    display: flex;
+    min-height: 3.75rem;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--kroma-chat-spacing-control);
+    padding: var(--kroma-chat-spacing-control) var(--kroma-chat-spacing-card);
+    border-bottom: 1px solid var(--kroma-chat-border-subtle);
+    background: var(--kroma-chat-surface-header);
+  }
+
+  &__avatar {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 auto;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--kroma-chat-accent);
+    color: var(--kroma-chat-on-accent);
+    font-size: var(--kroma-chat-typography-label);
+    font-weight: var(--kroma-font-weight-bold, 700);
+  }
+
+  &__heading { display: grid; min-width: 0; flex: 1; gap: var(--kroma-chat-spacing-tight); }
+  &__title { margin: 0; font-size: var(--kroma-chat-typography-display); font-weight: var(--kroma-font-weight-bold, 700); line-height: var(--kroma-chat-leading-display); overflow-wrap: anywhere; }
+  &__subtitle { margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-secondary); line-height: var(--kroma-chat-leading-small); }
+  &__status { display: flex; align-items: center; gap: var(--kroma-chat-spacing-tight); margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-secondary); line-height: var(--kroma-chat-leading-small); }
+  &__status:not([hidden])::before { width: .4rem; height: .4rem; flex: 0 0 auto; border-radius: 50%; background: var(--kroma-chat-state-success-mark); content: ""; }
+  &__actions:empty { display: none; }
+  &__actions { display: flex; align-items: center; gap: var(--kroma-chat-spacing-tight); }
+  &__header-action { display: grid; min-width: 2.5rem; min-height: 2.5rem; place-items: center; padding: var(--kroma-chat-spacing-tight); border: 0; border-radius: var(--kroma-chat-radius-control); background: transparent; color: var(--kroma-chat-text-secondary); font: inherit; font-size: var(--kroma-chat-typography-label); cursor: pointer; }
+  &__header-action:hover:not(:disabled) { background: var(--kroma-chat-surface-hover); color: var(--kroma-chat-text-primary); }
+  &__header-action:disabled { color: var(--kroma-chat-text-disabled); cursor: not-allowed; opacity: .7; }
+
+  &__messages {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--kroma-chat-spacing-message);
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin: 0;
+    padding: var(--kroma-chat-spacing-card);
+    overscroll-behavior: contain;
+    list-style: none;
+    background: var(--kroma-chat-canvas);
+    scrollbar-color: var(--kroma-scrollbar-thumb, var(--kroma-chat-border-subtle)) transparent;
+    scrollbar-width: thin;
+  }
+
+  &__messages:empty { flex: 0 0 0; padding: 0; }
+  &__empty { display: grid; flex: 1 1 auto; place-items: center; margin: 0; padding: var(--kroma-chat-spacing-section); color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-body); text-align: center; }
+
+  &__composer-area {
+    min-width: 0;
+    flex: 0 0 auto;
+    padding: var(--kroma-chat-spacing-control) var(--kroma-chat-spacing-card) max(var(--kroma-chat-spacing-control), env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--kroma-chat-border-subtle);
+    background: var(--kroma-chat-surface-header);
+  }
+
+  &__composer {
+    display: flex;
+    min-width: 0;
+    align-items: flex-end;
+    gap: var(--kroma-chat-spacing-control);
+    margin: 0;
+    padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
+    border: 1px solid var(--kroma-chat-border-interactive);
+    border-radius: var(--kroma-chat-radius-input);
+    background: var(--kroma-chat-surface-control);
+    transition: border-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), box-shadow var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+
+    &:focus-within { border-color: var(--kroma-chat-state-focus); outline: 2px solid var(--kroma-chat-state-focus); outline-offset: 2px; }
+    &:has(.kroma-chat__input[aria-invalid="true"]) { border-color: var(--kroma-chat-state-error); }
+  }
+
+  &__input {
+    width: 100%;
+    min-width: 0;
+    min-height: var(--kroma-chat-control-height);
+    max-height: 7.5rem;
+    resize: none;
+    overflow-y: auto;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    background: transparent;
+    color: var(--kroma-chat-text-primary);
+    font: inherit;
+    font-size: var(--kroma-chat-typography-body);
+    line-height: var(--kroma-chat-leading-body);
+    padding-block: var(--kroma-chat-spacing-control);
+
+    &::placeholder { color: var(--kroma-chat-text-secondary); opacity: 1; }
+    &:disabled { cursor: not-allowed; opacity: .7; }
+  }
+
+  &__send {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 0;
+    border-radius: var(--kroma-chat-radius-control);
+    background: var(--kroma-chat-action-primary-surface);
+    color: var(--kroma-chat-action-primary-content);
+    cursor: pointer;
+    transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), opacity var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+
+    svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    &:hover:not(:disabled) { background: var(--kroma-chat-action-primary-hover); color: var(--kroma-chat-action-primary-hover-content); }
+    &:disabled { background: var(--kroma-chat-action-primary-disabled); color: var(--kroma-chat-action-primary-disabled-content); cursor: not-allowed; }
+  }
+
+}

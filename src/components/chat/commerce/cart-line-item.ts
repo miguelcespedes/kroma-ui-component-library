@@ -2,12 +2,15 @@ import type { ChatAction, ChatCartItem } from "../core/chat.types";
 import type { ChatActionHandler } from "../shared/actions";
 import type { ChatActionDetail } from "../core/chat.events";
 import { formatMoney } from "../shared/formatting";
+import { createProductImage, createProductImagePlaceholder } from "../shared/images";
 
 export function createCartLineItem(messageId: string, line: ChatCartItem, removeLabel: string, onAction: ChatActionHandler) {
   const row = document.createElement("article");
   row.className = "kroma-chat__cart-item";
   row.setAttribute("role", "listitem");
   row.dataset.lineId = line.id;
+  const image = createProductImage(line.product.image, "kroma-chat__cart-image")
+    || createProductImagePlaceholder(line.product.name, "kroma-chat__cart-image");
   const product = document.createElement("div");
   product.className = "kroma-chat__cart-product";
   const name = document.createElement("strong");
@@ -49,6 +52,6 @@ export function createCartLineItem(messageId: string, line: ChatCartItem, remove
     });
     trailing.append(button);
   });
-  row.append(product, trailing);
+  row.append(image, product, trailing);
   return row;
 }

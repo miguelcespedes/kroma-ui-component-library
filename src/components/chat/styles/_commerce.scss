@@ -1,0 +1,29 @@
+.kroma-chat {
+  &__cart-summary { display: grid; width: min(100%, 34rem); gap: var(--kroma-chat-spacing-control); padding: var(--kroma-chat-spacing-card); border: 0; border-radius: var(--kroma-chat-radius-card); background: var(--kroma-chat-surface-card); }
+  &__cart-items { display: grid; gap: var(--kroma-chat-spacing-control); }
+  &__cart-item { display: grid; min-width: 0; grid-template-columns: 2.5rem minmax(0, 1fr) auto; align-items: center; gap: var(--kroma-chat-spacing-control); padding-block: var(--kroma-chat-spacing-tight); }
+  &__cart-image { width: 2.5rem; height: 2.5rem; border: 0; border-radius: var(--kroma-chat-radius-control); background: var(--kroma-chat-surface-assistant); object-fit: cover; }
+  &__cart-product { display: grid; min-width: 0; gap: var(--kroma-chat-spacing-tight); }
+  &__cart-name { min-width: 0; font-size: var(--kroma-chat-typography-body); font-weight: var(--kroma-font-weight-semibold, 600); line-height: var(--kroma-chat-leading-body); overflow-wrap: anywhere; }
+  &__cart-meta { min-width: 0; margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-body-small); line-height: var(--kroma-chat-leading-small); overflow-wrap: anywhere; }
+  &__cart-trailing { display: flex; min-width: 0; flex-direction: column; align-items: flex-end; gap: var(--kroma-chat-spacing-tight); }
+  &__cart-total { font-size: var(--kroma-chat-typography-body); font-weight: var(--kroma-font-weight-semibold, 600); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  &__cart-remove { min-height: 2rem; padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control); border: 0; border-radius: var(--kroma-chat-radius-control); background: transparent; color: var(--kroma-chat-text-accent); font: inherit; font-size: var(--kroma-chat-typography-body-small); text-decoration: underline; text-underline-offset: .15em; cursor: pointer; }
+  &__cart-remove:hover:not(:disabled) { background: var(--kroma-chat-surface-hover); color: var(--kroma-chat-text-primary); }
+  &__price-summary { display: grid; gap: var(--kroma-chat-spacing-tight); }
+  &__cart-subtotal { display: flex; min-width: 0; justify-content: space-between; gap: var(--kroma-chat-spacing-control); font-size: var(--kroma-chat-typography-body-small); }
+  &__cart-subtotal > * { min-width: 0; overflow-wrap: anywhere; }
+  &__cart-subtotal strong { color: var(--kroma-chat-text-primary); font-size: var(--kroma-chat-typography-body); font-weight: var(--kroma-font-weight-semibold, 600); font-variant-numeric: tabular-nums; text-align: end; }
+  &__price-entry--strong { margin-top: var(--kroma-chat-spacing-control); padding-top: var(--kroma-chat-spacing-control); color: var(--kroma-chat-text-primary); font-weight: var(--kroma-font-weight-semibold, 600); }
+  &__price-entry--strong strong { font-size: var(--kroma-chat-typography-display); font-weight: var(--kroma-font-weight-bold, 700); }
+  &__cart-empty { margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-body-small); }
+
+  &__order-review { display: grid; width: min(100%, 34rem); min-width: 0; gap: var(--kroma-chat-spacing-control); }
+  &__customer-details { display: grid; min-width: 0; gap: var(--kroma-chat-spacing-tight); margin: 0; padding: var(--kroma-chat-spacing-control); border: 0; border-radius: var(--kroma-chat-radius-control); background: var(--kroma-chat-surface); }
+  &__customer-row { display: grid; grid-template-columns: minmax(4rem, auto) minmax(0, 1fr); gap: var(--kroma-chat-spacing-control); font-size: var(--kroma-chat-typography-body-small); }
+  &__customer-row dt { color: var(--kroma-chat-text-secondary); font-weight: var(--kroma-font-weight-semibold, 600); }
+  &__customer-row dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+  &__review-actions { display: flex; flex-wrap: wrap; gap: var(--kroma-chat-spacing-control); }
+  &__review-actions .kroma-chat__journey-action { flex: 1 1 auto; justify-content: center; }
+  &__review-actions .kroma-chat__journey-action[data-action-id="edit"] { background: var(--kroma-chat-action-secondary-surface); color: var(--kroma-chat-action-secondary-content); }
+}

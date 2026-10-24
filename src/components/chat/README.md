@@ -20,10 +20,39 @@ chat?.addMessage({ author: "assistant", type: "text", text: "Hello." });
 | `setComposerDisabled(disabled)` | Disable or enable the text composer. |
 | `setOptionsDisabled(messageId, disabled)` | Disable one message's QuickReplies or ChoiceList. |
 | `setError(message)` | Show or clear a composer error. |
+| `mode` | Typed `"default" | "kitchen"` property reflected by the `mode` attribute. Changing it rebuilds the transcript. |
 
 Component listeners are disposed when the element disconnects and reinitialized if it is connected again.
 
-The `chat-title`, `subtitle`, `avatar`, `status`, `messages-label`, `empty-state`, `input-label`, `placeholder`, `send-label`, and `typing-label` attributes configure presentation. The `options` message remains an alias for the original QuickReplies contract.
+The `mode`, `chat-title`, `subtitle`, `avatar`, `status`, `messages-label`, `empty-state`, `input-label`, `placeholder`, `send-label`, and `typing-label` attributes configure the element. The `options` message remains an alias for the original QuickReplies contract.
+
+## Kitchen Mode
+
+Kitchen Mode is a static component-inspection conversation rendered by the same message list and renderers as the default chat. It is selected with the additive `mode` attribute or typed property; the default remains `default`.
+
+```html
+<kroma-chat mode="kitchen" chat-title="Asistente Kroma" avatar="K"></kroma-chat>
+```
+
+```ts
+import type { ChatMode, KromaChat } from "./components/chat";
+
+const chat = document.querySelector<KromaChat>("kroma-chat");
+const mode: ChatMode = "kitchen";
+if (chat) chat.mode = mode;
+```
+
+Changing mode rebuilds the transcript. Kitchen Mode loads its catalog asynchronously from the optional `kitchen/` module, leaves the composer visible but disabled, and suppresses host action, send, quantity and form-submit events. QuickReplies and ChoiceList may still show a local selected state without adding user messages. It does not run the host's commerce journey or call services.
+
+The Cheatsheet's `/chat/` page provides the mode selector, clear/dark theme controls and responsive width/density controls. Its normal mode keeps the existing mock commerce journey; Kitchen Mode presents every example in order in that same `<kroma-chat>` instance.
+
+### Catalog organization
+
+- `kitchen/kitchen.fixtures.ts`: typed, fictional products, variants, categories, menu entries and cart lines. Product art is imported from local `src/assets/` files.
+- `kitchen/kitchen.catalog.ts`: ordered component descriptions and real typed `ChatMessage` examples.
+- `kitchen/kitchen.messages.ts`: adds the numbered Spanish introduction before each example and produces the transcript consumed by KromaChat.
+
+To add a component example, add or reuse a typed fixture, then add an ordered entry in `kitchen.catalog.ts` using the component's existing message type. Composite internals are demonstrated through their owning renderer (for example, Cart Line Item through Cart Summary and Journey Option through Journey Menu); do not duplicate their markup. Status examples cover information, success, warning and error; the product and choice fixtures include selected and disabled states, and the static typing sample represents loading.
 
 ## Message contracts
 
@@ -53,6 +82,6 @@ The former `KromaChatElement` class export remains an alias of `KromaChat`; only
 - `layout/` owns the header, message history and composer.
 - `messages/`, `navigation/`, `catalog/`, `commerce/`, `forms/`, and `feedback/` contain their named presentation controls.
 - `shared/` contains reusable action, icon, image and formatting primitives.
-- `kroma-chat.scss` is the stylesheet entry point; it preserves the component's existing selectors and design tokens.
+- `kroma-chat.scss` is the stylesheet entry point; `styles/` separates token aliases and the layout, messages, navigation, catalog, commerce, forms, feedback and state families.
 
 Control modules receive structured data and callbacks. Only the host decides which message or journey step comes next.

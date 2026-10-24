@@ -2,6 +2,7 @@ import type { ProductDetailMessage } from "../core/chat.types";
 import { createControlAction, type ChatActionHandler } from "../shared/actions";
 import { formatMoney } from "../shared/formatting";
 import { createProductImage, createProductImagePlaceholder } from "../shared/images";
+import { createIconLabel } from "../shared/icons";
 import { createFeatureList } from "./feature-list";
 import { createQuantitySelector, type ChatQuantityHandler } from "./quantity-selector";
 import { createVariantSelector } from "./product-variant-selector";
@@ -37,7 +38,7 @@ export function createProductDetail(messageId: string, message: ProductDetailMes
   addButton.type = "button";
   addButton.className = "kroma-chat__journey-action kroma-chat__product-add";
   addButton.dataset.actionId = "add-to-cart";
-  addButton.textContent = message.addActionLabel || "Add to selection";
+  addButton.append(createIconLabel("cart", message.addActionLabel || "Add to selection", "kroma-chat__product-add-label"));
   addButton.disabled = Boolean(message.requiresVariant && !selectedVariantId);
 
   if (variants.length) {

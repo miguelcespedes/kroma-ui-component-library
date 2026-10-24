@@ -40,7 +40,7 @@ import { createChatBubble, createChatMessageTime } from "../messages/chat-messag
 import { createChoiceList } from "../messages/choice-list";
 import { createQuickReplies } from "../messages/quick-replies";
 import { createRichMessage } from "../messages/rich-message";
-import { createTypingIndicator } from "../messages/typing-indicator";
+import { createTypingBubble } from "../messages/typing-indicator";
 import { createCategoryPicker } from "../navigation/category-picker";
 import { createJourneyMenu } from "../navigation/journey-menu";
 import { createProductCard } from "../catalog/product-card";
@@ -168,7 +168,9 @@ function renderText(item: HTMLLIElement, message: ChatTextMessage) {
 }
 
 function renderTyping(item: HTMLLIElement, message: ChatTypingMessage) {
-  item.append(createTypingIndicator(item.id, message.label || "Assistant is typing"));
+  item.classList.add("kroma-chat__message--typing");
+  item.setAttribute("role", "status");
+  item.append(createTypingBubble(message.label || "Assistant is typing"));
 }
 
 const renderers = {

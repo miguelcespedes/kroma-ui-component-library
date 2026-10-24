@@ -16,6 +16,20 @@
   background: var(--kroma-color-surface-canvas, var(--bs-body-bg));
 }
 
+:root[data-bs-theme="dark"] .kroma-chat-standalone,
+:root[data-bs-theme="dark"] .kroma-chat-page {
+  --kroma-chat-lab-canvas: var(--kroma-ref-gray-850, var(--kroma-color-surface-canvas, var(--bs-body-bg)));
+  --kroma-chat-lab-content: var(--kroma-ref-gray-100, var(--kroma-color-content-primary, var(--bs-body-color)));
+  background: var(--kroma-chat-lab-canvas);
+  color: var(--kroma-chat-lab-content);
+}
+
+:root[data-bs-theme="dark"] .kroma-chat-standalone,
+:root[data-bs-theme="dark"] .kroma-chat-page {
+  background: var(--kroma-ref-gray-850, var(--kroma-color-surface-canvas, var(--bs-body-bg)));
+  color: var(--kroma-ref-gray-100, var(--kroma-color-content-primary, var(--bs-body-color)));
+}
+
 .kroma-chat-lab__toolbar {
   display: flex;
   width: min(100%, 62rem);
@@ -72,6 +86,7 @@
 }
 
 .kroma-chat-lab__control select,
+.kroma-chat-lab__control > button,
 .kroma-chat-lab__control .dropdown-toggle {
   min-height: 2.35rem;
   padding: .35rem .65rem;
@@ -114,10 +129,10 @@
   .kroma-chat-page { gap: .5rem; padding: .5rem; }
   .kroma-chat-lab__toolbar { gap: .5rem .75rem; padding: .65rem .5rem; }
   .kroma-chat-page__device {
-    --kroma-chat-height: min(760px, calc(100dvh - 14rem));
-    --kroma-chat-max-height: calc(100dvh - 14rem);
-    height: min(760px, calc(100dvh - 14rem));
-    min-height: min(22rem, calc(100dvh - 14rem));
+    --kroma-chat-height: min(760px, calc(100dvh - 15rem));
+    --kroma-chat-max-height: calc(100dvh - 15rem);
+    height: min(760px, calc(100dvh - 15rem));
+    min-height: min(22rem, calc(100dvh - 15rem));
   }
 }
 

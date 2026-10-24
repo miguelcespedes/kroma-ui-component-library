@@ -9,6 +9,8 @@ export function createProductImage(image?: ChatImage, className = "kroma-chat__p
     element.className = className;
     element.src = url.href;
     element.alt = image.alt;
+    element.width = 512;
+    element.height = 512;
     element.loading = "lazy";
     element.decoding = "async";
     return element;

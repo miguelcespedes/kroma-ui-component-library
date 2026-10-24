@@ -4,6 +4,11 @@ import { initializeContrastDropdown } from "../components/contrast-dropdown/cont
 import { initializeThemeDropdown } from "../components/theme-dropdown/theme-dropdown";
 import { initializeColorTokenPalette } from "../components/color-token-palette/color-token-palette";
 import "../components/chat";
+import chatPoloImage from "../assets/chat-polo-v2.png";
+import chatJacketImage from "../assets/chat-jacket-v2.png";
+import chatBottleImage from "../assets/chat-bottle-v2.png";
+import chatSneakerImage from "../assets/chat-sneaker-v2.png";
+import chatCapImage from "../assets/chat-cap-v2.png";
 import type {
   ChatActionDetail,
   ChatCartItem,
@@ -17,6 +22,7 @@ import type {
   ChatProduct,
   ChatQuantityChangeDetail,
   ChatSendDetail,
+  ChatMode,
   JourneyMenuItem,
   KromaChat,
 } from "../components/chat";
@@ -34,7 +40,22 @@ document.documentElement.setAttribute("data-bs-theme", "dark");
 initializeThemeDropdown(bootstrap);
 initializeContrastDropdown(bootstrap);
 initializeColorTokenPalette();
-document.querySelectorAll<KromaChat>("kroma-chat[data-demo='commerce-journey']").forEach(initializeCommerceJourneyDemo);
+const commerceDemoCleanups = new WeakMap<KromaChat, () => void>();
+document.querySelectorAll<KromaChat>("kroma-chat[data-demo='commerce-journey']").forEach((chat) => {
+  const modeControl = document.querySelector<HTMLSelectElement>("[data-chat-mode]");
+  if (chat.mode === "default") commerceDemoCleanups.set(chat, initializeCommerceJourneyDemo(chat));
+  if (!modeControl) return;
+
+  modeControl.value = chat.mode;
+  modeControl.addEventListener("change", () => {
+    const nextMode: ChatMode = modeControl.value === "kitchen" ? "kitchen" : "default";
+    if (nextMode === chat.mode) return;
+    commerceDemoCleanups.get(chat)?.();
+    commerceDemoCleanups.delete(chat);
+    chat.mode = nextMode;
+    if (nextMode === "default") commerceDemoCleanups.set(chat, initializeCommerceJourneyDemo(chat));
+  });
+});
 
 document.querySelectorAll<HTMLElement>('[data-bs-toggle="tooltip"]').forEach((element) => new bootstrap.Tooltip(element));
 document.querySelectorAll<HTMLElement>('[data-bs-toggle="popover"]').forEach((element) => new bootstrap.Popover(element));
@@ -94,6 +115,7 @@ const demoProducts: ChatProduct[] = [
     name: "Polo de algodón",
     summary: "Algodón suave, cuello redondo y corte clásico.",
     description: "Polo de algodón suave, con cuello redondo y un corte clásico para el uso diario.",
+    image: { src: chatPoloImage, alt: "Polo blanco de algodón" },
     price: { amount: 49, currency: "PEN", label: "S/ 49.00" },
     features: ["Algodón suave", "Colores blanco y negro", "Lavable a máquina"],
     variants: [
@@ -107,6 +129,7 @@ const demoProducts: ChatProduct[] = [
     name: "Casaca ligera",
     summary: "Una capa versátil para días frescos.",
     description: "Casaca ligera y versátil para usar durante los días frescos.",
+    image: { src: chatJacketImage, alt: "Casaca ligera color grafito" },
     price: { amount: 129, currency: "PEN", label: "S/ 129.00" },
     features: ["Tela ligera", "Bolsillos laterales", "Cierre frontal"],
     variants: [
@@ -118,16 +141,40 @@ const demoProducts: ChatProduct[] = [
     id: "folding-bottle",
     name: "Botella reutilizable",
     summary: "Formato compacto para llevar contigo.",
-    description: "Botella reutilizable de formato compacto. Esta ficha de ejemplo no incluye una imagen.",
+    description: "Botella reutilizable de formato compacto para llevar contigo.",
+    image: { src: chatBottleImage, alt: "Botella reutilizable de acero grafito" },
     price: { amount: 35, currency: "PEN", label: "S/ 35.00" },
     features: ["Tapa a rosca", "Fácil de transportar"],
+  },
+  {
+    id: "urban-sneaker",
+    name: "Zapatilla urbana",
+    summary: "Diseño ligero para todos los días.",
+    description: "Zapatilla urbana ligera en blanco con detalles grafito.",
+    image: { src: chatSneakerImage, alt: "Zapatilla urbana blanca" },
+    price: { amount: 129, currency: "PEN", label: "S/ 129.00" },
+    features: ["Suela flexible", "Malla transpirable"],
+    variants: [
+      { id: "sneaker-size-38", label: "Talla 38", value: "38" },
+      { id: "sneaker-size-40", label: "Talla 40", value: "40" },
+      { id: "sneaker-size-42", label: "Talla 42", value: "42" },
+    ],
+  },
+  {
+    id: "classic-cap",
+    name: "Gorra clásica",
+    summary: "Algodón con ajuste posterior.",
+    description: "Gorra de algodón azul noche con ajuste posterior.",
+    image: { src: chatCapImage, alt: "Gorra azul noche" },
+    price: { amount: 39, currency: "PEN", label: "S/ 39.00" },
+    features: ["Algodón tejido", "Ajuste regulable"],
   },
 ];
 
 const productsByCategory: Record<DemoCategoryId, readonly string[]> = {
   all: demoProducts.map((product) => product.id),
-  clothing: ["cotton-polo", "light-jacket"],
-  accessories: ["folding-bottle"],
+  clothing: ["cotton-polo", "light-jacket", "urban-sneaker"],
+  accessories: ["folding-bottle", "classic-cap"],
 };
 
 function getDemoProduct(productId: string) {
@@ -305,6 +352,7 @@ function renderJourney(chat: KromaChat, state: JourneyState) {
 }
 
 function initializeCommerceJourneyDemo(chat: KromaChat) {
+  const listeners = new AbortController();
   let state = freshJourney();
   renderJourney(chat, state);
   let pendingReply = 0;
@@ -362,12 +410,12 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
       default:
         break;
     }
-  });
+  }, { signal: listeners.signal });
 
   chat.addEventListener("kroma-chat-quantity-change", (event) => {
     const detail = (event as CustomEvent<ChatQuantityChangeDetail>).detail;
     transition({ type: "change-quantity", productId: detail.productId, quantity: detail.quantity }, false, false);
-  });
+  }, { signal: listeners.signal });
 
   chat.addEventListener("kroma-chat-form-submit", (event) => {
     const detail = (event as CustomEvent<ChatFormSubmitDetail>).detail;
@@ -375,7 +423,7 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
       type: "submit-customer",
       customer: { name: detail.values.name || "", contact: detail.values.contact || "", delivery: detail.values.delivery || "" },
     });
-  });
+  }, { signal: listeners.signal });
 
   chat.addEventListener("kroma-chat-option-select", (event) => {
     const detail = (event as CustomEvent<ChatOptionSelectEventDetail>).detail;
@@ -404,7 +452,7 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
       default:
         break;
     }
-  });
+  }, { signal: listeners.signal });
 
   chat.addEventListener("kroma-chat-send", () => {
     const revision = ++pendingReply;
@@ -418,7 +466,12 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
         { id: "cart", label: "Ver mi selección", value: "view-cart" },
       ]));
     }, 420);
-  });
+  }, { signal: listeners.signal });
+
+  return () => {
+    pendingReply++;
+    listeners.abort();
+  };
 }
 
 function reduceJourney(state: JourneyState, event: JourneyEvent): JourneyState {
