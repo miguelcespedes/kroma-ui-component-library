@@ -7,19 +7,52 @@
     <title>KromaChat · Kroma</title>
   </head>
   <body class="bg-body-tertiary kroma-chat-standalone">
-    <main class="kroma-chat-page">
-      <kroma-chat
-        class="kroma-chat-page__device"
-        data-demo="commerce-journey"
-        aria-label="KromaChat: asistente conversacional"
-        chat-title="Asistente"
-        subtitle="Aquí para ayudarte"
-        messages-label="Mensajes"
-        input-label="Escribe un mensaje"
-        send-label="Enviar mensaje"
-        placeholder="Mensaje…"
-        empty-state="Inicia la conversación">
-      </kroma-chat>
+    <main class="kroma-chat-page" data-chat-lab>
+      <header class="kroma-chat-lab__toolbar" aria-label="Controles del laboratorio visual">
+        <fieldset class="kroma-chat-lab__control">
+          <legend>Ancho</legend>
+          <div class="kroma-chat-lab__widths" role="group" aria-label="Ancho de vista previa">
+            <button type="button" data-chat-width="320px" aria-pressed="false">320 px</button>
+            <button type="button" data-chat-width="390px" aria-pressed="true">390 px</button>
+            <button type="button" data-chat-width="480px" aria-pressed="false">480 px</button>
+            <button type="button" data-chat-width="fluid" aria-pressed="false">Adaptable</button>
+          </div>
+        </fieldset>
+        <label class="kroma-chat-lab__control">
+          <span>Densidad</span>
+          <select id="chat-density" name="chat-density" data-chat-density aria-label="Densidad del chat">
+            <option value="comfortable" selected>Cómoda</option>
+            <option value="compact">Compacta</option>
+          </select>
+        </label>
+        <div class="dropdown kroma-chat-lab__control" data-theme-dropdown aria-label="Tema de marca"></div>
+        <div class="dropdown kroma-chat-lab__control kroma-chat-lab__contrast">
+          <span>Contraste</span>
+          <button class="btn btn-outline-secondary dropdown-toggle" id="bd-theme" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Seleccionar contraste">
+            <span>Auto</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><button type="button" class="dropdown-item" data-bs-theme-value="light" aria-pressed="false">Claro</button></li>
+            <li><button type="button" class="dropdown-item" data-bs-theme-value="dark" aria-pressed="false">Oscuro</button></li>
+            <li><button type="button" class="dropdown-item" data-bs-theme-value="auto" aria-pressed="true">Auto</button></li>
+          </ul>
+        </div>
+      </header>
+      <section class="kroma-chat-page__preview" data-chat-preview aria-label="Vista previa de KromaChat">
+        <kroma-chat
+          class="kroma-chat-page__device"
+          data-demo="commerce-journey"
+          data-density="comfortable"
+          aria-label="KromaChat: asistente conversacional"
+          chat-title="Asistente"
+          subtitle="Aquí para ayudarte"
+          messages-label="Mensajes"
+          input-label="Escribe un mensaje"
+          send-label="Enviar mensaje"
+          placeholder="Mensaje…"
+          empty-state="Inicia la conversación">
+        </kroma-chat>
+      </section>
     </main>
     <script type="module" src="./chat-page.ts"></script>
   </body>
