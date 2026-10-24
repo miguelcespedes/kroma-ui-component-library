@@ -9,6 +9,21 @@ const iconPaths: Record<string, string> = {
   cart: "M3 4h2l2.2 10.5h10.4L20 7H6 M8 18.5h.01 M17 18.5h.01",
 };
 
+export function createChevronIcon(direction: "previous" | "next") {
+  const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  icon.setAttribute("viewBox", "0 0 24 24");
+  icon.setAttribute("fill", "none");
+  icon.setAttribute("stroke", "currentColor");
+  icon.setAttribute("stroke-width", "1.75");
+  icon.setAttribute("stroke-linecap", "round");
+  icon.setAttribute("stroke-linejoin", "round");
+  icon.setAttribute("aria-hidden", "true");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", direction === "next" ? "m9 5 7 7-7 7" : "m15 5-7 7 7 7");
+  icon.append(path);
+  return icon;
+}
+
 export function createIconLabel(icon: string | undefined, label: string, className: string) {
   const wrapper = document.createElement("span");
   wrapper.className = className;
@@ -19,7 +34,7 @@ export function createIconLabel(icon: string | undefined, label: string, classNa
     iconElement.setAttribute("viewBox", "0 0 24 24");
     iconElement.setAttribute("fill", "none");
     iconElement.setAttribute("stroke", "currentColor");
-    iconElement.setAttribute("stroke-width", "1.7");
+    iconElement.setAttribute("stroke-width", "1.75");
     iconElement.setAttribute("stroke-linecap", "round");
     iconElement.setAttribute("stroke-linejoin", "round");
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -28,6 +43,7 @@ export function createIconLabel(icon: string | undefined, label: string, classNa
     wrapper.append(iconElement);
   }
   const text = document.createElement("span");
+  text.className = `${className}-text`;
   text.textContent = label;
   wrapper.append(text);
   return wrapper;

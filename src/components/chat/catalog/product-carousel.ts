@@ -1,5 +1,6 @@
 import type { ProductCarouselMessage } from "../core/chat.types";
 import type { ChatActionHandler } from "../shared/actions";
+import { createChevronIcon } from "../shared/icons";
 import { createProductListItem } from "./product-list-item";
 
 export function createProductCarousel(messageId: string, message: ProductCarouselMessage, onAction: ChatActionHandler) {
@@ -23,7 +24,7 @@ export function createProductCarousel(messageId: string, message: ProductCarouse
     button.className = "kroma-chat__carousel-arrow";
     button.setAttribute("aria-label", label);
     button.setAttribute("aria-controls", trackId);
-    button.textContent = direction < 0 ? "‹" : "›";
+    button.append(createChevronIcon(direction < 0 ? "previous" : "next"));
     button.addEventListener("click", () => {
       const card = track.querySelector<HTMLElement>(".kroma-chat__product-card");
       const behavior: ScrollBehavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";

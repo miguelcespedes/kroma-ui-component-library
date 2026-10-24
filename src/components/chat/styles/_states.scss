@@ -15,6 +15,7 @@
 
   &__composer textarea:focus-visible:not(:disabled) { outline: none; box-shadow: none; }
   &__sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+  :where(button, input, textarea, select):disabled { opacity: .62; }
 
   @media (max-width: 30rem) {
     width: 100%;
@@ -35,6 +36,7 @@
   .kroma-chat__bubble { max-width: min(94%, 34rem); }
   .kroma-chat__product-detail { padding: var(--kroma-chat-spacing-control); }
   .kroma-chat__product-detail-image { max-height: 10rem; }
+  .kroma-chat__journey-item { padding-inline: var(--kroma-chat-spacing-control) 2.25rem; }
   .kroma-chat__product-card { grid-template-columns: 3rem minmax(0, 1fr); grid-template-rows: auto auto; gap: var(--kroma-chat-spacing-control); padding: var(--kroma-chat-spacing-control); }
   .kroma-chat__product-image { width: 3rem; height: 3rem; grid-column: 1; grid-row: 1; }
   .kroma-chat__product-content { grid-column: 2; grid-row: 1; }

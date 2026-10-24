@@ -45,7 +45,9 @@
 
   &__product-carousel { display: grid; width: 100%; max-width: 34rem; min-width: 0; gap: var(--kroma-chat-spacing-tight); }
   &__carousel-controls { display: flex; justify-content: flex-end; gap: var(--kroma-chat-spacing-tight); }
-  &__carousel-arrow { display: grid; width: 2.25rem; height: 2.25rem; place-items: center; border: 0; border-radius: var(--kroma-chat-radius-control); background: var(--kroma-chat-surface-selected); color: var(--kroma-chat-text-primary); font: inherit; font-size: 1.25rem; cursor: pointer; }
+  &__carousel-arrow { display: grid; width: 2.25rem; height: 2.25rem; place-items: center; border: 0; border-radius: var(--kroma-chat-radius-control); background: transparent; color: var(--kroma-chat-text-secondary); font: inherit; cursor: pointer; }
+  &__carousel-arrow svg { width: var(--kroma-chat-chevron-size); height: var(--kroma-chat-chevron-size); }
+  &__carousel-arrow:hover:not(:disabled) { background: var(--kroma-chat-surface-hover); color: var(--kroma-chat-text-primary); }
   &__carousel-arrow:disabled { color: var(--kroma-chat-text-disabled); cursor: default; }
   &__product-track { display: flex; width: 100%; min-width: 0; gap: var(--kroma-chat-spacing-control); overflow-x: auto; padding: var(--kroma-chat-spacing-tight); scroll-snap-type: x mandatory; overscroll-behavior-inline: contain; scrollbar-width: none; }
   &__product-track::-webkit-scrollbar { display: none; }
@@ -68,7 +70,7 @@
   }
   &__product-detail > * { min-width: 0; max-width: 100%; }
   &__product-detail-image { display: block; width: 100%; max-height: 13rem; border: 0; border-radius: var(--kroma-chat-radius-control); background: var(--kroma-chat-surface-assistant); object-fit: contain; }
-  &__product-detail-title { margin: 0; font-size: var(--kroma-chat-typography-title); font-weight: var(--kroma-font-weight-bold, 700); line-height: var(--kroma-chat-leading-heading); overflow-wrap: anywhere; }
+  &__product-detail-title { margin: 0; font-size: var(--kroma-chat-typography-title); font-weight: var(--kroma-chat-weight-semibold); line-height: var(--kroma-chat-leading-heading); overflow-wrap: anywhere; }
   &__product-detail-description { width: 100%; margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-body); line-height: var(--kroma-chat-leading-body); overflow-wrap: anywhere; word-break: normal; }
   &__product-detail-price { width: fit-content; max-width: 100%; margin: 0; padding: 0; color: var(--kroma-chat-text-primary); font-size: var(--kroma-chat-typography-price); font-weight: var(--kroma-font-weight-bold, 700); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
   &__product-features { display: grid; min-width: 0; gap: var(--kroma-chat-spacing-tight); margin: 0; padding: 0; color: var(--kroma-chat-text-primary); font-size: var(--kroma-chat-typography-body-small); line-height: var(--kroma-chat-leading-small); list-style: none; }

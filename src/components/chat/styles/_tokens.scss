@@ -26,6 +26,7 @@
   --kroma-chat-border-subtle: var(--kroma-color-border-subtle, var(--bs-border-color, #dee2e6));
   --kroma-chat-border-interactive: var(--kroma-color-border-default, var(--bs-border-color, #dee2e6));
   --kroma-chat-border-selected: var(--kroma-color-focus-indicator, var(--kroma-chat-accent));
+  --kroma-chat-border-menu: var(--kroma-chat-border-subtle);
 
   --kroma-chat-action-primary-surface: var(--kroma-button-primary-bg, var(--kroma-chat-accent));
   --kroma-chat-action-primary-content: var(--kroma-button-primary-fg, var(--kroma-chat-on-accent));
@@ -47,10 +48,12 @@
 
   // The global radius scale tops out at 8px; chat needs 12px cards and a 16px shell.
   --kroma-chat-radius-shell: 1rem;
+  --kroma-chat-radius-menu: 1rem;
   --kroma-chat-radius-message: 1rem;
   --kroma-chat-radius-card: .75rem;
-  --kroma-chat-radius-control: var(--kroma-radius-lg, .5rem);
-  --kroma-chat-radius-input: var(--kroma-radius-md, .375rem);
+  --kroma-chat-radius-control: var(--kroma-radius-md, .5rem);
+  --kroma-chat-radius-input: var(--kroma-radius-md, .5rem);
+  --kroma-chat-radius-small: var(--kroma-radius-sm, .25rem);
   --kroma-chat-radius-pill: 999px;
   --kroma-chat-elevation-shell: var(--kroma-elevation-1, 0 .125rem .25rem rgb(27 35 52 / 8%));
 
@@ -58,16 +61,24 @@
   --kroma-chat-spacing-message: var(--kroma-space-2, .5rem);
   --kroma-chat-spacing-group: var(--kroma-space-2, .5rem);
   --kroma-chat-spacing-control: var(--kroma-space-2, .5rem);
-  // Add the 12px step absent from the shared 4/8/16/24 spacing scale.
   --kroma-chat-spacing-3: .75rem;
   --kroma-chat-spacing-card: var(--kroma-space-3, 1rem);
   --kroma-chat-spacing-section: var(--kroma-space-4, 1.5rem);
+  --kroma-chat-spacing-5: 2rem;
+  --kroma-chat-spacing-menu-inline: var(--kroma-chat-spacing-card);
+  --kroma-chat-spacing-icon-label: var(--kroma-chat-spacing-3);
+  --kroma-chat-spacing-copy: var(--kroma-chat-spacing-tight);
   // Compact, touch-safe control geometry used consistently by chat actions and fields.
   --kroma-chat-control-height: 2.75rem;
+  --kroma-chat-menu-row-height: 3.75rem;
+  --kroma-chat-icon-action-size: 1.125rem;
+  --kroma-chat-icon-secondary-size: 1rem;
+  --kroma-chat-chevron-size: 1rem;
   --kroma-chat-bubble-padding: .75rem 1rem;
 
   // Chat reading scale follows the reference when no equivalent semantic size exists globally.
-  --kroma-chat-typography-display: var(--kroma-font-size-base, 1rem);
+  --kroma-chat-font-family: var(--kroma-font-family-base, var(--bs-body-font-family, system-ui, -apple-system, "Segoe UI", sans-serif));
+  --kroma-chat-typography-display: 1rem;
   --kroma-chat-typography-title: .875rem;
   --kroma-chat-typography-body: .875rem;
   --kroma-chat-typography-body-small: .75rem;
@@ -77,11 +88,16 @@
   --kroma-chat-typography-meta: var(--kroma-chat-typography-caption);
   --kroma-chat-typography-product: .875rem;
   --kroma-chat-typography-price: 1rem;
-  --kroma-chat-leading-display: var(--kroma-line-height-base, 1.5);
+  --kroma-chat-leading-display: 1.5;
   --kroma-chat-leading-heading: 1.43;
   --kroma-chat-leading-body: 1.43;
   --kroma-chat-leading-small: 1.33;
   --kroma-chat-leading-caption: 1.27;
+  --kroma-chat-weight-regular: var(--kroma-font-weight-normal, 400);
+  // 500 is supported by the system-ui/Segoe UI stack and stays local to KromaChat.
+  --kroma-chat-weight-medium: 500;
+  --kroma-chat-weight-semibold: var(--kroma-font-weight-semibold, 600);
+  --kroma-chat-weight-bold: var(--kroma-font-weight-bold, 700);
 
   --kroma-chat-motion-fast: var(--kroma-motion-duration-fast, .15s);
   --kroma-chat-motion-standard: var(--kroma-motion-easing-standard, ease);
@@ -121,7 +137,7 @@
   .kroma-chat {
     --kroma-chat-elevated: var(--kroma-ref-surface-raised, color-mix(in srgb, var(--kroma-chat-surface) 90%, var(--kroma-chat-text-primary) 10%));
     --kroma-chat-surface-assistant: var(--kroma-ref-surface-accent, color-mix(in srgb, var(--kroma-chat-canvas) 94%, var(--kroma-chat-text-primary) 6%));
-    --kroma-chat-surface-hover: color-mix(in srgb, var(--kroma-chat-surface) 92%, var(--kroma-chat-accent) 8%);
+    --kroma-chat-surface-hover: color-mix(in srgb, var(--kroma-chat-surface) 97%, var(--kroma-chat-text-primary) 3%);
     --kroma-chat-surface-selected: color-mix(in srgb, var(--kroma-chat-surface) 88%, var(--kroma-chat-accent) 12%);
     --kroma-chat-surface-success: color-mix(in srgb, var(--kroma-chat-surface) 86%, var(--kroma-chat-state-success-mark) 14%);
     --kroma-chat-surface-warning: color-mix(in srgb, var(--kroma-chat-surface) 86%, var(--kroma-chat-state-warning-mark) 14%);

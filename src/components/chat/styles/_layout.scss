@@ -10,7 +10,10 @@
   border-radius: var(--kroma-chat-radius-shell);
   background: var(--kroma-chat-canvas);
   color: var(--kroma-chat-text-primary);
-  font-family: var(--kroma-font-family-base, var(--bs-body-font-family, system-ui, sans-serif));
+  font-family: var(--kroma-chat-font-family);
+  font-size: var(--kroma-chat-typography-body);
+  font-weight: var(--kroma-chat-weight-regular);
+  line-height: var(--kroma-chat-leading-body);
   box-shadow: var(--kroma-chat-elevation-shell);
   container-name: kroma-chat;
   container-type: inline-size;
@@ -134,7 +137,7 @@
     cursor: pointer;
     transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), opacity var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
 
-    svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    svg { width: var(--kroma-chat-icon-action-size); height: var(--kroma-chat-icon-action-size); fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
     &:hover:not(:disabled) { background: var(--kroma-chat-action-primary-hover); color: var(--kroma-chat-action-primary-hover-content); }
     &:disabled { background: var(--kroma-chat-action-primary-disabled); color: var(--kroma-chat-action-primary-disabled-content); cursor: not-allowed; }
   }

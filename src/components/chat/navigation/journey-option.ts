@@ -11,7 +11,7 @@ export function createJourneyOption(messageId: string, item: JourneyMenuItem, on
     const description = document.createElement("span");
     description.className = "kroma-chat__journey-item-description";
     description.textContent = item.description;
-    button.append(description);
+    button.querySelector(".kroma-chat__journey-item-label-text")?.append(description);
   }
   button.dataset.itemId = item.id;
   return button;

@@ -12,7 +12,7 @@
     background: var(--kroma-chat-action-primary-surface);
     color: var(--kroma-chat-action-primary-content);
     font: inherit;
-    font-size: var(--kroma-chat-typography-secondary);
+    font-size: var(--kroma-chat-typography-body);
     font-weight: var(--kroma-font-weight-semibold, 600);
     line-height: var(--kroma-chat-leading-body);
     text-align: center;
@@ -37,7 +37,8 @@
 
   &__journey-menu {
     overflow: hidden;
-    border-radius: var(--kroma-chat-radius-card);
+    border: 1px solid var(--kroma-chat-border-menu);
+    border-radius: var(--kroma-chat-radius-menu);
     background: var(--kroma-chat-surface);
   }
 
@@ -48,18 +49,19 @@
     position: relative;
     display: flex;
     min-width: 0;
-    min-height: var(--kroma-chat-control-height);
+    min-height: var(--kroma-chat-menu-row-height);
     flex-direction: column;
     align-items: stretch;
-    gap: var(--kroma-chat-spacing-tight);
-    padding: var(--kroma-chat-spacing-card) 2.25rem var(--kroma-chat-spacing-card) var(--kroma-chat-spacing-control);
+    gap: 0;
+    padding: var(--kroma-chat-spacing-3) var(--kroma-chat-spacing-menu-inline);
     border: 0;
     border-radius: 0;
     background: transparent;
     color: var(--kroma-chat-text-primary);
     font: inherit;
-    font-size: var(--kroma-chat-typography-secondary);
-    line-height: var(--kroma-chat-leading-small);
+    font-size: var(--kroma-chat-typography-body);
+    font-weight: var(--kroma-chat-weight-medium);
+    line-height: var(--kroma-chat-leading-body);
     text-align: start;
     overflow-wrap: anywhere;
     cursor: pointer;
@@ -68,13 +70,13 @@
     &::after {
       position: absolute;
       top: 50%;
-      inset-inline-end: .875rem;
-      width: .4rem;
-      height: .4rem;
-      border-top: 1.5px solid currentColor;
-      border-right: 1.5px solid currentColor;
+      inset-inline-end: var(--kroma-chat-spacing-menu-inline);
+      width: .375rem;
+      height: .375rem;
+      border-top: 1.25px solid currentColor;
+      border-right: 1.25px solid currentColor;
       content: "";
-      opacity: .75;
+      opacity: .58;
       transform: translateY(-50%) rotate(45deg);
     }
 
@@ -84,24 +86,22 @@
     &:disabled { color: var(--kroma-chat-text-disabled); cursor: default; }
   }
 
-  &__journey-item { min-height: 4rem; padding: var(--kroma-chat-spacing-card) 2.25rem var(--kroma-chat-spacing-card) var(--kroma-chat-spacing-control); }
-  &__journey-item + &__journey-item { border-top: 0; }
+  &__journey-item { min-height: var(--kroma-chat-menu-row-height); padding-inline-end: 2.5rem; }
+  &__journey-item + &__journey-item { border-top: 1px solid var(--kroma-chat-border-menu); }
   &__journey-item-label,
-  &__category-label { display: flex; min-width: 0; align-items: center; gap: var(--kroma-chat-spacing-control); }
+  &__category-label { display: flex; min-width: 0; align-items: center; gap: var(--kroma-chat-spacing-icon-label); }
   &__journey-item-label-icon,
   &__category-label-icon {
     display: grid;
-    width: 2rem;
-    height: 2rem;
-    flex: 0 0 2rem;
+    width: var(--kroma-chat-icon-action-size);
+    height: var(--kroma-chat-icon-action-size);
+    flex: 0 0 var(--kroma-chat-icon-action-size);
     place-items: center;
-    padding: var(--kroma-chat-spacing-tight);
-    border-radius: var(--kroma-chat-radius-control);
-    background: var(--kroma-chat-surface-selected);
-    color: var(--kroma-chat-text-accent);
+    color: var(--kroma-chat-accent);
   }
   &__journey-item-label-icon svg,
-  &__category-label-icon svg { width: 1.25rem; height: 1.25rem; }
+  &__category-label-icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  &__journey-item-label-text { display: grid; min-width: 0; gap: var(--kroma-chat-spacing-copy); }
   &__journey-item-description,
   &__category-description { color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-body-small); line-height: var(--kroma-chat-leading-small); }
 
