@@ -49,6 +49,28 @@
     position: static;
   }
 
+  .bd-header [data-theme-dropdown] {
+    min-width: 0;
+    gap: .25rem !important;
+  }
+
+  .bd-header [data-theme-dropdown] > .text-body { display: none; }
+
+  .bd-header [data-theme-selector] {
+    min-width: 0;
+    max-width: 8rem;
+    overflow: hidden;
+    padding-inline: .5rem;
+  }
+
+  .bd-header #kroma-theme-label {
+    display: block;
+    max-width: 6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .bd-header .dropdown-menu {
     right: .5rem !important;
     min-width: 0;

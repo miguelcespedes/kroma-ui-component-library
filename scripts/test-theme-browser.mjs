@@ -549,11 +549,13 @@ const runChatChecks = async (browserName, browser) => {
       const chatElement = document.querySelector("#chat kroma-chat");
       const chatRect = chatElement.getBoundingClientRect();
       const composerRect = chatElement.querySelector(".kroma-chat__composer-area").getBoundingClientRect();
+      const header = document.querySelector(".bd-header");
       return {
         width: innerWidth,
         documentWidth: document.documentElement.scrollWidth,
         chatWidth: chatRect.width,
         composerInside: composerRect.bottom <= chatRect.bottom + 1,
+        headerOverflow: header.scrollWidth > header.clientWidth + 1,
         optionOverflow: [...chatElement.querySelectorAll(".kroma-chat__option")].some((button) => button.scrollWidth > button.clientWidth),
         overflowers: [...document.body.querySelectorAll("*")]
           .map((element) => {
@@ -565,6 +567,7 @@ const runChatChecks = async (browserName, browser) => {
       };
     });
     assert.equal(layout.documentWidth > layout.width + 1, false, `${browserName}: horizontal overflow at ${viewport.width}px (document ${layout.documentWidth}px; ${JSON.stringify(layout.overflowers)})`);
+    assert.equal(layout.headerOverflow, false, `${browserName}: Cheatsheet header fits at ${viewport.width}px`);
     assert.ok(layout.chatWidth > 0, `${browserName}: Chat has a visible width at ${viewport.width}px`);
     assert.equal(layout.composerInside, true, `${browserName}: composer remains inside Chat at ${viewport.width}px`);
     assert.equal(layout.optionOverflow, false, `${browserName}: options do not clip at ${viewport.width}px`);
