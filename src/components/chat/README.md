@@ -45,3 +45,14 @@ All events bubble and are composed so host applications can listen on the elemen
 | `kroma-chat-form-submit` | `{ messageId, values }` | A valid ConversationalForm was submitted. Values are emitted in memory only. |
 
 The former `KromaChatElement` class export remains an alias of `KromaChat`; only the hyphenated `kroma-chat` tag is registered.
+
+## Module map
+
+- `kroma-chat.ts` composes the custom element and forwards host events.
+- `layout/` owns the header, message history and composer.
+- `core/` owns backend-agnostic message models, event contracts and the renderer registry.
+- `messages/`, `navigation/`, `catalog/`, `commerce/`, `forms/`, and `feedback/` contain their respective presentation controls.
+- `shared/` contains action, icon, image and formatting primitives used by those controls.
+- `kroma-chat.scss` is the style entry point; `index.ts` is the public TypeScript entry point.
+
+Control modules receive structured data and callbacks. Only the host decides which message or journey step comes next.

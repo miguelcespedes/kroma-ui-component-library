@@ -1,21 +1,20 @@
 import type {
-  ChatAction,
   ChatActionDetail,
   ChatControlSelection,
-  ChatMessage,
-  ChatOption,
   ChatOptionSelectEventDetail,
   ChatRichActionDetail,
   ChatQuantityChangeDetail,
   ChatFormSubmitDetail,
-} from "./chat.types";
-import { renderChatMessage } from "./chat.renderers";
-import type { ChatRendererHandlers } from "./chat.renderers";
-import { createTypingIndicator } from "./chat.controls.shared";
+} from "../core/chat.events";
+import type { ChatAction, ChatMessage, ChatOption } from "../core/chat.types";
+import { renderChatMessage } from "../core/chat.renderers";
+import type { ChatRendererHandlers } from "../core/chat.renderers";
+import { createTypingIndicator } from "../messages/typing-indicator";
 
 export type ChatMessageListCallbacks = {
   createMessageId: () => string;
   addUserMessage: (text: string) => void;
+  consumedActions: Map<string, Set<string>>;
   focusComposer: () => void;
   onAction: (detail: ChatActionDetail, userMessage?: string) => void;
   onRichAction: (detail: ChatRichActionDetail, action: ChatAction, userMessage?: string) => void;
@@ -23,6 +22,27 @@ export type ChatMessageListCallbacks = {
   onQuantityChange: (detail: ChatQuantityChangeDetail) => void;
   onFormSubmit: (detail: ChatFormSubmitDetail) => void;
 };
+
+type ActionReusePolicy = "message-once" | "action-once" | "line-once" | "repeatable";
+
+const actionReusePolicies: Record<ChatActionDetail["control"], ActionReusePolicy> = {
+  header: "repeatable",
+  "journey-menu": "action-once",
+  "category-picker": "action-once",
+  "product-card": "action-once",
+  "product-list": "action-once",
+  "product-carousel": "action-once",
+  "product-detail": "message-once",
+  "product-variant-selector": "repeatable",
+  "conversational-form": "repeatable",
+  "cart-summary": "action-once",
+  "order-review": "message-once",
+  confirmation: "action-once",
+};
+
+function actionStateKey(actionId: string, lineId?: string) {
+  return lineId ? `${actionId}\u001f${lineId}` : actionId;
+}
 
 /** Owns message ordering, grouping, render dispatch, typing state and scroll policy. */
 export class ChatMessageList {
@@ -74,6 +94,7 @@ export class ChatMessageList {
     };
     renderChatMessage(item, message, handlers);
     this.element.append(item);
+    this.restoreConsumedActions(messageId);
     this.emptyState.hidden = true;
     if (stick) this.scrollToBottom();
     return messageId;
@@ -121,6 +142,14 @@ export class ChatMessageList {
     });
   }
 
+  private restoreConsumedActions(messageId: string) {
+    const consumed = this.callbacks.consumedActions.get(messageId);
+    if (!consumed) return;
+    this.findMessage(messageId)?.querySelectorAll<HTMLButtonElement>("button[data-action-id]").forEach((button) => {
+      if (consumed.has(actionStateKey(button.dataset.actionId || "", button.dataset.lineId))) button.disabled = true;
+    });
+  }
+
   findMessage(messageId: string) {
     return [...this.element.querySelectorAll<HTMLLIElement>("li[data-message-id]")]
       .find((message) => message.dataset.messageId === messageId);
@@ -160,35 +189,57 @@ export class ChatMessageList {
   }
 
   private emitRichAction(messageId: string, action: ChatAction, userMessage?: string) {
-    this.findMessage(messageId)?.querySelectorAll<HTMLButtonElement>(".kroma-chat__rich-action").forEach((button) => { button.disabled = true; });
+    const actionId = action.id || `${messageId}-action`;
+    const button = this.findMessage(messageId)?.querySelector<HTMLButtonElement>(`.kroma-chat__rich-action[data-action-id="${CSS.escape(actionId)}"]`);
+    if (button && !this.consumeButton(messageId, button)) return;
     if (userMessage) {
       this.callbacks.addUserMessage(userMessage);
       this.scrollToBottom();
       this.callbacks.focusComposer();
     }
-    this.callbacks.onRichAction({ messageId, actionId: action.id || `${messageId}-action`, value: action.value }, action, userMessage);
+    this.callbacks.onRichAction({ messageId, actionId, value: action.value }, action, userMessage);
   }
 
   private emitAction(detail: ChatActionDetail, userMessage?: string) {
-    if (detail.control !== "product-variant-selector") {
-      this.findMessage(detail.messageId)?.querySelectorAll<HTMLButtonElement>("button[data-action-id]").forEach((button) => {
-        if (detail.control === "product-carousel") {
-          if (button.dataset.actionId === detail.actionId) button.disabled = true;
-          return;
-        }
-        if (detail.control === "cart-summary" && detail.actionId === "remove-item") {
-          if (button.dataset.actionId === detail.actionId && button.dataset.lineId === detail.data?.lineId) button.disabled = true;
-          return;
-        }
-        button.disabled = true;
-      });
-    }
+    if (!this.consumeAction(detail)) return;
     if (userMessage) {
       this.callbacks.addUserMessage(userMessage);
       this.scrollToBottom();
       this.callbacks.focusComposer();
     }
     this.callbacks.onAction(detail, userMessage);
+  }
+
+  private consumeAction(detail: ChatActionDetail) {
+    const policy = detail.control === "cart-summary" && detail.actionId === "remove-item"
+      ? "line-once"
+      : actionReusePolicies[detail.control];
+    if (policy === "repeatable") return true;
+    const sourceMessage = this.findMessage(detail.messageId);
+    const buttons = [...(sourceMessage?.querySelectorAll<HTMLButtonElement>("button[data-action-id]") || [])];
+    const target = buttons.find((button) => button.dataset.actionId === detail.actionId
+      && (policy !== "line-once" || button.dataset.lineId === detail.data?.lineId));
+    if (!target) return true;
+
+    if (policy === "message-once") {
+      if (buttons.some((button) => this.isConsumed(detail.messageId, button))) return false;
+      buttons.forEach((button) => this.consumeButton(detail.messageId, button));
+      return true;
+    }
+    return this.consumeButton(detail.messageId, target);
+  }
+
+  private isConsumed(messageId: string, button: HTMLButtonElement) {
+    return Boolean(this.callbacks.consumedActions.get(messageId)?.has(actionStateKey(button.dataset.actionId || "", button.dataset.lineId)));
+  }
+
+  private consumeButton(messageId: string, button: HTMLButtonElement) {
+    if (this.isConsumed(messageId, button)) return false;
+    const consumed = this.callbacks.consumedActions.get(messageId) || new Set<string>();
+    consumed.add(actionStateKey(button.dataset.actionId || "", button.dataset.lineId));
+    this.callbacks.consumedActions.set(messageId, consumed);
+    button.disabled = true;
+    return true;
   }
 
   private isAtBottom() {

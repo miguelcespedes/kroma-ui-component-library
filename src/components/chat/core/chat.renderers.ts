@@ -1,13 +1,9 @@
 import type {
   ChatAction,
-  ChatActionDetail,
   ChatChoiceListMessage,
-  ChatFormSubmitDetail,
   ChatInfoMessage,
   ChatMessage,
   ChatMessageBase,
-  ChatQuantityChangeDetail,
-  ChatRichActionDetail,
   ChatRichMessage,
   ChatStatusMessage,
   ChatTextMessage,
@@ -27,39 +23,65 @@ import type {
   OrderReviewMessage,
   ConfirmationMessage,
 } from "./chat.types";
-import {
-  createCartSummary,
-  createCategoryPicker,
-  createChoiceList,
-  createChatBubble,
-  createChatMessageTime,
-  createConfirmationCard,
-  createConversationalForm,
-  createJourneyMenu,
-  createOrderReview,
-  createProductCard,
-  createProductCarousel,
-  createProductDetail,
-  createProductList,
-  createProductVariantSelector,
-  createQuickReplies,
-  createRichMessage,
-  createStandaloneQuantitySelector,
-  createTypingIndicator,
-  type ChatActionHandler,
-  type ChatQuantityHandler,
-  type OptionSelectionHandler,
-} from "./chat.controls";
+import type {
+  ChatActionDetail,
+  ChatControlSelection,
+  ChatFormSubmitDetail,
+  ChatQuantityChangeDetail,
+  ChatRichActionDetail,
+} from "./chat.events";
+import type { ChatActionHandler } from "../shared/actions";
+import type { ChatQuantityHandler } from "../catalog/quantity-selector";
+import { createCartSummary, createOrderReview } from "../commerce/cart-summary";
+import { createConfirmationCard } from "../feedback/confirmation-card";
+import { createStatusMessage } from "../feedback/status-message";
+import { createConversationalForm } from "../forms/conversational-form";
+import { createChatBubble, createChatMessageTime } from "../messages/chat-message";
+import { createChoiceList } from "../messages/choice-list";
+import { createQuickReplies } from "../messages/quick-replies";
+import { createRichMessage } from "../messages/rich-message";
+import { createTypingIndicator } from "../messages/typing-indicator";
+import { createCategoryPicker } from "../navigation/category-picker";
+import { createJourneyMenu } from "../navigation/journey-menu";
+import { createProductCard } from "../catalog/product-card";
+import { createProductCarousel } from "../catalog/product-carousel";
+import { createProductDetail } from "../catalog/product-detail";
+import { createProductList } from "../catalog/product-list";
+import { createProductVariantSelector } from "../catalog/product-variant-selector";
+import { createStandaloneQuantitySelector } from "../catalog/quantity-selector";
 
 export type ChatRendererHandlers = {
   onAction: ChatActionHandler;
   onRichAction: (messageId: string, action: ChatAction, userMessage?: string) => void;
-  onOptionSelect: OptionSelectionHandler;
+  onOptionSelect: (selection: ChatControlSelection, group: HTMLDivElement, button: HTMLButtonElement) => void;
   onQuantityChange: ChatQuantityHandler;
   onFormSubmit: (detail: ChatFormSubmitDetail) => void;
 };
 
-type ChatRenderer = (item: HTMLLIElement, message: ChatMessage, handlers: ChatRendererHandlers) => void;
+type ChatRenderer<Message extends ChatMessage> = (item: HTMLLIElement, message: Message, handlers: ChatRendererHandlers) => void;
+type ChatRendererMap = {
+  text: ChatRenderer<ChatTextMessage>;
+  status: ChatRenderer<ChatStatusMessage>;
+  info: ChatRenderer<ChatInfoMessage>;
+  rich: ChatRenderer<ChatRichMessage>;
+  "journey-menu": ChatRenderer<JourneyMenuMessage>;
+  "category-picker": ChatRenderer<CategoryPickerMessage>;
+  "product-card": ChatRenderer<ProductCardMessage>;
+  "product-list": ChatRenderer<ProductListMessage>;
+  "product-carousel": ChatRenderer<ProductCarouselMessage>;
+  "product-detail": ChatRenderer<ProductDetailMessage>;
+  "product-variant-selector": ChatRenderer<ProductVariantSelectorMessage>;
+  "quantity-selector": ChatRenderer<QuantitySelectorMessage>;
+  "cart-summary": ChatRenderer<CartSummaryMessage>;
+  "conversational-form": ChatRenderer<ConversationalFormMessage>;
+  "order-review": ChatRenderer<OrderReviewMessage>;
+  confirmation: ChatRenderer<ConfirmationMessage>;
+  "confirmation-card": ChatRenderer<ConfirmationMessage>;
+  "quick-replies": ChatRenderer<ChatQuickRepliesMessage>;
+  options: ChatRenderer<ChatOptionsMessage>;
+  "choice-list": ChatRenderer<ChatChoiceListMessage>;
+  typing: ChatRenderer<ChatTypingMessage>;
+};
 
 function appendPrompt(item: HTMLLIElement, message: ChatMessageBase & { text: string }) {
   item.append(createChatBubble(message, item.id));
@@ -68,11 +90,7 @@ function appendPrompt(item: HTMLLIElement, message: ChatMessageBase & { text: st
 function renderStatus(item: HTMLLIElement, message: ChatStatusMessage) {
   item.classList.add("kroma-chat__message--status");
   item.dataset.status = message.status || "neutral";
-  const status = document.createElement("p");
-  status.className = "kroma-chat__status-message";
-  status.setAttribute("role", "status");
-  status.textContent = message.text;
-  item.append(status);
+  item.append(createStatusMessage(message));
 }
 
 function renderRich(item: HTMLLIElement, message: ChatInfoMessage | ChatRichMessage, handlers: ChatRendererHandlers) {
@@ -153,31 +171,33 @@ function renderTyping(item: HTMLLIElement, message: ChatTypingMessage) {
   item.append(createTypingIndicator(item.id, message.label || "Assistant is typing"));
 }
 
-const renderers: Record<string, ChatRenderer> = {
-  status: (item, message) => renderStatus(item, message as ChatStatusMessage),
-  info: (item, message, handlers) => renderRich(item, message as ChatInfoMessage, handlers),
-  rich: (item, message, handlers) => renderRich(item, message as ChatRichMessage, handlers),
-  "journey-menu": (item, message, handlers) => renderJourneyMenu(item, message as JourneyMenuMessage, handlers),
-  "category-picker": (item, message, handlers) => renderCategoryPicker(item, message as CategoryPickerMessage, handlers),
-  "product-card": (item, message, handlers) => renderProductCard(item, message as ProductCardMessage, handlers),
-  "product-list": (item, message, handlers) => renderProductList(item, message as ProductListMessage, handlers),
-  "product-carousel": (item, message, handlers) => renderProductCarousel(item, message as ProductCarouselMessage, handlers),
-  "product-detail": (item, message, handlers) => renderProductDetail(item, message as ProductDetailMessage, handlers),
-  "product-variant-selector": (item, message, handlers) => renderProductVariantSelector(item, message as ProductVariantSelectorMessage, handlers),
-  "quantity-selector": (item, message, handlers) => renderQuantitySelector(item, message as QuantitySelectorMessage, handlers),
-  "cart-summary": (item, message, handlers) => renderCartSummary(item, message as CartSummaryMessage, handlers),
-  "conversational-form": (item, message, handlers) => renderForm(item, message as ConversationalFormMessage, handlers),
-  "order-review": (item, message, handlers) => renderOrderReview(item, message as OrderReviewMessage, handlers),
-  confirmation: (item, message, handlers) => renderConfirmation(item, message as ConfirmationMessage, handlers),
-  "confirmation-card": (item, message, handlers) => renderConfirmation(item, message as ConfirmationMessage, handlers),
-  "quick-replies": (item, message, handlers) => renderQuickReplies(item, message as ChatQuickRepliesMessage, handlers),
-  options: (item, message, handlers) => renderQuickReplies(item, message as ChatOptionsMessage, handlers),
-  "choice-list": (item, message, handlers) => renderChoiceList(item, message as ChatChoiceListMessage, handlers),
-  text: (item, message) => renderText(item, message as ChatTextMessage),
-  typing: (item, message) => renderTyping(item, message as ChatTypingMessage),
-};
+const renderers = {
+  status: (item, message, _handlers) => renderStatus(item, message),
+  info: (item, message, handlers) => renderRich(item, message, handlers),
+  rich: (item, message, handlers) => renderRich(item, message, handlers),
+  "journey-menu": (item, message, handlers) => renderJourneyMenu(item, message, handlers),
+  "category-picker": (item, message, handlers) => renderCategoryPicker(item, message, handlers),
+  "product-card": (item, message, handlers) => renderProductCard(item, message, handlers),
+  "product-list": (item, message, handlers) => renderProductList(item, message, handlers),
+  "product-carousel": (item, message, handlers) => renderProductCarousel(item, message, handlers),
+  "product-detail": (item, message, handlers) => renderProductDetail(item, message, handlers),
+  "product-variant-selector": (item, message, handlers) => renderProductVariantSelector(item, message, handlers),
+  "quantity-selector": (item, message, handlers) => renderQuantitySelector(item, message, handlers),
+  "cart-summary": (item, message, handlers) => renderCartSummary(item, message, handlers),
+  "conversational-form": (item, message, handlers) => renderForm(item, message, handlers),
+  "order-review": (item, message, handlers) => renderOrderReview(item, message, handlers),
+  confirmation: (item, message, handlers) => renderConfirmation(item, message, handlers),
+  "confirmation-card": (item, message, handlers) => renderConfirmation(item, message, handlers),
+  "quick-replies": (item, message, handlers) => renderQuickReplies(item, message, handlers),
+  options: (item, message, handlers) => renderQuickReplies(item, message, handlers),
+  "choice-list": (item, message, handlers) => renderChoiceList(item, message, handlers),
+  text: (item, message) => renderText(item, message),
+  typing: (item, message) => renderTyping(item, message),
+} satisfies ChatRendererMap;
 
 /** Resolves a typed content payload to its focused renderer without embedding control logic in KromaChat. */
 export function renderChatMessage(item: HTMLLIElement, message: ChatMessage, handlers: ChatRendererHandlers) {
-  renderers[message.type || "text"]?.(item, message, handlers);
+  const type = message.type || "text";
+  // The runtime discriminant selects the matching map entry; TypeScript loses that relation after indexed lookup.
+  renderers[type](item, message as never, handlers);
 }

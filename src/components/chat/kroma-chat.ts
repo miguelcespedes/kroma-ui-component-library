@@ -1,31 +1,30 @@
-import { ChatComposer } from "./chat-composer";
-import { ChatHeader, type ChatHeaderAction } from "./chat-header";
-import { ChatMessageList } from "./chat-message-list";
+import { ChatComposer } from "./layout/chat-composer";
+import { ChatHeader, type ChatHeaderAction } from "./layout/chat-header";
+import { ChatMessageList } from "./layout/chat-message-list";
+import { CHAT_EVENTS, emitKromaChatEvent } from "./core/chat.events";
 import type {
   ChatAction,
-  ChatActionDetail,
-  ChatFormSubmitDetail,
   ChatMessage,
   ChatMessageAuthor,
   ChatOption,
+} from "./core/chat.types";
+import type {
+  ChatActionDetail,
+  ChatFormSubmitDetail,
   ChatOptionSelectEventDetail,
   ChatQuantityChangeDetail,
   ChatRichActionDetail,
   ChatSendDetail,
-} from "./chat.types";
+} from "./core/chat.events";
 
 export type {
   ChatAction,
-  ChatActionControl,
-  ChatActionData,
-  ChatActionDetail,
   ChatCategory,
   ChatCartItem,
   ChatChoice,
   ChatChoiceListMessage,
   ChatCustomerDetails,
   ChatFormField,
-  ChatFormSubmitDetail,
   ChatImage,
   ChatInfoMessage,
   ChatLink,
@@ -33,18 +32,13 @@ export type {
   ChatMessageAuthor,
   ChatMoney,
   ChatOption,
-  ChatOptionSelectDetail,
-  ChatOptionSelectEventDetail,
   ChatOptionsMessage,
-  ChatQuantityChangeDetail,
   ChatPriceEntry,
   ChatPriceSummary,
   ChatProduct,
   ChatProductVariant,
   ChatQuickRepliesMessage,
-  ChatRichActionDetail,
   ChatRichMessage,
-  ChatSendDetail,
   ChatStatusMessage,
   ChatTextMessage,
   ChatTypingMessage,
@@ -60,8 +54,21 @@ export type {
   ProductListMessage,
   ProductVariantSelectorMessage,
   QuantitySelectorMessage,
-} from "./chat.types";
-export type { ChatHeaderAction, ChatHeaderOptions } from "./chat-header";
+} from "./core/chat.types";
+export type {
+  ChatActionControl,
+  ChatActionData,
+  ChatActionDetail,
+  ChatControlSelection,
+  ChatFormSubmitDetail,
+  ChatOptionSelectDetail,
+  ChatOptionSelectEventDetail,
+  ChatQuantityChangeDetail,
+  ChatRichActionDetail,
+  ChatSendDetail,
+  KromaChatEventMap,
+} from "./core/chat.events";
+export type { ChatHeaderAction, ChatHeaderOptions } from "./layout/chat-header";
 
 const tagName = "kroma-chat";
 let nextElementId = 0;
@@ -75,6 +82,7 @@ export class KromaChat extends HTMLElement {
   private history: StoredMessage[] = [];
   private selectedOptions = new Map<string, string>();
   private disabledOptions = new Map<string, boolean>();
+  private consumedActions = new Map<string, Set<string>>();
   private typing: { active: boolean; label: string; messageId?: string } = { active: false, label: "" };
   private status: string | null = null;
   private error: string | null = null;
@@ -100,6 +108,7 @@ export class KromaChat extends HTMLElement {
     });
     const messageList = new ChatMessageList({
       createMessageId: () => this.createMessageId(),
+      consumedActions: this.consumedActions,
       addUserMessage: (text) => this.addMessage({ author: "user", type: "text", text }),
       focusComposer: () => this.composer?.focus(),
       onAction: (detail, userMessage) => this.emitAction(detail, userMessage),
@@ -193,52 +202,28 @@ export class KromaChat extends HTMLElement {
   private sendMessage(message: string) {
     this.addMessage({ id: this.createMessageId(), author: "user", type: "text", text: message });
     this.setError(null);
-    this.dispatchEvent(new CustomEvent<ChatSendDetail>("kroma-chat-send", {
-      bubbles: true,
-      composed: true,
-      detail: { message, source: "composer" },
-    }));
+    emitKromaChatEvent(this, CHAT_EVENTS.send, { message, source: "composer" });
   }
 
   private emitOptionSelect(detail: ChatOptionSelectEventDetail) {
     this.selectedOptions.set(detail.messageId, detail.optionId);
-    this.dispatchEvent(new CustomEvent<ChatOptionSelectEventDetail>("kroma-chat-option-select", {
-      bubbles: true,
-      composed: true,
-      detail,
-    }));
+    emitKromaChatEvent(this, CHAT_EVENTS.optionSelect, detail);
   }
 
   private emitRichAction(detail: ChatRichActionDetail, _action: ChatAction, _userMessage?: string) {
-    this.dispatchEvent(new CustomEvent<ChatRichActionDetail>("kroma-chat-rich-action", {
-      bubbles: true,
-      composed: true,
-      detail,
-    }));
+    emitKromaChatEvent(this, CHAT_EVENTS.richAction, detail);
   }
 
   private emitAction(detail: ChatActionDetail, _userMessage?: string) {
-    this.dispatchEvent(new CustomEvent<ChatActionDetail>("kroma-chat-action", {
-      bubbles: true,
-      composed: true,
-      detail,
-    }));
+    emitKromaChatEvent(this, CHAT_EVENTS.action, detail);
   }
 
   private emitQuantityChange(detail: ChatQuantityChangeDetail) {
-    this.dispatchEvent(new CustomEvent<ChatQuantityChangeDetail>("kroma-chat-quantity-change", {
-      bubbles: true,
-      composed: true,
-      detail,
-    }));
+    emitKromaChatEvent(this, CHAT_EVENTS.quantityChange, detail);
   }
 
   private emitFormSubmit(detail: ChatFormSubmitDetail) {
-    this.dispatchEvent(new CustomEvent<ChatFormSubmitDetail>("kroma-chat-form-submit", {
-      bubbles: true,
-      composed: true,
-      detail,
-    }));
+    emitKromaChatEvent(this, CHAT_EVENTS.formSubmit, detail);
   }
 }
 
