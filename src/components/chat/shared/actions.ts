@@ -1,5 +1,4 @@
-import type { ChatActionData } from "../core/chat.events";
-import type { ChatActionDetail } from "../core/chat.events";
+import type { ChatActionData, ChatActionDetail } from "../core/chat.events";
 
 export type ChatActionHandler = (detail: ChatActionDetail, userMessage?: string) => void;
 

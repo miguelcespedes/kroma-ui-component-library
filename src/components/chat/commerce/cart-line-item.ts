@@ -1,5 +1,4 @@
-import type { ChatAction } from "../core/chat.types";
-import type { ChatCartItem } from "../core/chat.types";
+import type { ChatAction, ChatCartItem } from "../core/chat.types";
 import type { ChatActionHandler } from "../shared/actions";
 import type { ChatActionDetail } from "../core/chat.events";
 import { formatMoney } from "../shared/formatting";

@@ -9,8 +9,8 @@ export function createProductListItem(messageId: string, product: ChatProduct, c
   const button = createControlAction(messageId, control, `product-${product.id}`, actionLabel, product.id, { productId: product.id }, onAction, product.name);
   button.classList.add("kroma-chat__product-card");
   button.dataset.productId = product.id;
+  button.replaceChildren();
   const image = createProductImage(product.image);
-  if (image) button.append(image);
   const content = document.createElement("span");
   content.className = "kroma-chat__product-content";
   const name = document.createElement("strong");
@@ -27,6 +27,10 @@ export function createProductListItem(messageId: string, product: ChatProduct, c
     price.textContent = priceLabel;
     content.append(price);
   }
-  button.append(content);
+  const action = document.createElement("span");
+  action.className = "kroma-chat__product-action";
+  action.textContent = actionLabel;
+  if (image) button.append(image);
+  button.append(content, action);
   return button;
 }

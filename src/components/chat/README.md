@@ -48,11 +48,11 @@ The former `KromaChatElement` class export remains an alias of `KromaChat`; only
 
 ## Module map
 
-- `kroma-chat.ts` composes the custom element and forwards host events.
+- `kroma-chat.ts` composes the custom element; `index.ts` is the public TypeScript entry point.
+- `core/` contains backend-agnostic models, event contracts and renderer dispatch.
 - `layout/` owns the header, message history and composer.
-- `core/` owns backend-agnostic message models, event contracts and the renderer registry.
-- `messages/`, `navigation/`, `catalog/`, `commerce/`, `forms/`, and `feedback/` contain their respective presentation controls.
-- `shared/` contains action, icon, image and formatting primitives used by those controls.
-- `kroma-chat.scss` is the style entry point; `index.ts` is the public TypeScript entry point.
+- `messages/`, `navigation/`, `catalog/`, `commerce/`, `forms/`, and `feedback/` contain their named presentation controls.
+- `shared/` contains reusable action, icon, image and formatting primitives.
+- `kroma-chat.scss` is the stylesheet entry point; it preserves the component's existing selectors and design tokens.
 
 Control modules receive structured data and callbacks. Only the host decides which message or journey step comes next.
