@@ -12,6 +12,7 @@
   &__message--user { align-items: flex-end; }
   &__message--system { align-items: center; }
   &__message--grouped { margin-top: calc(var(--kroma-chat-spacing-group) * -.5); }
+  &__message > * { min-width: 0; max-width: 100%; }
 
   &__message--assistant {
     display: grid;
@@ -28,8 +29,8 @@
   &__bubble {
     display: flex;
     width: fit-content;
+    min-width: min(2.5rem, 100%);
     max-width: min(86%, 34rem);
-    min-width: 2.5rem;
     flex-direction: column;
     gap: var(--kroma-chat-spacing-tight);
     padding: var(--kroma-chat-bubble-padding);
@@ -41,6 +42,7 @@
     line-height: var(--kroma-chat-leading-body);
     overflow-wrap: anywhere;
     white-space: pre-wrap;
+    word-break: normal;
   }
 
   &__message--user &__bubble {

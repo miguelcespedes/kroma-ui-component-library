@@ -42,10 +42,12 @@
     background: var(--kroma-chat-surface);
   }
 
-  &__category-picker { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+  &__category-picker { max-width: 100%; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
 
   &__journey-item,
   &__category {
+    width: 100%;
+    max-width: 100%;
     position: relative;
     display: flex;
     min-width: 0;
@@ -121,4 +123,8 @@
   &__journey-item[data-consumed="true"]::after,
   &__category[data-consumed="true"]::after { width: auto; height: auto; border: 0; color: var(--kroma-chat-text-accent); content: "✓"; font-size: var(--kroma-chat-typography-body); font-weight: var(--kroma-font-weight-bold, 700); transform: translateY(-50%); }
   &__category-picker > .kroma-chat__category:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+
+@container kroma-chat (max-width: 22rem) {
+  .kroma-chat__category-picker { grid-template-columns: minmax(0, 1fr); }
 }

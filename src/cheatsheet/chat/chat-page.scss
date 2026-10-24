@@ -1,12 +1,20 @@
 .kroma-chat-standalone {
   display: block;
+  box-sizing: border-box;
+  width: 100%;
   min-width: 320px;
+  max-width: 100%;
   background: var(--kroma-color-surface-canvas, var(--bs-body-bg));
   color: var(--kroma-color-content-primary, var(--bs-body-color));
+
+  *, *::before, *::after { box-sizing: border-box; }
 }
 
 .kroma-chat-page {
   display: grid;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 100vh;
   min-height: 100dvh;
   grid-template-rows: auto minmax(0, 1fr);
@@ -100,6 +108,8 @@
   display: grid;
   width: min(var(--chat-preview-width, 390px), 100%);
   min-width: 0;
+  max-width: 100%;
+  min-height: 0;
   align-content: start;
   justify-items: center;
 }
@@ -108,6 +118,8 @@
   --kroma-chat-height: min(760px, calc(100dvh - 11rem));
   --kroma-chat-max-height: calc(100dvh - 11rem);
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   height: min(760px, calc(100dvh - 11rem));
   min-height: min(24rem, calc(100dvh - 11rem));
 }
@@ -147,8 +159,8 @@
   z-index: 1;
   display: block;
   width: 100%;
-  height: 100vh;
-  height: 100dvh;
+  height: var(--chat-visual-viewport-height, 100vh);
+  height: var(--chat-visual-viewport-height, 100dvh);
   min-height: 0;
   margin: 0;
   padding: 0;
@@ -170,9 +182,18 @@
   box-shadow: none;
 }
 
+.kroma-chat-page[data-chat-layout-adaptive] {
+  inset-block-start: var(--chat-visual-viewport-top, 0px);
+  inset-block-end: auto;
+}
+
 .kroma-chat-page[data-chat-layout-adaptive] .kroma-chat__header,
 .kroma-chat-page[data-chat-layout-adaptive] .kroma-chat__composer-area {
   padding-inline: max(1rem, calc((100vw - 56rem) / 2));
+}
+
+.kroma-chat-page[data-chat-layout-adaptive] .kroma-chat__header {
+  padding-block-start: max(var(--kroma-chat-spacing-control), env(safe-area-inset-top, 0px));
 }
 
 .kroma-chat-page[data-chat-layout-adaptive] .kroma-chat__messages {
@@ -184,4 +205,39 @@
 .kroma-chat-page[data-chat-layout-adaptive] .kroma-chat__composer {
   width: min(100%, 56rem);
   margin-inline: auto;
+}
+
+@media (max-width: 30rem) {
+  .kroma-chat-standalone {
+    height: var(--chat-visual-viewport-height, 100vh);
+    height: var(--chat-visual-viewport-height, 100dvh);
+    overflow: hidden;
+  }
+
+  .kroma-chat-page {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-start: var(--chat-visual-viewport-top, 0px);
+    inset-block-end: auto;
+    height: var(--chat-visual-viewport-height, 100vh);
+    height: var(--chat-visual-viewport-height, 100dvh);
+    min-height: 0;
+  }
+
+  .kroma-chat-page:not([data-chat-layout-adaptive]) {
+    grid-template-rows: auto minmax(0, 1fr);
+    padding-block: max(.5rem, env(safe-area-inset-top, 0px)) max(.5rem, env(safe-area-inset-bottom, 0px));
+    overflow: hidden;
+  }
+
+  .kroma-chat-page__preview { min-height: 0; }
+
+  .kroma-chat-page__device {
+    --kroma-chat-height: 100%;
+    --kroma-chat-max-height: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .kroma-chat-page[data-chat-keyboard-open] .kroma-chat-lab__toolbar { display: none; }
 }

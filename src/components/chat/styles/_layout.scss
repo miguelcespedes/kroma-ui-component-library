@@ -1,6 +1,7 @@
 .kroma-chat {
   display: flex;
   width: min(100%, var(--kroma-chat-width, 26rem));
+  max-width: 100%;
   height: min(var(--kroma-chat-height, 39rem), var(--kroma-chat-max-height, 82dvh));
   min-height: min(24rem, var(--kroma-chat-height, 39rem), var(--kroma-chat-max-height, 82dvh));
   min-width: 0;
@@ -123,6 +124,10 @@
     &::placeholder { color: var(--kroma-chat-text-secondary); opacity: 1; }
     &:disabled { cursor: not-allowed; opacity: .7; }
   }
+
+  &__composer-area,
+  &__composer,
+  &__input { max-width: 100%; }
 
   &__send {
     display: grid;

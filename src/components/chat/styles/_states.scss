@@ -49,11 +49,15 @@
 }
 
 @container kroma-chat (max-width: 19rem) {
-  .kroma-chat__category-picker { grid-template-columns: minmax(0, 1fr); }
   .kroma-chat__product-card { align-items: start; }
   .kroma-chat__product-track .kroma-chat__product-card { width: 88%; max-width: 88%; flex-basis: 88%; }
   .kroma-chat__quantity-selector { flex-wrap: wrap; }
   .kroma-chat__confirmation { padding: var(--kroma-chat-spacing-card); }
+}
+
+@media (max-width: 30rem) {
+  .kroma-chat__input,
+  .kroma-chat__form-input { font-size: 16px; }
 }
 
 @keyframes kroma-chat-typing {
