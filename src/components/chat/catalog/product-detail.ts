@@ -1,7 +1,7 @@
 import type { ProductDetailMessage } from "../core/chat.types";
 import { createControlAction, type ChatActionHandler } from "../shared/actions";
 import { formatMoney } from "../shared/formatting";
-import { createProductImage } from "../shared/images";
+import { createProductImage, createProductImagePlaceholder } from "../shared/images";
 import { createFeatureList } from "./feature-list";
 import { createQuantitySelector, type ChatQuantityHandler } from "./quantity-selector";
 import { createVariantSelector } from "./product-variant-selector";
@@ -9,8 +9,9 @@ import { createVariantSelector } from "./product-variant-selector";
 export function createProductDetail(messageId: string, message: ProductDetailMessage, onAction: ChatActionHandler, onQuantityChange: ChatQuantityHandler) {
   const detail = document.createElement("section");
   detail.className = "kroma-chat__product-detail";
-  const image = createProductImage(message.product.image, "kroma-chat__product-detail-image");
-  if (image) detail.append(image);
+  const image = createProductImage(message.product.image, "kroma-chat__product-detail-image")
+    || createProductImagePlaceholder(message.product.name, "kroma-chat__product-detail-image");
+  detail.append(image);
   const heading = document.createElement("h3");
   heading.className = "kroma-chat__product-detail-title";
   heading.textContent = message.product.name;

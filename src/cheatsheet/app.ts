@@ -83,9 +83,9 @@ type JourneyEvent =
   | { readonly type: "restart" };
 
 const demoCategories: ChatCategory[] = [
-  { id: "all", label: "Todos" },
-  { id: "clothing", label: "Ropa" },
-  { id: "accessories", label: "Accesorios" },
+  { id: "all", label: "Todos", icon: "all" },
+  { id: "clothing", label: "Ropa", icon: "clothing" },
+  { id: "accessories", label: "Accesorios", icon: "accessories" },
 ];
 
 const demoProducts: ChatProduct[] = [
@@ -164,10 +164,10 @@ function freshJourney(): JourneyState {
 
 function welcomeMessage(): ChatMessage {
   const items: JourneyMenuItem[] = [
-    { id: "browse-products", label: "Explorar productos" },
-    { id: "search-product", label: "Buscar un producto" },
-    { id: "order-status", label: "Consultar un pedido" },
-    { id: "advisor", label: "Hablar con un asesor" },
+    { id: "browse-products", label: "Explorar productos", description: "Ver categorías y productos", icon: "browse" },
+    { id: "search-product", label: "Buscar un producto", description: "Encuentra un artículo específico", icon: "search" },
+    { id: "order-status", label: "Consultar un pedido", description: "Consulta el estado de una solicitud", icon: "orders" },
+    { id: "advisor", label: "Hablar con un asesor", description: "Recibe ayuda personalizada", icon: "advisor" },
   ];
   return { author: "assistant", type: "journey-menu", text: "¡Hola! Bienvenido. ¿Qué te gustaría hacer hoy?", items };
 }

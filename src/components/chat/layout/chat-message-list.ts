@@ -96,7 +96,7 @@ export class ChatMessageList {
     this.element.append(item);
     this.restoreConsumedActions(messageId);
     this.emptyState.hidden = true;
-    if (stick) this.scrollToBottom();
+    if (stick) this.scrollToMessage(item);
     return messageId;
   }
 
@@ -146,7 +146,11 @@ export class ChatMessageList {
     const consumed = this.callbacks.consumedActions.get(messageId);
     if (!consumed) return;
     this.findMessage(messageId)?.querySelectorAll<HTMLButtonElement>("button[data-action-id]").forEach((button) => {
-      if (consumed.has(actionStateKey(button.dataset.actionId || "", button.dataset.lineId))) button.disabled = true;
+      const key = actionStateKey(button.dataset.actionId || "", button.dataset.lineId);
+      if (consumed.has(key)) {
+        button.disabled = true;
+        button.dataset.consumed = String(consumed.has(`selected:${key}`));
+      }
     });
   }
 
@@ -191,7 +195,7 @@ export class ChatMessageList {
   private emitRichAction(messageId: string, action: ChatAction, userMessage?: string) {
     const actionId = action.id || `${messageId}-action`;
     const button = this.findMessage(messageId)?.querySelector<HTMLButtonElement>(`.kroma-chat__rich-action[data-action-id="${CSS.escape(actionId)}"]`);
-    if (button && !this.consumeButton(messageId, button)) return;
+    if (button && !this.consumeButton(messageId, button, true)) return;
     if (userMessage) {
       this.callbacks.addUserMessage(userMessage);
       this.scrollToBottom();
@@ -223,27 +227,43 @@ export class ChatMessageList {
 
     if (policy === "message-once") {
       if (buttons.some((button) => this.isConsumed(detail.messageId, button))) return false;
-      buttons.forEach((button) => this.consumeButton(detail.messageId, button));
+      buttons.forEach((button) => this.consumeButton(detail.messageId, button, button === target));
       return true;
     }
-    return this.consumeButton(detail.messageId, target);
+    return this.consumeButton(detail.messageId, target, true);
   }
 
   private isConsumed(messageId: string, button: HTMLButtonElement) {
     return Boolean(this.callbacks.consumedActions.get(messageId)?.has(actionStateKey(button.dataset.actionId || "", button.dataset.lineId)));
   }
 
-  private consumeButton(messageId: string, button: HTMLButtonElement) {
+  private consumeButton(messageId: string, button: HTMLButtonElement, selected: boolean) {
     if (this.isConsumed(messageId, button)) return false;
     const consumed = this.callbacks.consumedActions.get(messageId) || new Set<string>();
-    consumed.add(actionStateKey(button.dataset.actionId || "", button.dataset.lineId));
+    const key = actionStateKey(button.dataset.actionId || "", button.dataset.lineId);
+    consumed.add(key);
+    if (selected) consumed.add(`selected:${key}`);
     this.callbacks.consumedActions.set(messageId, consumed);
     button.disabled = true;
+    button.dataset.consumed = String(selected);
     return true;
   }
 
   private isAtBottom() {
     return this.element.scrollHeight - this.element.scrollTop - this.element.clientHeight < 56;
+  }
+
+  private scrollToMessage(message: HTMLLIElement) {
+    requestAnimationFrame(() => {
+      if (!message.isConnected) return;
+      if (message.getBoundingClientRect().height > this.element.clientHeight) {
+        const listRect = this.element.getBoundingClientRect();
+        const paddingTop = Number.parseFloat(getComputedStyle(this.element).paddingTop) || 0;
+        this.element.scrollTop += message.getBoundingClientRect().top - listRect.top - this.element.clientTop - paddingTop;
+        return;
+      }
+      this.element.scrollTop = this.element.scrollHeight;
+    });
   }
 
 }

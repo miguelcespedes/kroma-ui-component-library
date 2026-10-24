@@ -1,7 +1,7 @@
 import type { ChatProduct } from "../core/chat.types";
 import { createControlAction, type ChatActionHandler } from "../shared/actions";
 import { formatMoney } from "../shared/formatting";
-import { createProductImage } from "../shared/images";
+import { createProductImage, createProductImagePlaceholder } from "../shared/images";
 
 export type ProductListItemAction = "product-card" | "product-list" | "product-carousel";
 
@@ -10,7 +10,7 @@ export function createProductListItem(messageId: string, product: ChatProduct, c
   button.classList.add("kroma-chat__product-card");
   button.dataset.productId = product.id;
   button.replaceChildren();
-  const image = createProductImage(product.image);
+  const image = createProductImage(product.image) || createProductImagePlaceholder(product.name);
   const content = document.createElement("span");
   content.className = "kroma-chat__product-content";
   const name = document.createElement("strong");
@@ -30,7 +30,7 @@ export function createProductListItem(messageId: string, product: ChatProduct, c
   const action = document.createElement("span");
   action.className = "kroma-chat__product-action";
   action.textContent = actionLabel;
-  if (image) button.append(image);
+  button.append(image);
   button.append(content, action);
   return button;
 }
