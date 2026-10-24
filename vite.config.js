@@ -6,6 +6,24 @@ import { promisify } from "node:util";
 
 const run = promisify(execFile);
 
+function routeChatPage(server) {
+  server.middlewares.use((request, response, next) => {
+    if (!request.url) return next();
+    const url = new URL(request.url, "http://localhost");
+    const pathname = url.pathname.replace(/\/$/, "");
+    if (pathname === "/chat" || pathname.endsWith("/chat")) {
+      if (!url.pathname.endsWith("/")) {
+        response.statusCode = 308;
+        response.setHeader("Location", `${pathname}/${url.search}`);
+        response.end();
+        return;
+      }
+      request.url = `${pathname}/index.html${url.search}`;
+    }
+    next();
+  });
+}
+
 export default defineConfig(({ mode }) => ({
   root: "src/cheatsheet",
   base: "./",
@@ -16,7 +34,7 @@ export default defineConfig(({ mode }) => ({
     cssCodeSplit: false,
     assetsDir: ".",
     rollupOptions: {
-      input: "src/cheatsheet/index.html",
+      input: ["src/cheatsheet/index.html", "src/cheatsheet/chat/index.html"],
       output: {
         entryFileNames: mode === "min" ? "main.min.js" : "main.js",
         assetFileNames: (assetInfo) => {
@@ -35,6 +53,10 @@ export default defineConfig(({ mode }) => ({
       await run(process.execPath, ["scripts/generate-theme-manifest.mjs"]);
       await run(process.execPath, ["scripts/generate-theme-tokens.mjs"]);
     }
+  }, {
+    name: "kroma-chat-page-route",
+    configureServer: routeChatPage,
+    configurePreviewServer: routeChatPage,
   }, {
     name: "write-named-build-files",
     async closeBundle() {

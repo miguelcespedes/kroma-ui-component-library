@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Demostración independiente de KromaChat">
+    <title>KromaChat · Kroma</title>
+  </head>
+  <body class="bg-body-tertiary kroma-chat-standalone">
+    <main class="kroma-chat-page">
+      <section class="kroma-chat-page__content" aria-labelledby="kroma-chat-page-title">
+        <header class="kroma-chat-page__header">
+          <a class="kroma-chat-page__back" href="../">Volver al Cheatsheet</a>
+          <div>
+            <h1 id="kroma-chat-page-title">KromaChat</h1>
+            <p>Demostración conversacional guiada</p>
+          </div>
+        </header>
+        <div class="kroma-chat-page__surface">
+          <kroma-chat
+            data-demo="commerce-journey"
+            chat-title="Asistente"
+            subtitle="Aquí para ayudarte"
+            messages-label="Mensajes"
+            input-label="Escribe un mensaje"
+            send-label="Enviar mensaje"
+            placeholder="Mensaje…"
+            empty-state="Inicia la conversación">
+          </kroma-chat>
+        </div>
+        <p class="kroma-chat-page__note">Catálogo ficticio de demostración. No se realizan pedidos reales.</p>
+      </section>
+    </main>
+    <script type="module" src="./chat-page.ts"></script>
+  </body>
+</html>
