@@ -21,10 +21,11 @@ chat?.addMessage({ author: "assistant", type: "text", text: "Hello." });
 | `setOptionsDisabled(messageId, disabled)` | Disable one message's QuickReplies or ChoiceList. |
 | `setError(message)` | Show or clear a composer error. |
 | `mode` | Typed `"default" | "kitchen"` property reflected by the `mode` attribute. Changing it rebuilds the transcript. |
+| `composerInputMode` | Typed `"native" | "virtual"` property reflected by `input-mode`; defaults to native. |
 
 Component listeners are disposed when the element disconnects and reinitialized if it is connected again.
 
-The `mode`, `chat-title`, `subtitle`, `avatar`, `status`, `messages-label`, `empty-state`, `input-label`, `placeholder`, `send-label`, and `typing-label` attributes configure the element. The `options` message remains an alias for the original QuickReplies contract.
+The `mode`, `input-mode`, `chat-title`, `subtitle`, `avatar`, `status`, `messages-label`, `empty-state`, `input-label`, `placeholder`, `send-label`, and `typing-label` attributes configure the element. `input-mode="virtual"` selects KromaChat's controlled Spanish virtual keyboard; the visible composer switch can return to `native` at any time. The default `native` mode preserves the textarea, IME composition, dictation, and assistive-technology input. The virtual surface supports controlled character editing and hardware key input but intentionally does not emulate IME composition or system dictation. The `options` message remains an alias for the original QuickReplies contract.
 
 ## Kitchen Mode
 
@@ -42,7 +43,7 @@ const mode: ChatMode = "kitchen";
 if (chat) chat.mode = mode;
 ```
 
-Changing mode rebuilds the transcript. Kitchen Mode loads its catalog asynchronously from the optional `kitchen/` module, leaves the composer visible but disabled, and suppresses host action, send, quantity and form-submit events. QuickReplies and ChoiceList may still show a local selected state without adding user messages. It does not run the host's commerce journey or call services.
+Changing mode rebuilds the transcript. Kitchen Mode loads its catalog asynchronously from the optional `kitchen/` module, leaves the composer visible but disabled, presents the virtual keyboard's alphabetic, shifted, numeric, and composer examples when virtual mode is selected, and suppresses host action, send, quantity and form-submit events. QuickReplies and ChoiceList may still show a local selected state without adding user messages. It does not run the host's commerce journey or call services.
 
 The Cheatsheet's `/chat/` page provides the mode selector, clear/dark theme controls and responsive width/density controls. Its normal mode keeps the existing mock commerce journey; Kitchen Mode presents every example in order in that same `<kroma-chat>` instance.
 
@@ -79,7 +80,7 @@ The former `KromaChatElement` class export remains an alias of `KromaChat`; only
 
 - `kroma-chat.ts` composes the custom element; `index.ts` is the public TypeScript entry point.
 - `core/` contains backend-agnostic models, event contracts and renderer dispatch.
-- `layout/` owns the header, message history and composer.
+- `layout/` owns the header, message history and composer; `input/` owns the controlled virtual text state, keyboard layouts and semantic key renderer.
 - `messages/`, `navigation/`, `catalog/`, `commerce/`, `forms/`, and `feedback/` contain their named presentation controls.
 - `shared/` contains reusable action, icon, image and formatting primitives.
 - `kroma-chat.scss` is the stylesheet entry point; `styles/` separates token aliases and the layout, messages, navigation, catalog, commerce, forms, feedback and state families.

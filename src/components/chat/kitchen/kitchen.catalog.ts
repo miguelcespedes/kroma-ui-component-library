@@ -18,7 +18,12 @@ export type KitchenCatalogEntry = {
 export const kitchenCatalog: readonly KitchenCatalogEntry[] = [
   {
     title: "Layout · Chat Header, Chat Message List y Chat Composer",
-    description: "El encabezado, el historial desplazable y el composer deshabilitado que rodean este catálogo son las instancias reales del componente.",
+    description: "El encabezado, el historial desplazable y el composer deshabilitado con teclado virtual son las instancias reales del componente.",
+    examples: [],
+  },
+  {
+    title: "Virtual Keyboard & Composer",
+    description: "Presenta las variantes alfabética, Shift y numérica, además de estados de composer vacío, con texto y deshabilitado.",
     examples: [],
   },
   {
