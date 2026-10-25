@@ -270,7 +270,6 @@ async function estimateModelStorage() {
 function isWhisperRuntimeAvailable() {
   return typeof window !== "undefined"
     && window.isSecureContext
-    && window.crossOriginIsolated
     && typeof Worker !== "undefined"
     && typeof WebAssembly !== "undefined"
     && typeof MediaRecorder !== "undefined"

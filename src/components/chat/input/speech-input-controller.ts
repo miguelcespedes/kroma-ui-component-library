@@ -72,7 +72,7 @@ export class SpeechInputController {
     this.isSupported = options.supported ?? detectSpeechInputSupport;
     this.currentStatus = this.isSupported()
       ? { ...DEFAULT_STATUS, modelReady: this.adapter.ready }
-      : { ...DEFAULT_STATUS, state: "unsupported", message: unsupportedMessage() };
+      : { ...DEFAULT_STATUS, state: "unsupported" };
     if (this.adapter.ready && this.isSupported()) {
       this.currentStatus = { ...this.currentStatus, state: "ready" };
     }
@@ -280,12 +280,8 @@ export class SpeechInputController {
 export function detectSpeechInputSupport(scope: Window | null = typeof window === "undefined" ? null : window) {
   if (!scope?.isSecureContext || !scope.navigator?.mediaDevices?.getUserMedia) return false;
   if (typeof MediaRecorder === "undefined") return false;
-  // browser-whisper requires isolation for its threaded WASM backend; WebGPU then remains an automatic fast path.
-  return scope.crossOriginIsolated === true;
-}
-
-function unsupportedMessage() {
-  return "El dictado local requiere un navegador compatible, acceso al micrófono y aislamiento seguro de origen. Puedes escribir el mensaje.";
+  // Cross-origin isolation is only required for threaded WASM; WebGPU may work without it.
+  return true;
 }
 
 function captureErrorMessage(error: unknown) {

@@ -34,7 +34,7 @@ Dictation uses `browser-whisper` 2.x with the multilingual `whisper-tiny` model 
 
 Automatic preparation is deferred on Save-Data/2G connections and skipped when the browser reports at most 2 GB of device memory. Storage estimates are advisory because the library must first probe its own cache (a valid cached model can be reused even with little free space); quota or download failures remain silent and leave text entry available. In these cases the dictation button stays hidden until preparation succeeds.
 
-The chat page must be served in a secure context with `Cross-Origin-Embedder-Policy: require-corp` and `Cross-Origin-Opener-Policy: same-origin`; the Vite development and preview middleware applies these headers only to `/chat/`, not the full cheatsheet. `browser-whisper` uses WebGPU when available and falls back to threaded WASM. GitHub Pages cannot set these response headers, so the current static Pages deployment cannot guarantee this local transcription engine; deploy the chat route to a host that supports the headers to enable it. Where isolation, microphone access or `MediaRecorder` is unavailable, users can continue typing.
+The chat page must be served in a secure context. `browser-whisper` uses WebGPU when available and can use threaded WASM as a fallback; that fallback requires `Cross-Origin-Embedder-Policy: require-corp` and `Cross-Origin-Opener-Policy: same-origin`. The Vite development and preview middleware applies these headers only to `/chat/`, not the full cheatsheet. Hosts such as GitHub Pages that cannot set these response headers may still support dictation through WebGPU; otherwise preparation fails silently and the microphone remains hidden while text entry stays available.
 
 ## Kitchen Mode
 

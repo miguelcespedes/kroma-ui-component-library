@@ -18,7 +18,7 @@ const insertionModuleUrl = asModuleUrl(await compile("src/components/chat/input/
 const controllerSource = (await compile("src/components/chat/input/speech-input-controller.ts"))
   .replace('from "./audio-capture"', `from "${audioModuleUrl}"`)
   .replace('from "./whisper-transcription-adapter"', `from "${adapterModuleUrl}"`);
-const { SpeechInputController } = await import(asModuleUrl(controllerSource));
+const { SpeechInputController, detectSpeechInputSupport } = await import(asModuleUrl(controllerSource));
 const { AudioCapture } = await import(audioModuleUrl);
 const { WhisperTranscriptionAdapter } = await import(adapterModuleUrl);
 const { insertSpeechTranscript } = await import(insertionModuleUrl);
@@ -169,8 +169,19 @@ assert.equal(controller.status.state, "ready");
 const unsupported = new SpeechInputController({ adapter, supported: () => false });
 assert.equal(unsupported.supported, false);
 assert.equal(unsupported.status.state, "unsupported");
+assert.equal(unsupported.status.message, "", "unsupported environments do not put disclaimers in the composer");
 assert.equal(await unsupported.start(), false);
 unsupported.destroy();
+
+const previousMediaRecorder = globalThis.MediaRecorder;
+Object.defineProperty(globalThis, "MediaRecorder", { configurable: true, value: class {} });
+assert.equal(detectSpeechInputSupport({
+  isSecureContext: true,
+  crossOriginIsolated: false,
+  navigator: { mediaDevices: { getUserMedia: () => Promise.resolve() } },
+}), true, "a secure WebGPU-capable browser is not rejected only because cross-origin isolation is unavailable");
+if (previousMediaRecorder === undefined) delete globalThis.MediaRecorder;
+else Object.defineProperty(globalThis, "MediaRecorder", { configurable: true, value: previousMediaRecorder });
 
 // Adapter-level contract: one worker/model preparation is shared, language is Whisper's "es",
 // async segments are joined once, cancellation is forwarded, and the engine can be disposed.
