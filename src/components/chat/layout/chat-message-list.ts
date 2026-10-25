@@ -268,12 +268,6 @@ export class ChatMessageList {
   private scrollToMessage(message: HTMLLIElement) {
     requestAnimationFrame(() => {
       if (!message.isConnected) return;
-      if (message.getBoundingClientRect().height > this.element.clientHeight) {
-        const listRect = this.element.getBoundingClientRect();
-        const paddingTop = Number.parseFloat(getComputedStyle(this.element).paddingTop) || 0;
-        this.element.scrollTop += message.getBoundingClientRect().top - listRect.top - this.element.clientTop - paddingTop;
-        return;
-      }
       this.element.scrollTop = this.element.scrollHeight;
     });
   }

@@ -3,7 +3,7 @@
   width: min(100%, var(--kroma-chat-width, 26rem));
   max-width: 100%;
   height: min(var(--kroma-chat-height, 39rem), var(--kroma-chat-max-height, 82dvh));
-  min-height: min(24rem, var(--kroma-chat-height, 39rem), var(--kroma-chat-max-height, 82dvh));
+  min-height: 0;
   min-width: 0;
   flex-direction: column;
   overflow: hidden;
