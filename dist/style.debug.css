@@ -1,4 +1,14 @@
-@charset "UTF-8";
+@charset "UTF-8";/*!
+ *
+ *   simple-keyboard v3.8.199
+ *   https://github.com/hodgef/simple-keyboard
+ *
+ *   Copyright (c) Francisco Hodge (https://github.com/hodgef) and project contributors.
+ *
+ *   This source code is licensed under the MIT license found in the
+ *   LICENSE file in the root directory of this source tree.
+ *
+ */.hg-theme-default{background-color:#ececec;border-radius:5px;box-sizing:border-box;font-family:HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif;overflow:hidden;padding:5px;touch-action:manipulation;-webkit-user-select:none;-moz-user-select:none;user-select:none;width:100%}.hg-theme-default .hg-button span,.hg-theme-default .hg-button span svg{pointer-events:none}.hg-theme-default button.hg-button{border-width:0;font-size:inherit}.hg-theme-default .hg-button{display:inline-block;flex-grow:1}.hg-theme-default .hg-row{display:flex}.hg-theme-default .hg-row:not(:last-child){margin-bottom:5px}.hg-theme-default .hg-row .hg-button-container,.hg-theme-default .hg-row .hg-button:not(:last-child){margin-right:5px}.hg-theme-default .hg-row>div:last-child{margin-right:0}.hg-theme-default .hg-row .hg-button-container{display:flex}.hg-theme-default .hg-button{align-items:center;background:#fff;border-bottom:1px solid #b5b5b5;border-radius:5px;box-shadow:0 0 3px -1px rgba(0,0,0,.3);box-sizing:border-box;cursor:pointer;display:flex;height:40px;justify-content:center;padding:5px;-webkit-tap-highlight-color:rgba(0,0,0,0)}.hg-theme-default .hg-button.hg-standardBtn{width:20px}.hg-theme-default .hg-button.hg-activeButton{background:#efefef}.hg-theme-default.hg-layout-numeric .hg-button{align-items:center;display:flex;height:60px;justify-content:center;width:33.3%}.hg-theme-default .hg-button.hg-button-numpadadd,.hg-theme-default .hg-button.hg-button-numpadenter{height:85px}.hg-theme-default .hg-button.hg-button-numpad0{width:105px}.hg-theme-default .hg-button.hg-button-com{max-width:85px}.hg-theme-default .hg-button.hg-standardBtn.hg-button-at{max-width:45px}.hg-theme-default .hg-button.hg-selectedButton{background:rgba(5,25,70,.53);color:#fff}.hg-theme-default .hg-button.hg-standardBtn[data-skbtn=".com"]{max-width:82px}.hg-theme-default .hg-button.hg-standardBtn[data-skbtn="@"]{max-width:60px}.hg-candidate-box{background:#ececec;border-bottom:2px solid #b5b5b5;border-radius:5px;display:inline-flex;margin-top:-10px;position:absolute;transform:translateY(-100%);-webkit-user-select:none;-moz-user-select:none;user-select:none}ul.hg-candidate-box-list{display:flex;flex:1;list-style:none;margin:0;padding:0}li.hg-candidate-box-list-item{align-items:center;display:flex;height:40px;justify-content:center;width:40px}li.hg-candidate-box-list-item:hover{background:rgba(0,0,0,.03);cursor:pointer}li.hg-candidate-box-list-item:active{background:rgba(0,0,0,.1)}.hg-candidate-box-prev:before{content:"◄"}.hg-candidate-box-next:before{content:"►"}.hg-candidate-box-next,.hg-candidate-box-prev{align-items:center;color:#969696;cursor:pointer;display:flex;padding:0 10px}.hg-candidate-box-next{border-bottom-right-radius:5px;border-top-right-radius:5px}.hg-candidate-box-prev{border-bottom-left-radius:5px;border-top-left-radius:5px}.hg-candidate-box-btn-active{color:#444}
 /*!
  * Bootstrap  v5.3.8 (https://getbootstrap.com/)
  * Copyright 2011-2025 The Bootstrap Authors
@@ -12269,847 +12279,357 @@ textarea.form-control-lg {
   }
 }
 .kroma-chat {
-  --chat-surface-token: var(--kroma-color-surface-raised, var(--bs-secondary-bg, var(--bs-body-bg, #fff)));
-  --chat-canvas-token: var(--kroma-color-surface-canvas, var(--bs-body-bg, #fff));
-  --chat-assistant-token: var(--kroma-color-surface-subtle, var(--bs-tertiary-bg, var(--chat-canvas-token)));
-  --chat-border-token: var(--kroma-color-border-default, var(--bs-border-color, #e3e6eb));
-  --chat-surface: var(--chat-surface-token);
-  --chat-history: var(--chat-canvas-token);
-  --chat-assistant-bubble: var(--chat-assistant-token);
-  --chat-border: var(--chat-border-token);
-  --chat-user-bubble: var(--kroma-color-action-primary, var(--bs-primary, #5b55d9));
-  --chat-user-content: var(--kroma-color-on-action, var(--bs-white, #fff));
-  --chat-content: var(--kroma-color-content-primary, var(--bs-body-color, #20242d));
-  --chat-muted: var(--kroma-color-readable-secondary, var(--bs-secondary-color, #697386));
-  --chat-focus: var(--kroma-color-focus-indicator, var(--bs-primary, #5b55d9));
-  --chat-radius: var(--kroma-radius-lg, 1.25rem);
-  --chat-space-1: var(--kroma-space-1, .25rem);
-  --chat-space-2: var(--kroma-space-2, .5rem);
-  --chat-space-3: var(--kroma-space-3, 1rem);
-  --chat-space-4: var(--kroma-space-4, 1.5rem);
+  --kroma-chat-canvas: var(--kroma-color-surface-canvas, var(--bs-body-bg, #fff));
+  --kroma-chat-surface: var(--kroma-color-surface-raised, var(--bs-secondary-bg, #fff));
+  --kroma-chat-elevated: var(--kroma-ref-surface-raised, var(--kroma-card-bg, var(--kroma-chat-surface)));
+  --kroma-chat-accent: var(--kroma-color-action-primary, var(--bs-primary, #0d6efd));
+  --kroma-chat-on-accent: var(--kroma-color-on-action, var(--bs-white, #fff));
+  --kroma-chat-surface-header: var(--kroma-chat-surface);
+  --kroma-chat-surface-composer: var(--kroma-chat-canvas);
+  --kroma-chat-surface-assistant: var(--kroma-ref-surface-accent, var(--kroma-chat-surface));
+  --kroma-chat-surface-control: var(--kroma-input-bg, var(--kroma-chat-surface));
+  --kroma-chat-surface-card: var(--kroma-chat-elevated);
+  --kroma-chat-surface-hover: var(--kroma-chat-surface);
+  --kroma-chat-surface-selected: var(--kroma-chat-surface);
+  --kroma-chat-surface-success: var(--kroma-chat-surface);
+  --kroma-chat-surface-warning: var(--kroma-chat-surface);
+  --kroma-chat-surface-error: var(--kroma-chat-surface);
+  --kroma-chat-text-primary: var(--kroma-color-content-primary, var(--bs-body-color, #212529));
+  --kroma-chat-text-secondary: var(--kroma-color-readable-secondary, var(--bs-secondary-color, #6c757d));
+  --kroma-chat-text-inverse: var(--kroma-chat-on-accent);
+  --kroma-chat-text-accent: var(--kroma-color-readable-link, var(--kroma-color-link, var(--kroma-chat-accent)));
+  --kroma-chat-text-disabled: var(--kroma-color-disabled, var(--bs-secondary-color, #6c757d));
+  --kroma-chat-border-subtle: var(--kroma-color-border-subtle, var(--bs-border-color, #dee2e6));
+  --kroma-chat-border-interactive: var(--kroma-color-border-default, var(--bs-border-color, #dee2e6));
+  --kroma-chat-border-selected: var(--kroma-color-focus-indicator, var(--kroma-chat-accent));
+  --kroma-chat-border-menu: var(--kroma-chat-border-subtle);
+  --kroma-chat-action-primary-surface: var(--kroma-button-primary-bg, var(--kroma-chat-accent));
+  --kroma-chat-action-primary-content: var(--kroma-button-primary-fg, var(--kroma-chat-on-accent));
+  --kroma-chat-action-primary-hover: var(--kroma-button-primary-hover-bg, var(--kroma-color-action-primary-hover, var(--kroma-chat-accent)));
+  --kroma-chat-action-primary-hover-content: var(--kroma-button-primary-hover-fg, var(--kroma-color-on-action-hover, var(--kroma-chat-on-accent)));
+  --kroma-chat-action-primary-disabled: var(--kroma-button-primary-disabled-bg, var(--kroma-chat-surface));
+  --kroma-chat-action-primary-disabled-content: var(--kroma-button-primary-disabled-fg, var(--kroma-chat-text-disabled));
+  --kroma-chat-action-secondary-surface: var(--kroma-chat-surface-selected);
+  --kroma-chat-action-secondary-content: var(--kroma-chat-text-primary);
+  --kroma-chat-state-success: var(--kroma-color-readable-success, var(--bs-success, #198754));
+  --kroma-chat-state-success-mark: var(--kroma-color-success, var(--bs-success, #198754));
+  --kroma-chat-state-info: var(--kroma-color-readable-info, var(--kroma-chat-text-secondary));
+  --kroma-chat-state-warning: var(--kroma-color-readable-warning, var(--bs-warning, #997404));
+  --kroma-chat-state-warning-mark: var(--kroma-color-warning, var(--bs-warning, #997404));
+  --kroma-chat-state-error: var(--kroma-color-readable-danger, var(--bs-danger, #dc3545));
+  --kroma-chat-state-error-mark: var(--kroma-color-danger, var(--bs-danger, #dc3545));
+  --kroma-chat-state-focus: var(--kroma-color-focus-indicator, var(--kroma-chat-accent));
+  --kroma-chat-radius-shell: 1rem;
+  --kroma-chat-radius-menu: 1rem;
+  --kroma-chat-radius-message: 1rem;
+  --kroma-chat-radius-card: .75rem;
+  --kroma-chat-radius-control: var(--kroma-radius-md, .5rem);
+  --kroma-chat-radius-input: var(--kroma-radius-md, .5rem);
+  --kroma-chat-radius-small: var(--kroma-radius-sm, .25rem);
+  --kroma-chat-radius-pill: 999px;
+  --kroma-chat-elevation-shell: var(--kroma-elevation-1, 0 .125rem .25rem rgb(27 35 52 / 8%));
+  --kroma-chat-spacing-tight: var(--kroma-space-1, .25rem);
+  --kroma-chat-spacing-message: var(--kroma-space-2, .5rem);
+  --kroma-chat-spacing-group: var(--kroma-space-2, .5rem);
+  --kroma-chat-spacing-control: var(--kroma-space-2, .5rem);
+  --kroma-chat-spacing-3: .75rem;
+  --kroma-chat-spacing-card: var(--kroma-space-3, 1rem);
+  --kroma-chat-spacing-section: var(--kroma-space-4, 1.5rem);
+  --kroma-chat-spacing-5: 2rem;
+  --kroma-chat-spacing-menu-inline: var(--kroma-chat-spacing-card);
+  --kroma-chat-spacing-icon-label: var(--kroma-chat-spacing-3);
+  --kroma-chat-spacing-copy: var(--kroma-chat-spacing-tight);
+  --kroma-chat-control-height: 2.75rem;
+  --kroma-chat-menu-row-height: 3.75rem;
+  --kroma-chat-icon-action-size: 1.125rem;
+  --kroma-chat-icon-secondary-size: 1rem;
+  --kroma-chat-chevron-size: 1rem;
+  --kroma-chat-bubble-padding: .75rem 1rem;
+  --kroma-chat-font-family: var(--kroma-font-family-base, var(--bs-body-font-family, system-ui, -apple-system, "Segoe UI", sans-serif));
+  --kroma-chat-typography-display: 1rem;
+  --kroma-chat-typography-title: .875rem;
+  --kroma-chat-typography-body: .875rem;
+  --kroma-chat-typography-body-small: .75rem;
+  --kroma-chat-typography-secondary: var(--kroma-chat-typography-body-small);
+  --kroma-chat-typography-label: .875rem;
+  --kroma-chat-typography-caption: .6875rem;
+  --kroma-chat-typography-meta: var(--kroma-chat-typography-caption);
+  --kroma-chat-typography-product: .875rem;
+  --kroma-chat-typography-price: 1rem;
+  --kroma-chat-leading-display: 1.5;
+  --kroma-chat-leading-heading: 1.43;
+  --kroma-chat-leading-body: 1.43;
+  --kroma-chat-leading-small: 1.33;
+  --kroma-chat-leading-caption: 1.27;
+  --kroma-chat-weight-regular: var(--kroma-font-weight-normal, 400);
+  --kroma-chat-weight-medium: 500;
+  --kroma-chat-weight-semibold: var(--kroma-font-weight-semibold, 600);
+  --kroma-chat-weight-bold: var(--kroma-font-weight-bold, 700);
+  --kroma-chat-motion-fast: var(--kroma-motion-duration-fast, .15s);
+  --kroma-chat-motion-standard: var(--kroma-motion-easing-standard, ease);
+  --chat-surface: var(--kroma-chat-surface);
+  --chat-history: var(--kroma-chat-canvas);
+  --chat-assistant-bubble: var(--kroma-chat-surface-assistant);
+  --chat-border: var(--kroma-chat-border-subtle);
+  --chat-user-bubble: var(--kroma-chat-accent);
+  --chat-user-content: var(--kroma-chat-on-accent);
+  --chat-content: var(--kroma-chat-text-primary);
+  --chat-muted: var(--kroma-chat-text-secondary);
+  --chat-focus: var(--kroma-chat-state-focus);
+  --chat-radius: var(--kroma-chat-radius-shell);
+  --chat-space-1: var(--kroma-chat-spacing-tight);
+  --chat-space-2: var(--kroma-chat-spacing-control);
+  --chat-space-3: var(--kroma-chat-spacing-card);
+  --chat-space-4: var(--kroma-chat-spacing-section);
 }
-@supports (color: hsl(from var(--chat-surface-token) h s l)) {
+
+.kroma-chat[data-density=compact] {
+  --kroma-chat-spacing-message: .375rem;
+  --kroma-chat-spacing-control: .375rem;
+  --kroma-chat-spacing-card: .75rem;
+  --kroma-chat-control-height: 2.5rem;
+  --kroma-chat-bubble-padding: .5rem .75rem;
+}
+
+@supports (color: color-mix(in srgb, white 50%, black)) {
   .kroma-chat {
-    --chat-surface: hsl(from var(--chat-surface-token) 0 0% l);
-    --chat-history: hsl(from var(--chat-canvas-token) 0 0% l);
-    --chat-assistant-bubble: color-mix(in srgb, hsl(from var(--chat-assistant-token) 0 0% l) 50%, var(--chat-history));
-    --chat-border: hsl(from var(--chat-border-token) 0 0% l);
+    --kroma-chat-elevated: var(--kroma-ref-surface-raised, color-mix(in srgb, var(--kroma-chat-surface) 90%, var(--kroma-chat-text-primary) 10%));
+    --kroma-chat-surface-assistant: var(--kroma-ref-surface-accent, color-mix(in srgb, var(--kroma-chat-canvas) 94%, var(--kroma-chat-text-primary) 6%));
+    --kroma-chat-surface-hover: color-mix(in srgb, var(--kroma-chat-surface) 97%, var(--kroma-chat-text-primary) 3%);
+    --kroma-chat-surface-selected: color-mix(in srgb, var(--kroma-chat-surface) 88%, var(--kroma-chat-accent) 12%);
+    --kroma-chat-surface-success: color-mix(in srgb, var(--kroma-chat-surface) 86%, var(--kroma-chat-state-success-mark) 14%);
+    --kroma-chat-surface-warning: color-mix(in srgb, var(--kroma-chat-surface) 86%, var(--kroma-chat-state-warning-mark) 14%);
+    --kroma-chat-surface-error: color-mix(in srgb, var(--kroma-chat-surface) 86%, var(--kroma-chat-state-error-mark) 14%);
+    --kroma-chat-border-subtle: color-mix(in srgb, var(--kroma-color-border-subtle, var(--bs-border-color, #dee2e6)) 72%, transparent);
+  }
+}
+:root[data-bs-theme=dark] .kroma-chat {
+  --kroma-chat-canvas: var(--kroma-ref-gray-850, var(--kroma-color-surface-canvas, var(--bs-body-bg, #fff)));
+  --kroma-chat-surface: var(--kroma-ref-gray-800, var(--kroma-color-surface-raised, var(--bs-secondary-bg, #fff)));
+  --kroma-chat-elevated: var(--kroma-ref-gray-750, var(--kroma-ref-surface-raised, var(--kroma-card-bg, var(--kroma-chat-surface))));
+  --kroma-chat-surface-control: var(--kroma-ref-gray-800, var(--kroma-input-bg, var(--kroma-chat-surface)));
+  --kroma-chat-border-subtle: var(--kroma-ref-gray-750, var(--kroma-color-border-subtle, var(--bs-border-color, #dee2e6)));
+  --kroma-chat-border-interactive: var(--kroma-ref-gray-750, var(--kroma-color-border-default, var(--bs-border-color, #dee2e6)));
+  --kroma-chat-text-primary: var(--kroma-ref-gray-100, var(--kroma-color-content-primary, var(--bs-body-color, #212529)));
+  --kroma-chat-text-secondary: var(--kroma-ref-gray-500, var(--kroma-color-readable-secondary, var(--bs-secondary-color, #6c757d)));
+  --kroma-chat-action-primary-hover: var(--kroma-chat-accent);
+  --kroma-chat-action-primary-hover-content: var(--kroma-chat-on-accent);
+  --kroma-chat-action-primary-disabled: var(--kroma-chat-surface);
+  --kroma-chat-action-primary-disabled-content: var(--kroma-chat-text-secondary);
+}
+
+@supports (color: color-mix(in srgb, white 50%, black)) {
+  :root[data-bs-theme=dark] .kroma-chat {
+    --kroma-chat-border-subtle: color-mix(in srgb, var(--kroma-ref-gray-750, var(--kroma-color-border-subtle, var(--bs-border-color, #dee2e6))) 72%, transparent);
+  }
+}
+@supports (color: color-mix(in srgb, white 50%, black)) {
+  :root[data-bs-theme=dark] .kroma-chat {
+    --kroma-chat-action-primary-hover: color-mix(in srgb, var(--kroma-chat-accent) 82%, var(--kroma-chat-on-accent) 18%);
   }
 }
 .kroma-chat {
   display: flex;
   width: min(100%, var(--kroma-chat-width, 26rem));
+  max-width: 100%;
   height: min(var(--kroma-chat-height, 39rem), var(--kroma-chat-max-height, 82dvh));
-  min-height: min(24rem, var(--kroma-chat-height, 39rem), var(--kroma-chat-max-height, 82dvh));
+  min-height: 0;
+  min-width: 0;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid var(--chat-border);
-  border-radius: var(--chat-radius);
-  background: var(--chat-surface);
-  color: var(--chat-content);
-  font-family: var(--kroma-font-family-base, var(--bs-body-font-family, system-ui, sans-serif));
-  box-shadow: var(--kroma-elevation-1, 0 0.25rem 1rem rgba(27, 35, 52, 0.08));
+  border: 1px solid var(--kroma-chat-border-subtle);
+  border-radius: var(--kroma-chat-radius-shell);
+  background: var(--kroma-chat-canvas);
+  color: var(--kroma-chat-text-primary);
+  font-family: var(--kroma-chat-font-family);
+  font-size: var(--kroma-chat-typography-body);
+  font-weight: var(--kroma-chat-weight-regular);
+  line-height: var(--kroma-chat-leading-body);
+  box-shadow: var(--kroma-chat-elevation-shell);
+  container-name: kroma-chat;
+  container-type: size;
 }
+
 .kroma-chat *, .kroma-chat *::before, .kroma-chat *::after {
   box-sizing: border-box;
 }
+
 .kroma-chat [hidden] {
   display: none !important;
 }
+
 .kroma-chat__header {
   display: flex;
-  min-height: 4rem;
+  min-height: 3.75rem;
   flex: 0 0 auto;
   align-items: center;
-  gap: var(--chat-space-2);
-  padding: var(--chat-space-2) var(--chat-space-3);
-  border-bottom: 1px solid var(--chat-border);
-  background: var(--chat-surface);
+  gap: var(--kroma-chat-spacing-control);
+  padding: var(--kroma-chat-spacing-control) var(--kroma-chat-spacing-card);
+  border-bottom: 1px solid var(--kroma-chat-border-subtle);
+  background: var(--kroma-chat-surface-header);
 }
+
 .kroma-chat__avatar {
   display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
   flex: 0 0 auto;
   place-items: center;
   overflow: hidden;
   border-radius: 50%;
-  background: var(--chat-assistant-bubble);
-  color: var(--chat-content);
-  font-size: 0.9rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
+  background: var(--kroma-chat-accent);
+  color: var(--kroma-chat-on-accent);
+  font-size: var(--kroma-chat-typography-label);
+  font-weight: var(--kroma-font-weight-bold, 700);
 }
+
 .kroma-chat__heading {
+  display: grid;
   min-width: 0;
   flex: 1;
+  gap: var(--kroma-chat-spacing-tight);
 }
+
 .kroma-chat__title {
   margin: 0;
-  font-size: 0.95rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
-  line-height: 1.35;
+  font-size: var(--kroma-chat-typography-display);
+  font-weight: var(--kroma-font-weight-bold, 700);
+  line-height: var(--kroma-chat-leading-display);
+  overflow-wrap: anywhere;
 }
+
 .kroma-chat__subtitle {
-  margin: 0.1rem 0 0;
-  color: var(--chat-muted);
-  font-size: 0.75rem;
-  line-height: 1.35;
+  margin: 0;
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-secondary);
+  line-height: var(--kroma-chat-leading-small);
 }
+
 .kroma-chat__status {
-  margin: 0.1rem 0 0;
-  color: var(--chat-muted);
-  font-size: 0.75rem;
-  line-height: 1.35;
+  display: flex;
+  align-items: center;
+  gap: var(--kroma-chat-spacing-tight);
+  margin: 0;
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-secondary);
+  line-height: var(--kroma-chat-leading-small);
 }
+
+.kroma-chat__status:not([hidden])::before {
+  width: 0.4rem;
+  height: 0.4rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--kroma-chat-state-success-mark);
+  content: "";
+}
+
 .kroma-chat__actions:empty {
   display: none;
 }
+
 .kroma-chat__actions {
   display: flex;
   align-items: center;
-  gap: var(--chat-space-1);
+  gap: var(--kroma-chat-spacing-tight);
 }
+
 .kroma-chat__header-action {
+  display: grid;
+  min-width: 2.5rem;
   min-height: 2.5rem;
-  padding: 0.35rem 0.6rem;
-  border: 1px solid var(--chat-border);
-  border-radius: 999px;
-  background: var(--chat-surface);
-  color: var(--chat-content);
+  place-items: center;
+  padding: var(--kroma-chat-spacing-tight);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-control);
+  background: transparent;
+  color: var(--kroma-chat-text-secondary);
   font: inherit;
-  font-size: 0.78rem;
+  font-size: var(--kroma-chat-typography-label);
   cursor: pointer;
 }
-.kroma-chat__header-action:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
+
+.kroma-chat__header-action:hover:not(:disabled) {
+  background: var(--kroma-chat-surface-hover);
+  color: var(--kroma-chat-text-primary);
 }
+
+.kroma-chat__header-action:disabled {
+  color: var(--kroma-chat-text-disabled);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 .kroma-chat__messages {
   display: flex;
+  width: 100%;
+  min-width: 0;
   min-height: 0;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: var(--chat-space-3);
+  gap: var(--kroma-chat-spacing-message);
   overflow-x: hidden;
   overflow-y: auto;
   margin: 0;
-  padding: var(--chat-space-3);
+  padding: var(--kroma-chat-spacing-card);
   overscroll-behavior: contain;
   list-style: none;
-  background: var(--chat-history);
-  scrollbar-color: var(--kroma-scrollbar-thumb, var(--chat-border)) transparent;
+  background: var(--kroma-chat-canvas);
+  scrollbar-color: var(--kroma-scrollbar-thumb, var(--kroma-chat-border-subtle)) transparent;
   scrollbar-width: thin;
 }
+
 .kroma-chat__messages:empty {
   flex: 0 0 0;
   padding: 0;
 }
-.kroma-chat__message {
-  display: flex;
-  width: 100%;
-  flex: 0 0 auto;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.2rem;
-  min-width: 0;
-}
-.kroma-chat__message--user {
-  align-items: flex-end;
-}
-.kroma-chat__message--system {
-  align-items: center;
-}
-.kroma-chat__message--grouped {
-  margin-top: calc(var(--chat-space-3) * -0.65);
-}
-.kroma-chat__bubble {
-  display: flex;
-  width: fit-content;
-  max-width: min(85%, 34rem);
-  min-width: 2.5rem;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.55rem 0.75rem 0.35rem;
-  border-radius: var(--kroma-radius-md, 0.9rem) var(--kroma-radius-md, 0.9rem) var(--kroma-radius-md, 0.9rem) 0.25rem;
-  background: var(--chat-assistant-bubble);
-  color: var(--chat-content);
-  font-size: 0.925rem;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
-}
-.kroma-chat__message--user .kroma-chat__bubble {
-  border-radius: var(--kroma-radius-md, 0.9rem) var(--kroma-radius-md, 0.9rem) 0.25rem var(--kroma-radius-md, 0.9rem);
-  background: var(--chat-user-bubble);
-  color: var(--chat-user-content);
-}
-.kroma-chat__text, .kroma-chat__info-description {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.kroma-chat__time {
-  align-self: flex-end;
-  color: var(--chat-muted);
-  font-size: 0.68rem;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-.kroma-chat__message--user .kroma-chat__time {
-  color: var(--chat-user-content);
-}
-.kroma-chat__info-title {
-  font-size: 0.9rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
-  line-height: 1.35;
-}
-.kroma-chat__info-description {
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-.kroma-chat__message--status {
-  align-items: center;
-}
-.kroma-chat__status-message {
-  max-width: 92%;
-  margin: 0;
-  padding: 0.25rem var(--chat-space-2);
-  border-radius: 999px;
-  color: var(--chat-muted);
-  font-size: 0.75rem;
-  line-height: 1.4;
-  text-align: center;
-}
-.kroma-chat__message--status[data-status=success] .kroma-chat__status-message {
-  color: var(--kroma-color-readable-success, var(--chat-muted));
-}
-.kroma-chat__message--status[data-status=warning] .kroma-chat__status-message {
-  color: var(--kroma-color-readable-warning, var(--chat-muted));
-}
-.kroma-chat__message--status[data-status=error] .kroma-chat__status-message {
-  color: var(--kroma-color-readable-danger, var(--chat-muted));
-}
-.kroma-chat__options {
-  display: flex;
-  width: min(90%, 34rem);
-  flex-wrap: wrap;
-  gap: var(--chat-space-2);
-  margin-top: var(--chat-space-1);
-}
-.kroma-chat__choice-list {
-  display: grid;
-  width: min(90%, 34rem);
-  grid-template-columns: minmax(0, 1fr);
-}
-.kroma-chat__option {
-  min-width: 0;
-  max-width: 100%;
-  flex: 0 1 auto;
-  min-height: 2.75rem;
-  padding: 0.55rem 0.75rem;
-  border: 1px solid var(--chat-border);
-  border-radius: 999px;
-  background: var(--chat-surface);
-  color: var(--chat-content);
-  font: inherit;
-  font-size: 0.85rem;
-  line-height: 1.35;
-  text-align: center;
-  overflow-wrap: anywhere;
-  cursor: pointer;
-  transition: border-color var(--kroma-motion-duration-fast, 0.15s) var(--kroma-motion-easing-standard, ease), background-color var(--kroma-motion-duration-fast, 0.15s) var(--kroma-motion-easing-standard, ease);
-}
-.kroma-chat__option:hover:not(:disabled) {
-  border-color: var(--chat-border);
-  background: var(--chat-assistant-bubble);
-}
-.kroma-chat__option:active:not(:disabled) {
-  background: var(--kroma-color-surface-subtle, var(--chat-assistant-bubble));
-}
-.kroma-chat__option:disabled {
-  cursor: default;
-}
-.kroma-chat__option[aria-pressed=true] {
-  border-color: var(--chat-focus);
-  font-weight: var(--kroma-font-weight-semibold, 600);
-}
-.kroma-chat__options--inactive .kroma-chat__option {
-  cursor: default;
-}
-.kroma-chat__choice {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.2rem;
-  border-radius: var(--kroma-radius-md, 0.75rem);
-  text-align: start;
-}
-.kroma-chat__choice-title {
-  font-weight: var(--kroma-font-weight-semibold, 600);
-}
-.kroma-chat__choice-description {
-  color: var(--chat-muted);
-  font-size: 0.78rem;
-  line-height: 1.4;
-}
-.kroma-chat__rich-title {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
-  line-height: 1.35;
-}
-.kroma-chat__rich-description {
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
-.kroma-chat__rich-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--chat-space-2);
-  align-items: center;
-}
-.kroma-chat__rich-link, .kroma-chat__rich-action {
-  display: inline-flex;
-  min-height: 2.75rem;
-  align-items: center;
-  padding: 0.4rem 0.65rem;
-  border: 1px solid var(--chat-border);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--kroma-color-link, var(--bs-link-color, var(--chat-content)));
-  font: inherit;
-  font-size: 0.82rem;
-  line-height: 1.35;
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
-  cursor: pointer;
-}
-.kroma-chat__rich-link:hover, .kroma-chat__rich-action:hover {
-  background: var(--chat-assistant-bubble);
-}
-.kroma-chat__rich-action {
-  text-decoration: none;
-}
-.kroma-chat__journey-action {
-  display: inline-flex;
-  min-width: 0;
-  min-height: 2.75rem;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--chat-space-2);
-  padding: 0.55rem 0.8rem;
-  border: 1px solid var(--kroma-button-primary-bg, var(--chat-user-bubble));
-  border-radius: 999px;
-  background: var(--kroma-button-primary-bg, var(--chat-user-bubble));
-  color: var(--kroma-button-primary-fg, var(--chat-user-content));
-  font: inherit;
-  font-size: 0.85rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
-  line-height: 1.35;
-  text-align: center;
-  overflow-wrap: anywhere;
-  cursor: pointer;
-}
-.kroma-chat__journey-action:hover:not(:disabled) {
-  border-color: var(--kroma-button-primary-hover-bg, var(--chat-user-bubble));
-  background: var(--kroma-button-primary-hover-bg, var(--chat-user-bubble));
-  color: var(--kroma-button-primary-hover-fg, var(--chat-user-content));
-}
-.kroma-chat__journey-action:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-.kroma-chat__journey-menu, .kroma-chat__category-picker {
-  display: grid;
-  width: min(100%, 34rem);
-  gap: var(--chat-space-2);
-  margin-top: var(--chat-space-2);
-}
-.kroma-chat__journey-menu {
-  grid-template-columns: minmax(0, 1fr);
-}
-.kroma-chat__category-picker {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
-}
-.kroma-chat__journey-item, .kroma-chat__category {
-  display: flex;
-  min-width: 0;
-  min-height: 3rem;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.25rem;
-  padding: 0.65rem 0.8rem;
-  border: 1px solid var(--chat-border);
-  border-radius: var(--kroma-radius-md, 0.75rem);
-  background: var(--chat-surface);
-  color: var(--chat-content);
-  font: inherit;
-  font-size: 0.875rem;
-  text-align: start;
-  overflow-wrap: anywhere;
-  cursor: pointer;
-}
-.kroma-chat__journey-item:hover:not(:disabled), .kroma-chat__category:hover:not(:disabled) {
-  background: var(--chat-assistant-bubble);
-}
-.kroma-chat__journey-item:disabled, .kroma-chat__category:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-.kroma-chat__journey-item-label, .kroma-chat__category-label {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: var(--chat-space-2);
-}
-.kroma-chat__journey-item-icon, .kroma-chat__category-label-icon {
-  flex: 0 0 auto;
-}
-.kroma-chat__journey-item-description, .kroma-chat__category-description {
-  color: var(--chat-muted);
-  font-size: 0.78rem;
-  line-height: 1.4;
-}
-.kroma-chat__product-card-message {
-  width: min(90%, 34rem);
-}
-.kroma-chat__product-list {
-  display: grid;
-  width: min(90%, 34rem);
-  gap: var(--chat-space-2);
-  margin-top: var(--chat-space-2);
-}
-.kroma-chat__product-card {
-  display: flex;
-  width: 100%;
-  min-width: 0;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: var(--chat-space-2);
-  padding: 0.65rem 0.75rem;
-  border: 1px solid var(--chat-border);
-  border-radius: var(--kroma-radius-md, 0.75rem);
-  background: var(--chat-surface);
-  color: var(--chat-content);
-  font: inherit;
-  text-align: start;
-  cursor: pointer;
-  scroll-snap-align: start;
-}
-.kroma-chat__product-card:hover {
-  background: var(--chat-assistant-bubble);
-}
-.kroma-chat__product-image {
-  width: 3.5rem;
-  height: 3.5rem;
-  flex: 0 0 auto;
-  border-radius: var(--kroma-radius-sm, 0.25rem);
-  object-fit: cover;
-}
-.kroma-chat__product-content {
-  display: grid;
-  min-width: 0;
-  flex: 1;
-  gap: 0.15rem;
-}
-.kroma-chat__product-name {
-  font-size: 0.875rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
-}
-.kroma-chat__product-description {
-  color: var(--chat-muted);
-  font-size: 0.78rem;
-  line-height: 1.35;
-  overflow-wrap: anywhere;
-}
-.kroma-chat__product-price {
-  color: var(--chat-content);
-  font-size: 0.85rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
-}
-.kroma-chat__product-carousel {
-  display: grid;
-  width: min(90%, 34rem);
-  gap: var(--chat-space-2);
-}
-.kroma-chat__carousel-controls {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--chat-space-1);
-}
-.kroma-chat__carousel-arrow {
-  display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
-  place-items: center;
-  border: 1px solid var(--chat-border);
-  border-radius: 50%;
-  background: var(--chat-surface);
-  color: var(--chat-content);
-  font: inherit;
-  font-size: 1.35rem;
-  cursor: pointer;
-}
-.kroma-chat__carousel-arrow:disabled {
-  cursor: default;
-  opacity: 0.45;
-}
-.kroma-chat__product-track {
-  display: flex;
-  min-width: 0;
-  gap: var(--chat-space-2);
-  overflow-x: auto;
-  padding-bottom: var(--chat-space-1);
-  scroll-snap-type: x mandatory;
-  overscroll-behavior-inline: contain;
-  scrollbar-width: thin;
-}
-.kroma-chat__product-track .kroma-chat__product-card {
-  width: min(78%, 17rem);
-}
-.kroma-chat__product-detail {
-  display: grid;
-  width: min(90%, 34rem);
-  gap: var(--chat-space-2);
-  padding: 0.75rem;
-  border: 1px solid var(--chat-border);
-  border-radius: var(--kroma-radius-md, 0.75rem);
-  background: var(--chat-surface);
-}
-.kroma-chat__product-detail-image {
-  width: 100%;
-  max-height: 10rem;
-  border-radius: var(--kroma-radius-sm, 0.25rem);
-  object-fit: contain;
-}
-.kroma-chat__product-detail-title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
-  line-height: 1.35;
-}
-.kroma-chat__product-detail-description {
-  margin: 0;
-  color: var(--chat-content);
-  font-size: 0.875rem;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
-}
-.kroma-chat__product-detail-price {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
-}
-.kroma-chat__product-features {
-  display: grid;
-  gap: 0.35rem;
-  margin: 0;
-  padding-inline-start: 1.2rem;
-  color: var(--chat-muted);
-  font-size: 0.8rem;
-}
-.kroma-chat__variant-selector {
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-.kroma-chat__variant-selector legend {
-  margin-bottom: var(--chat-space-1);
-  color: var(--chat-muted);
-  font-size: 0.78rem;
-}
-.kroma-chat__variant-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--chat-space-1);
-}
-.kroma-chat__variant {
-  display: inline-flex;
-  min-height: 2.75rem;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.6rem;
-  border: 1px solid var(--chat-border);
-  border-radius: 999px;
-  background: var(--chat-surface);
-  color: var(--chat-content);
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-.kroma-chat__variant input {
-  accent-color: var(--chat-focus);
-}
-.kroma-chat__quantity-selector {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--chat-space-2);
-}
-.kroma-chat__quantity-label {
-  margin-inline-end: var(--chat-space-1);
-  color: var(--chat-muted);
-  font-size: 0.8rem;
-}
-.kroma-chat__quantity-button {
-  display: grid;
-  width: 2.75rem;
-  height: 2.75rem;
-  place-items: center;
-  border: 1px solid var(--chat-border);
-  border-radius: 50%;
-  background: var(--chat-surface);
-  color: var(--chat-content);
-  font: inherit;
-  font-size: 1.1rem;
-  cursor: pointer;
-}
-.kroma-chat__quantity-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-.kroma-chat__quantity-value {
-  min-width: 1.5rem;
-  color: var(--chat-content);
-  text-align: center;
-}
-.kroma-chat__product-add {
-  width: 100%;
-  justify-content: center;
-}
-.kroma-chat__cart-summary {
-  display: grid;
-  width: min(100%, 34rem);
-  gap: var(--chat-space-3);
-}
-.kroma-chat__cart-items {
-  display: grid;
-  gap: var(--chat-space-2);
-}
-.kroma-chat__cart-item {
-  display: flex;
-  min-width: 0;
-  justify-content: space-between;
-  gap: var(--chat-space-2);
-  padding-block: var(--chat-space-1);
-  border-bottom: 1px solid var(--chat-border);
-}
-.kroma-chat__cart-product {
-  display: grid;
-  min-width: 0;
-  gap: 0.15rem;
-}
-.kroma-chat__cart-name {
-  font-size: 0.85rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
-  overflow-wrap: anywhere;
-}
-.kroma-chat__cart-meta {
-  margin: 0;
-  color: var(--chat-muted);
-  font-size: 0.75rem;
-}
-.kroma-chat__cart-trailing {
-  display: flex;
-  flex: 0 0 auto;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.3rem;
-}
-.kroma-chat__cart-total {
-  font-size: 0.85rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
-}
-.kroma-chat__cart-remove {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--chat-muted);
-  font: inherit;
-  font-size: 0.72rem;
-  text-decoration: underline;
-  cursor: pointer;
-}
-.kroma-chat__cart-subtotal {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--chat-space-2);
-  padding-top: var(--chat-space-2);
-  border-top: 1px solid var(--chat-border);
-  font-size: 0.9rem;
-}
-.kroma-chat__cart-subtotal strong {
-  font-size: 1rem;
-}
-.kroma-chat__cart-empty {
-  margin: 0;
-  color: var(--chat-muted);
-  font-size: 0.85rem;
-}
-.kroma-chat__price-entry--strong {
-  font-weight: var(--kroma-font-weight-semibold, 600);
-}
-.kroma-chat__conversational-form {
-  display: grid;
-  width: min(100%, 34rem);
-  gap: var(--chat-space-3);
-}
-.kroma-chat__form-title {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
-}
-.kroma-chat__form-fields {
-  display: grid;
-  gap: var(--chat-space-2);
-}
-.kroma-chat__form-field {
-  display: grid;
-  min-width: 0;
-  gap: var(--chat-space-1);
-}
-.kroma-chat__form-field label {
-  color: var(--chat-muted);
-  font-size: 0.78rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
-}
-.kroma-chat__form-input {
-  width: 100%;
-  min-width: 0;
-  min-height: 2.75rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--chat-border);
-  border-radius: 999px;
-  background: var(--chat-surface);
-  color: var(--chat-content);
-  font: inherit;
-  font-size: 0.875rem;
-}
-.kroma-chat__form-input:focus-visible {
-  border-color: var(--chat-focus);
-  outline: 2px solid var(--chat-focus);
-  outline-offset: 2px;
-}
-.kroma-chat__customer-details {
-  display: grid;
-  gap: var(--chat-space-2);
-  margin: 0;
-  padding: var(--chat-space-2);
-  border: 1px solid var(--chat-border);
-  border-radius: var(--kroma-radius-md, 0.75rem);
-}
-.kroma-chat__customer-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  font-size: 0.82rem;
-}
-.kroma-chat__customer-row dt {
-  font-weight: var(--kroma-font-weight-semibold, 600);
-}
-.kroma-chat__customer-row dd {
-  margin: 0;
-  overflow-wrap: anywhere;
-}
-.kroma-chat__review-actions {
-  display: grid;
-  gap: var(--chat-space-2);
-}
-.kroma-chat__confirmation {
-  display: grid;
-  width: min(100%, 34rem);
-  justify-items: center;
-  gap: var(--chat-space-2);
-  padding: var(--chat-space-3);
-  text-align: center;
-}
-.kroma-chat__confirmation-title {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: var(--kroma-font-weight-semibold, 600);
-}
-.kroma-chat__confirmation-description {
-  margin: 0;
-  color: var(--chat-muted);
-  font-size: 0.85rem;
-  line-height: 1.5;
-}
-.kroma-chat__confirmation-reference {
-  margin: 0;
-  color: var(--chat-muted);
-  font-size: 0.75rem;
-}
-.kroma-chat__confirmation-summary {
-  display: grid;
-  width: 100%;
-  gap: var(--chat-space-1);
-  margin: 0;
-  padding-inline-start: 1.2rem;
-  color: var(--chat-content);
-  text-align: start;
-  font-size: 0.8rem;
-}
-.kroma-chat__message--typing .kroma-chat__bubble {
-  min-width: 3.6rem;
-  min-height: 2.35rem;
-  justify-content: center;
-  padding: 0.5rem 0.8rem;
-}
-.kroma-chat__typing-dots {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.22rem;
-}
-.kroma-chat__typing-dots span {
-  width: 0.35rem;
-  height: 0.35rem;
-  border-radius: 50%;
-  background: var(--chat-muted);
-  animation: kroma-chat-typing 1.2s var(--kroma-motion-easing-standard, ease-in-out) infinite;
-}
-.kroma-chat__typing-dots span:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.kroma-chat__typing-dots span:nth-child(3) {
-  animation-delay: 0.3s;
-}
+
 .kroma-chat__empty {
   display: grid;
   flex: 1 1 auto;
   place-items: center;
   margin: 0;
-  padding: var(--chat-space-4);
-  color: var(--chat-muted);
-  font-size: 0.875rem;
+  padding: var(--kroma-chat-spacing-section);
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-body);
   text-align: center;
 }
+
 .kroma-chat__composer-area {
+  min-width: 0;
   flex: 0 0 auto;
-  padding: var(--chat-space-2) var(--chat-space-3) max(var(--chat-space-2), env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid var(--chat-border);
-  background: var(--chat-surface);
+  padding: var(--kroma-chat-spacing-control) var(--kroma-chat-spacing-card) max(var(--kroma-chat-spacing-control), env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--kroma-chat-border-subtle);
+  background: var(--kroma-chat-surface-header);
 }
+
 .kroma-chat__composer {
   display: flex;
+  min-width: 0;
   align-items: flex-end;
-  gap: var(--chat-space-2);
+  gap: var(--kroma-chat-spacing-control);
   margin: 0;
-  padding: 0.0625rem 0.25rem 0.0625rem 0.75rem;
-  border: 1px solid var(--chat-border);
-  border-radius: 1.4rem;
-  background: var(--chat-surface);
-  transition: border-color var(--kroma-motion-duration-fast, 0.15s) var(--kroma-motion-easing-standard, ease), box-shadow var(--kroma-motion-duration-fast, 0.15s) var(--kroma-motion-easing-standard, ease);
+  padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
+  border: 1px solid var(--kroma-chat-border-interactive);
+  border-radius: var(--kroma-chat-radius-input);
+  background: var(--kroma-chat-surface-control);
+  transition: border-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), box-shadow var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
 }
+
 .kroma-chat__composer:focus-within {
-  border-color: var(--chat-focus);
-  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--chat-focus) 18%, transparent);
+  border-color: var(--kroma-chat-state-focus);
+  outline: 2px solid var(--kroma-chat-state-focus);
+  outline-offset: 2px;
 }
+
+.kroma-chat__composer:has(.kroma-chat__input[aria-invalid=true]) {
+  border-color: var(--kroma-chat-state-error);
+}
+
 .kroma-chat__input {
   width: 100%;
   min-width: 0;
-  min-height: 2.75rem;
+  min-height: var(--kroma-chat-control-height);
   max-height: 7.5rem;
   resize: none;
   overflow-y: auto;
@@ -13117,65 +12637,1532 @@ textarea.form-control-lg {
   outline: 0;
   box-shadow: none;
   background: transparent;
-  color: var(--chat-content);
+  color: var(--kroma-chat-text-primary);
   font: inherit;
-  font-size: 0.9rem;
-  line-height: 1.45;
-  padding-block: 0.65rem;
+  font-size: var(--kroma-chat-typography-body);
+  line-height: var(--kroma-chat-leading-body);
+  padding-block: var(--kroma-chat-spacing-control);
 }
+
 .kroma-chat__input::placeholder {
-  color: var(--chat-muted);
+  color: var(--kroma-chat-text-secondary);
   opacity: 1;
 }
+
 .kroma-chat__input:disabled {
   cursor: not-allowed;
   opacity: 0.7;
 }
+
+.kroma-chat__virtual-display {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--kroma-chat-control-height);
+  max-height: 7.5rem;
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: var(--kroma-chat-spacing-control) 0;
+  color: var(--kroma-chat-text-primary);
+  font: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  cursor: text;
+  scrollbar-width: thin;
+}
+
+.kroma-chat__virtual-display[aria-disabled=true] {
+  color: var(--kroma-chat-text-disabled);
+  cursor: default;
+}
+
+.kroma-chat__virtual-display-placeholder {
+  color: var(--kroma-chat-text-secondary);
+}
+
+.kroma-chat__virtual-display-caret {
+  display: inline-block;
+  width: 0;
+  height: 1.2em;
+  vertical-align: text-bottom;
+  border-inline-start: 1.5px solid currentColor;
+  animation: kroma-chat-virtual-caret 1s steps(2, start) infinite;
+}
+
+.kroma-chat__composer-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__input-mode, .kroma-chat__keyboard-toggle {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: 0 0 2.5rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--kroma-chat-radius-control);
+  background: transparent;
+  color: var(--kroma-chat-text-secondary);
+  font: inherit;
+  font-size: 1.125rem;
+  cursor: pointer;
+}
+
+.kroma-chat__input-mode:hover:not(:disabled), .kroma-chat__keyboard-toggle:hover:not(:disabled) {
+  background: var(--kroma-chat-surface-hover);
+  color: var(--kroma-chat-text-primary);
+}
+
+.kroma-chat__input-mode:disabled, .kroma-chat__keyboard-toggle:disabled {
+  color: var(--kroma-chat-text-disabled);
+  cursor: not-allowed;
+}
+
+.kroma-chat__composer-area, .kroma-chat__composer, .kroma-chat__input, .kroma-chat__virtual-display {
+  max-width: 100%;
+}
+
 .kroma-chat__send {
   display: grid;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
   flex: 0 0 auto;
   place-items: center;
   border: 0;
-  border-radius: 50%;
-  background: var(--kroma-button-primary-bg, var(--chat-user-bubble));
-  color: var(--kroma-button-primary-fg, var(--chat-user-content));
+  border-radius: var(--kroma-chat-radius-control);
+  background: var(--kroma-chat-action-primary-surface);
+  color: var(--kroma-chat-action-primary-content);
   cursor: pointer;
-  transition: background-color var(--kroma-motion-duration-fast, 0.15s) var(--kroma-motion-easing-standard, ease), opacity var(--kroma-motion-duration-fast, 0.15s) var(--kroma-motion-easing-standard, ease);
+  transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), opacity var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
 }
+
 .kroma-chat__send svg {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: var(--kroma-chat-icon-action-size);
+  height: var(--kroma-chat-icon-action-size);
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.8;
+  stroke-width: 1.75;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
 .kroma-chat__send:hover:not(:disabled) {
-  background: var(--kroma-button-primary-hover-bg, var(--chat-user-bubble));
-  color: var(--kroma-button-primary-hover-fg, var(--chat-user-content));
+  background: var(--kroma-chat-action-primary-hover);
+  color: var(--kroma-chat-action-primary-hover-content);
 }
+
 .kroma-chat__send:disabled {
+  background: var(--kroma-chat-action-primary-disabled);
+  color: var(--kroma-chat-action-primary-disabled-content);
   cursor: not-allowed;
-  opacity: 0.45;
 }
-.kroma-chat__error {
-  margin: var(--chat-space-1) 0.5rem 0;
-  color: var(--kroma-color-readable-danger, var(--chat-muted));
-  font-size: 0.75rem;
-  line-height: 1.4;
+
+.kroma-chat .hg-theme-default {
+  width: 100%;
+  max-block-size: 16rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
-.kroma-chat__option:focus-visible, .kroma-chat__rich-link:focus-visible, .kroma-chat__rich-action:focus-visible, .kroma-chat__actions :focus-visible {
-  outline: 2px solid var(--chat-focus);
+
+.kroma-chat__keyboard-showcase {
+  display: grid;
+  max-height: 14rem;
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-control);
+  overflow-y: auto;
+  padding-block: var(--kroma-chat-spacing-control);
+  border-top: 1px solid var(--kroma-chat-border-subtle);
+  overscroll-behavior: contain;
+}
+
+.kroma-chat__keyboard-showcase-title {
+  margin: 0;
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-body-small);
+  font-weight: var(--kroma-chat-weight-semibold);
+}
+
+.kroma-chat__keyboard-showcase-composers {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--kroma-chat-spacing-control);
+}
+
+.kroma-chat__keyboard-showcase-sample,
+.kroma-chat__keyboard-showcase-composer {
+  display: grid;
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__keyboard-showcase-label {
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-caption);
+}
+
+.kroma-chat__keyboard-showcase-layouts {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__keyboard-showcase-layout,
+.kroma-chat__keyboard-showcase-toggle {
+  min-height: 2rem;
+  padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
+  border: 1px solid var(--kroma-chat-border-subtle);
+  border-radius: var(--kroma-chat-radius-control);
+  background: var(--kroma-chat-surface);
+  color: var(--kroma-chat-text-primary);
+  font: inherit;
+  font-size: var(--kroma-chat-typography-body-small);
+}
+
+.kroma-chat__keyboard-showcase-layout[aria-pressed=true] {
+  border-color: var(--kroma-chat-border-selected);
+  background: var(--kroma-chat-surface-selected);
+}
+
+.kroma-chat__virtual-display--sample {
+  min-height: 2.5rem;
+  max-height: 3rem;
+  padding-inline: var(--kroma-chat-spacing-control);
+  border: 1px solid var(--kroma-chat-border-subtle);
+  border-radius: var(--kroma-chat-radius-input);
+  background: var(--kroma-chat-surface);
+  font-size: var(--kroma-chat-typography-body-small);
+}
+
+@supports (height: 1cqb) {
+  .kroma-chat .hg-theme-default {
+    max-block-size: min(16rem, 38cqb);
+  }
+}
+.kroma-chat__message {
+  display: flex;
+  width: 100%;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--kroma-chat-spacing-tight);
+  min-width: 0;
+}
+
+.kroma-chat__message--user {
+  align-items: flex-end;
+}
+
+.kroma-chat__message--system {
+  align-items: center;
+}
+
+.kroma-chat__message--grouped {
+  margin-top: calc(var(--kroma-chat-spacing-group) * -0.5);
+}
+
+.kroma-chat__message > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.kroma-chat__message--assistant {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  column-gap: var(--kroma-chat-spacing-control);
+  row-gap: var(--kroma-chat-spacing-tight);
+  align-items: start;
+}
+
+.kroma-chat__message--assistant > * {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.kroma-chat__message-avatar {
+  display: grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: end;
+  place-items: center;
+  margin-bottom: 0.25rem;
+  border-radius: 50%;
+  background: var(--kroma-chat-surface-selected);
+  color: var(--kroma-chat-text-accent);
+  font-size: var(--kroma-chat-typography-caption);
+  font-weight: var(--kroma-font-weight-bold, 700);
+}
+
+.kroma-chat__message--assistant.kroma-chat__message--group-continuation .kroma-chat__message-avatar {
+  visibility: hidden;
+}
+
+.kroma-chat__bubble {
+  display: flex;
+  width: fit-content;
+  min-width: min(2.5rem, 100%);
+  max-width: min(86%, 34rem);
+  flex-direction: column;
+  gap: var(--kroma-chat-spacing-tight);
+  padding: var(--kroma-chat-bubble-padding);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-message) var(--kroma-chat-radius-message) var(--kroma-chat-radius-message) 0.25rem;
+  background: var(--kroma-chat-surface-assistant);
+  color: var(--kroma-chat-text-primary);
+  font-size: var(--kroma-chat-typography-body);
+  line-height: var(--kroma-chat-leading-body);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: normal;
+}
+
+.kroma-chat__message--user .kroma-chat__bubble {
+  border-radius: var(--kroma-chat-radius-message) var(--kroma-chat-radius-message) 0.25rem var(--kroma-chat-radius-message);
+  background: var(--kroma-chat-accent);
+  color: var(--kroma-chat-on-accent);
+}
+
+.kroma-chat__text, .kroma-chat__info-description {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.kroma-chat__time {
+  align-self: flex-end;
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-caption);
+  line-height: var(--kroma-chat-leading-caption);
+  white-space: nowrap;
+}
+
+.kroma-chat__message--user .kroma-chat__time {
+  color: currentColor;
+  opacity: 0.8;
+}
+
+.kroma-chat__info-title, .kroma-chat__rich-title {
+  margin: 0;
+  font-size: var(--kroma-chat-typography-title);
+  font-weight: var(--kroma-chat-weight-semibold);
+  line-height: var(--kroma-chat-leading-heading);
+}
+
+.kroma-chat__info-description {
+  font-size: var(--kroma-chat-typography-body);
+  line-height: var(--kroma-chat-leading-body);
+}
+
+.kroma-chat__rich-description {
+  margin: 0;
+  font-size: var(--kroma-chat-typography-body);
+  line-height: var(--kroma-chat-leading-body);
+  overflow-wrap: anywhere;
+}
+
+.kroma-chat__options {
+  display: flex;
+  width: min(100%, 34rem);
+  flex-wrap: wrap;
+  gap: var(--kroma-chat-spacing-control);
+  margin-top: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__quick-replies .kroma-chat__option {
+  min-height: 2rem;
+  padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
+  border-radius: var(--kroma-chat-radius-pill);
+  font-size: var(--kroma-chat-typography-body-small);
+}
+
+.kroma-chat__choice-list {
+  display: grid;
+  width: min(100%, 34rem);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__option {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--kroma-chat-control-height);
+  flex: 0 1 auto;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kroma-chat-spacing-tight);
+  padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-pill, 999px);
+  background: var(--kroma-chat-surface-selected);
+  color: var(--kroma-chat-text-primary);
+  font: inherit;
+  font-size: var(--kroma-chat-typography-secondary);
+  line-height: var(--kroma-chat-leading-small);
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+}
+
+.kroma-chat__option:hover:not(:disabled) {
+  background: var(--kroma-chat-surface-hover);
+}
+
+.kroma-chat__option:active:not(:disabled) {
+  background: var(--kroma-chat-surface-selected);
+}
+
+.kroma-chat__option:disabled {
+  color: var(--kroma-chat-text-disabled);
+  cursor: default;
+}
+
+.kroma-chat__option[aria-pressed=true] {
+  background: var(--kroma-chat-surface-selected);
+  color: var(--kroma-chat-text-primary);
+  font-weight: var(--kroma-font-weight-semibold, 600);
+}
+
+.kroma-chat__option[aria-pressed=true]::before {
+  color: var(--kroma-chat-text-accent);
+  content: "✓";
+}
+
+.kroma-chat__options--inactive .kroma-chat__option {
+  cursor: default;
+}
+
+.kroma-chat__choice {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--kroma-chat-spacing-tight);
+  padding: var(--kroma-chat-spacing-control) var(--kroma-chat-spacing-card);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-control);
+  background: var(--kroma-chat-surface);
+  text-align: start;
+}
+
+.kroma-chat__choice-title {
+  font-weight: var(--kroma-font-weight-semibold, 600);
+}
+
+.kroma-chat__choice-description {
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-secondary);
+  line-height: var(--kroma-chat-leading-small);
+}
+
+.kroma-chat__rich-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--kroma-chat-spacing-control);
+}
+
+.kroma-chat__rich-link, .kroma-chat__rich-action {
+  display: inline-flex;
+  min-height: var(--kroma-chat-control-height);
+  align-items: center;
+  padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-control);
+  background: transparent;
+  color: var(--kroma-chat-text-accent);
+  font: inherit;
+  font-size: var(--kroma-chat-typography-secondary);
+  line-height: var(--kroma-chat-leading-small);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+.kroma-chat__rich-link:hover, .kroma-chat__rich-action:hover {
+  background: var(--kroma-chat-surface-hover);
+}
+
+.kroma-chat__rich-action {
+  text-decoration: none;
+}
+
+.kroma-chat__message--status {
+  align-items: center;
+}
+
+.kroma-chat__status-message {
+  display: inline-flex;
+  max-width: 92%;
+  align-items: center;
+  gap: var(--kroma-chat-spacing-tight);
+  margin: 0;
+  padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
+  border-radius: var(--kroma-chat-radius-control);
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-secondary);
+  line-height: var(--kroma-chat-leading-small);
+  text-align: center;
+}
+
+.kroma-chat__status-icon {
+  width: var(--kroma-chat-icon-secondary-size);
+  height: var(--kroma-chat-icon-secondary-size);
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.kroma-chat__message--status[data-status=neutral] .kroma-chat__status-message {
+  color: var(--kroma-chat-state-info);
+}
+
+.kroma-chat__message--status[data-status=success] .kroma-chat__status-message {
+  color: var(--kroma-chat-state-success);
+}
+
+.kroma-chat__message--status[data-status=success] .kroma-chat__status-icon {
+  color: var(--kroma-chat-state-success-mark);
+}
+
+.kroma-chat__message--status[data-status=warning] .kroma-chat__status-message {
+  color: var(--kroma-chat-state-warning);
+}
+
+.kroma-chat__message--status[data-status=warning] .kroma-chat__status-icon {
+  color: var(--kroma-chat-state-warning-mark);
+}
+
+.kroma-chat__message--status[data-status=error] .kroma-chat__status-message {
+  color: var(--kroma-chat-state-error);
+}
+
+.kroma-chat__message--status[data-status=error] .kroma-chat__status-icon {
+  color: var(--kroma-chat-state-error-mark);
+}
+
+.kroma-chat__message--typing .kroma-chat__bubble {
+  min-width: 3.5rem;
+  min-height: 2.25rem;
+  justify-content: center;
+  padding: var(--kroma-chat-spacing-control) var(--kroma-chat-spacing-card);
+}
+
+.kroma-chat__typing-dots {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__typing-dots span {
+  width: 0.3rem;
+  height: 0.3rem;
+  border-radius: 50%;
+  background: currentColor;
+  animation: kroma-chat-typing 1.2s var(--kroma-motion-easing-standard, ease-in-out) infinite;
+}
+
+.kroma-chat__typing-dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.kroma-chat__typing-dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.kroma-chat__journey-action {
+  display: inline-flex;
+  min-width: 0;
+  min-height: var(--kroma-chat-control-height);
+  align-items: center;
+  justify-content: center;
+  gap: var(--kroma-chat-spacing-control);
+  padding: var(--kroma-chat-spacing-control) var(--kroma-chat-spacing-card);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-control);
+  background: var(--kroma-chat-action-primary-surface);
+  color: var(--kroma-chat-action-primary-content);
+  font: inherit;
+  font-size: var(--kroma-chat-typography-body);
+  font-weight: var(--kroma-font-weight-semibold, 600);
+  line-height: var(--kroma-chat-leading-body);
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), transform var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+}
+
+.kroma-chat__journey-action:hover:not(:disabled) {
+  background: var(--kroma-chat-action-primary-hover);
+  color: var(--kroma-chat-action-primary-hover-content);
+}
+
+.kroma-chat__journey-action:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.kroma-chat__journey-action:disabled {
+  background: var(--kroma-chat-action-primary-disabled);
+  color: var(--kroma-chat-action-primary-disabled-content);
+  cursor: not-allowed;
+}
+
+.kroma-chat__journey-menu, .kroma-chat__category-picker {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--kroma-chat-spacing-control);
+  margin-top: var(--kroma-chat-spacing-message);
+}
+
+.kroma-chat__journey-menu {
+  overflow: hidden;
+  border: 1px solid var(--kroma-chat-border-menu);
+  border-radius: var(--kroma-chat-radius-menu);
+  background: var(--kroma-chat-surface);
+}
+
+.kroma-chat__category-picker {
+  max-width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+}
+
+.kroma-chat__journey-item, .kroma-chat__category {
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: var(--kroma-chat-menu-row-height);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: var(--kroma-chat-spacing-3) var(--kroma-chat-spacing-menu-inline);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--kroma-chat-text-primary);
+  font: inherit;
+  font-size: var(--kroma-chat-typography-body);
+  font-weight: var(--kroma-chat-weight-medium);
+  line-height: var(--kroma-chat-leading-body);
+  text-align: start;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+}
+
+.kroma-chat__journey-item::after, .kroma-chat__category::after {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: var(--kroma-chat-spacing-menu-inline);
+  width: 0.375rem;
+  height: 0.375rem;
+  border-top: 1.25px solid currentColor;
+  border-right: 1.25px solid currentColor;
+  content: "";
+  opacity: 0.58;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.kroma-chat__journey-item:hover:not(:disabled), .kroma-chat__category:hover:not(:disabled) {
+  background: var(--kroma-chat-surface-hover);
+}
+
+.kroma-chat__journey-item:active:not(:disabled), .kroma-chat__category:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.kroma-chat__journey-item:focus-visible, .kroma-chat__category:focus-visible {
+  outline: 2px solid var(--kroma-chat-state-focus);
+  outline-offset: -2px;
+}
+
+.kroma-chat__journey-item:disabled, .kroma-chat__category:disabled {
+  color: var(--kroma-chat-text-disabled);
+  cursor: default;
+}
+
+.kroma-chat__journey-item {
+  min-height: var(--kroma-chat-menu-row-height);
+  padding-inline-end: 2.5rem;
+}
+
+.kroma-chat__journey-item + .kroma-chat__journey-item {
+  border-top: 1px solid var(--kroma-chat-border-menu);
+}
+
+.kroma-chat__journey-item-label, .kroma-chat__category-label {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--kroma-chat-spacing-icon-label);
+}
+
+.kroma-chat__journey-item-label-icon, .kroma-chat__category-label-icon {
+  display: grid;
+  width: var(--kroma-chat-icon-action-size);
+  height: var(--kroma-chat-icon-action-size);
+  flex: 0 0 var(--kroma-chat-icon-action-size);
+  place-items: center;
+  color: var(--kroma-chat-accent);
+}
+
+.kroma-chat__journey-item-label-icon svg, .kroma-chat__category-label-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.kroma-chat__journey-item-label-text {
+  display: grid;
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-copy);
+}
+
+.kroma-chat__journey-item-description, .kroma-chat__category-description {
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-body-small);
+  line-height: var(--kroma-chat-leading-small);
+}
+
+.kroma-chat__category {
+  min-height: 6.5rem;
+  justify-content: center;
+  padding: var(--kroma-chat-spacing-card) 2rem var(--kroma-chat-spacing-card) var(--kroma-chat-spacing-card);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-card);
+  background: var(--kroma-chat-surface-card);
+}
+
+.kroma-chat__category:hover:not(:disabled) {
+  background: var(--kroma-chat-surface-hover);
+}
+
+.kroma-chat__category-label {
+  align-items: center;
+}
+
+.kroma-chat__category-label-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-basis: 2.25rem;
+}
+
+.kroma-chat__journey-item[data-consumed=true], .kroma-chat__category[data-consumed=true] {
+  background: var(--kroma-chat-surface-selected);
+}
+
+.kroma-chat__journey-item[data-consumed=true]::after, .kroma-chat__category[data-consumed=true]::after {
+  width: auto;
+  height: auto;
+  border: 0;
+  color: var(--kroma-chat-text-accent);
+  content: "✓";
+  font-size: var(--kroma-chat-typography-body);
+  font-weight: var(--kroma-font-weight-bold, 700);
+  transform: translateY(-50%);
+}
+
+.kroma-chat__category-picker > .kroma-chat__category:last-child:nth-child(odd) {
+  grid-column: 1/-1;
+}
+
+@container kroma-chat (max-width: 22rem) {
+  .kroma-chat__category-picker {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.kroma-chat__product-card-message, .kroma-chat__product-list {
+  display: grid;
+  width: 100%;
+  max-width: 34rem;
+  min-width: 0;
+}
+
+.kroma-chat__product-card-message {
+  margin-top: var(--kroma-chat-spacing-message);
+}
+
+.kroma-chat__product-list {
+  display: grid;
+  gap: var(--kroma-chat-spacing-tight);
+  margin-top: var(--kroma-chat-spacing-message);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--kroma-chat-radius-card);
+  background: transparent;
+}
+
+.kroma-chat__product-card {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  flex: 0 1 auto;
+  align-items: center;
+  grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+  gap: var(--kroma-chat-spacing-control);
+  padding: var(--kroma-chat-spacing-control);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-card);
+  background: var(--kroma-chat-surface-card);
+  color: var(--kroma-chat-text-primary);
+  font: inherit;
+  text-align: start;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+}
+
+.kroma-chat__product-card:hover:not(:disabled) {
+  background: var(--kroma-chat-surface-hover);
+}
+
+.kroma-chat__product-card:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.kroma-chat__product-card:focus-visible {
+  outline: 2px solid var(--kroma-chat-state-focus);
+  outline-offset: -2px;
+}
+
+.kroma-chat__product-card:disabled {
+  cursor: default;
+  color: var(--kroma-chat-text-primary);
+  opacity: 1;
+}
+
+.kroma-chat__product-card-message .kroma-chat__product-card {
+  border: 0;
+  border-radius: var(--kroma-chat-radius-card);
+  background: var(--kroma-chat-surface-card);
+}
+
+.kroma-chat__product-card[data-consumed=true] {
+  background: var(--kroma-chat-surface-selected);
+}
+
+.kroma-chat__product-image {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 0;
+  border-radius: var(--kroma-chat-radius-control);
+  background: var(--kroma-chat-surface-assistant);
+  object-fit: cover;
+}
+
+.kroma-chat__product-image--placeholder {
+  color: var(--kroma-chat-text-secondary);
+  background: var(--kroma-chat-surface);
+  object-fit: contain;
+}
+
+.kroma-chat__product-content {
+  display: grid;
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-tight);
+  overflow-wrap: anywhere;
+}
+
+.kroma-chat__product-name {
+  min-width: 0;
+  font-size: var(--kroma-chat-typography-product);
+  font-weight: var(--kroma-font-weight-semibold, 600);
+  line-height: var(--kroma-chat-leading-heading);
+  overflow-wrap: anywhere;
+}
+
+.kroma-chat__product-description {
+  min-width: 0;
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-body-small);
+  line-height: var(--kroma-chat-leading-small);
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.kroma-chat__product-price {
+  color: var(--kroma-chat-text-primary);
+  font-size: var(--kroma-chat-typography-price);
+  font-weight: var(--kroma-font-weight-bold, 700);
+  font-variant-numeric: tabular-nums;
+}
+
+.kroma-chat__product-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--kroma-chat-spacing-tight);
+  color: var(--kroma-chat-text-accent);
+  font-size: var(--kroma-chat-typography-body-small);
+  font-weight: var(--kroma-font-weight-semibold, 600);
+  white-space: nowrap;
+}
+
+.kroma-chat__product-action::after {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.kroma-chat__product-carousel {
+  display: grid;
+  width: 100%;
+  max-width: 34rem;
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__carousel-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__carousel-arrow {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 0;
+  border-radius: var(--kroma-chat-radius-control);
+  background: transparent;
+  color: var(--kroma-chat-text-secondary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.kroma-chat__carousel-arrow svg {
+  width: var(--kroma-chat-chevron-size);
+  height: var(--kroma-chat-chevron-size);
+}
+
+.kroma-chat__carousel-arrow:hover:not(:disabled) {
+  background: var(--kroma-chat-surface-hover);
+  color: var(--kroma-chat-text-primary);
+}
+
+.kroma-chat__carousel-arrow:disabled {
+  color: var(--kroma-chat-text-disabled);
+  cursor: default;
+}
+
+.kroma-chat__product-track {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-control);
+  overflow-x: auto;
+  padding: var(--kroma-chat-spacing-tight);
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+}
+
+.kroma-chat__product-track::-webkit-scrollbar {
+  display: none;
+}
+
+.kroma-chat__product-track .kroma-chat__product-card {
+  width: min(86%, 19rem);
+  max-width: min(86%, 19rem);
+  flex: 0 0 min(86%, 19rem);
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  border: 0;
+  border-radius: var(--kroma-chat-radius-card);
+  background: var(--kroma-chat-surface-card);
+}
+
+.kroma-chat__product-track .kroma-chat__product-image {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.kroma-chat__product-track .kroma-chat__product-content {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.kroma-chat__product-track .kroma-chat__product-action {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
+}
+
+.kroma-chat__product-detail {
+  display: grid;
+  width: 100%;
+  max-width: 34rem;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--kroma-chat-spacing-control);
+  padding: var(--kroma-chat-spacing-card);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-card);
+  background: var(--kroma-chat-surface-card);
+}
+
+.kroma-chat__product-detail > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.kroma-chat__product-detail-image {
+  display: block;
+  width: 100%;
+  max-height: 13rem;
+  border: 0;
+  border-radius: var(--kroma-chat-radius-control);
+  background: var(--kroma-chat-surface-assistant);
+  object-fit: contain;
+}
+
+.kroma-chat__product-detail-title {
+  margin: 0;
+  font-size: var(--kroma-chat-typography-title);
+  font-weight: var(--kroma-chat-weight-semibold);
+  line-height: var(--kroma-chat-leading-heading);
+  overflow-wrap: anywhere;
+}
+
+.kroma-chat__product-detail-description {
+  width: 100%;
+  margin: 0;
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-body);
+  line-height: var(--kroma-chat-leading-body);
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.kroma-chat__product-detail-price {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  color: var(--kroma-chat-text-primary);
+  font-size: var(--kroma-chat-typography-price);
+  font-weight: var(--kroma-font-weight-bold, 700);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.kroma-chat__product-features {
+  display: grid;
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-tight);
+  margin: 0;
+  padding: 0;
+  color: var(--kroma-chat-text-primary);
+  font-size: var(--kroma-chat-typography-body-small);
+  line-height: var(--kroma-chat-leading-small);
+  list-style: none;
+}
+
+.kroma-chat__product-features li {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  align-items: start;
+  gap: var(--kroma-chat-spacing-control);
+  overflow-wrap: anywhere;
+}
+
+.kroma-chat__feature-icon {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.05rem;
+  color: var(--kroma-chat-state-success);
+}
+
+.kroma-chat__variant-selector {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.kroma-chat__variant-selector legend {
+  margin-bottom: var(--kroma-chat-spacing-tight);
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-body-small);
+}
+
+.kroma-chat__variant-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__variant {
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: var(--kroma-chat-spacing-tight);
+  padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-control);
+  background: var(--kroma-chat-surface-control);
+  color: var(--kroma-chat-text-primary);
+  font-size: var(--kroma-chat-typography-body-small);
+  cursor: pointer;
+}
+
+.kroma-chat__variant:has(input:checked) {
+  background: var(--kroma-chat-surface-selected);
+  color: var(--kroma-chat-text-primary);
+  font-weight: var(--kroma-font-weight-semibold, 600);
+}
+
+.kroma-chat__variant:has(input:disabled) {
+  color: var(--kroma-chat-text-disabled);
+  cursor: not-allowed;
+}
+
+.kroma-chat__variant input {
+  accent-color: var(--kroma-chat-accent);
+}
+
+.kroma-chat__quantity-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--kroma-chat-spacing-control);
+}
+
+.kroma-chat__quantity-label {
+  margin-inline-end: var(--kroma-chat-spacing-tight);
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-body-small);
+}
+
+.kroma-chat__quantity-button {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 0;
+  border-radius: var(--kroma-chat-radius-control);
+  background: var(--kroma-chat-surface-selected);
+  color: var(--kroma-chat-text-primary);
+  font: inherit;
+  font-size: 1.125rem;
+  cursor: pointer;
+}
+
+.kroma-chat__quantity-button:disabled {
+  color: var(--kroma-chat-text-disabled);
+  cursor: not-allowed;
+}
+
+.kroma-chat__quantity-value {
+  min-width: 1.5rem;
+  color: var(--kroma-chat-text-primary);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.kroma-chat__product-add {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--kroma-chat-control-height);
+  justify-self: stretch;
+  justify-content: center;
+  padding-inline: 1rem;
+}
+
+.kroma-chat__product-add-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--kroma-chat-spacing-control);
+}
+
+.kroma-chat__product-add-label-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.kroma-chat__product-detail > .kroma-chat__journey-action[data-action-id=back-to-products] {
+  justify-content: flex-start;
+  border-color: transparent;
+  background: transparent;
+  color: var(--kroma-chat-text-accent);
+}
+
+.kroma-chat__cart-summary {
+  display: grid;
+  width: min(100%, 34rem);
+  gap: var(--kroma-chat-spacing-control);
+  padding: var(--kroma-chat-spacing-card);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-card);
+  background: var(--kroma-chat-surface-card);
+}
+
+.kroma-chat__cart-items {
+  display: grid;
+  gap: var(--kroma-chat-spacing-control);
+}
+
+.kroma-chat__cart-item {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--kroma-chat-spacing-control);
+  padding-block: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__cart-image {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: var(--kroma-chat-radius-control);
+  background: var(--kroma-chat-surface-assistant);
+  object-fit: cover;
+}
+
+.kroma-chat__cart-product {
+  display: grid;
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__cart-name {
+  min-width: 0;
+  font-size: var(--kroma-chat-typography-body);
+  font-weight: var(--kroma-font-weight-semibold, 600);
+  line-height: var(--kroma-chat-leading-body);
+  overflow-wrap: anywhere;
+}
+
+.kroma-chat__cart-meta {
+  min-width: 0;
+  margin: 0;
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-body-small);
+  line-height: var(--kroma-chat-leading-small);
+  overflow-wrap: anywhere;
+}
+
+.kroma-chat__cart-trailing {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__cart-total {
+  font-size: var(--kroma-chat-typography-body);
+  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.kroma-chat__cart-remove {
+  min-height: 2rem;
+  padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-control);
+  background: transparent;
+  color: var(--kroma-chat-text-accent);
+  font: inherit;
+  font-size: var(--kroma-chat-typography-body-small);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+.kroma-chat__cart-remove:hover:not(:disabled) {
+  background: var(--kroma-chat-surface-hover);
+  color: var(--kroma-chat-text-primary);
+}
+
+.kroma-chat__price-summary {
+  display: grid;
+  gap: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__cart-subtotal {
+  display: flex;
+  min-width: 0;
+  justify-content: space-between;
+  gap: var(--kroma-chat-spacing-control);
+  font-size: var(--kroma-chat-typography-body-small);
+}
+
+.kroma-chat__cart-subtotal > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.kroma-chat__cart-subtotal strong {
+  color: var(--kroma-chat-text-primary);
+  font-size: var(--kroma-chat-typography-body);
+  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+.kroma-chat__price-entry--strong {
+  margin-top: var(--kroma-chat-spacing-control);
+  padding-top: var(--kroma-chat-spacing-control);
+  color: var(--kroma-chat-text-primary);
+  font-weight: var(--kroma-font-weight-semibold, 600);
+}
+
+.kroma-chat__price-entry--strong strong {
+  font-size: var(--kroma-chat-typography-display);
+  font-weight: var(--kroma-font-weight-bold, 700);
+}
+
+.kroma-chat__cart-empty {
+  margin: 0;
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-body-small);
+}
+
+.kroma-chat__order-review {
+  display: grid;
+  width: min(100%, 34rem);
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-control);
+}
+
+.kroma-chat__customer-details {
+  display: grid;
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-tight);
+  margin: 0;
+  padding: var(--kroma-chat-spacing-control);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-control);
+  background: var(--kroma-chat-surface);
+}
+
+.kroma-chat__customer-row {
+  display: grid;
+  grid-template-columns: minmax(4rem, auto) minmax(0, 1fr);
+  gap: var(--kroma-chat-spacing-control);
+  font-size: var(--kroma-chat-typography-body-small);
+}
+
+.kroma-chat__customer-row dt {
+  color: var(--kroma-chat-text-secondary);
+  font-weight: var(--kroma-font-weight-semibold, 600);
+}
+
+.kroma-chat__customer-row dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.kroma-chat__review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--kroma-chat-spacing-control);
+}
+
+.kroma-chat__review-actions .kroma-chat__journey-action {
+  flex: 1 1 auto;
+  justify-content: center;
+}
+
+.kroma-chat__review-actions .kroma-chat__journey-action[data-action-id=edit] {
+  background: var(--kroma-chat-action-secondary-surface);
+  color: var(--kroma-chat-action-secondary-content);
+}
+
+.kroma-chat__conversational-form {
+  display: grid;
+  width: min(100%, 34rem);
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-control);
+}
+
+.kroma-chat__form-title {
+  margin: 0;
+  font-size: var(--kroma-chat-typography-title);
+  font-weight: var(--kroma-font-weight-semibold, 600);
+  line-height: var(--kroma-chat-leading-heading);
+}
+
+.kroma-chat__form-fields {
+  display: grid;
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-control);
+}
+
+.kroma-chat__form-field {
+  display: grid;
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-tight);
+}
+
+.kroma-chat__form-field label {
+  color: var(--kroma-chat-text-primary);
+  font-size: var(--kroma-chat-typography-body-small);
+  font-weight: var(--kroma-font-weight-semibold, 600);
+}
+
+.kroma-chat__form-input {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.5rem;
+  padding: var(--kroma-chat-spacing-control) var(--kroma-chat-spacing-card);
+  border: 1px solid var(--kroma-chat-border-interactive);
+  border-radius: var(--kroma-chat-radius-input);
+  background: var(--kroma-chat-surface-control);
+  color: var(--kroma-chat-text-primary);
+  font: inherit;
+  font-size: var(--kroma-chat-typography-body);
+  line-height: var(--kroma-chat-leading-body);
+  transition: border-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), box-shadow var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+}
+
+.kroma-chat__form-input::placeholder {
+  color: var(--kroma-chat-text-secondary);
+  opacity: 1;
+}
+
+.kroma-chat__form-input:focus-visible {
+  border-color: var(--kroma-chat-state-focus);
+  outline: 2px solid var(--kroma-chat-state-focus);
   outline-offset: 2px;
 }
-.kroma-chat .kroma-chat__composer :is(button, textarea):focus-visible:not(:disabled) {
+
+.kroma-chat__form-input:disabled {
+  border-color: var(--kroma-chat-border-subtle);
+  background: var(--kroma-chat-surface);
+  color: var(--kroma-chat-text-disabled);
+  cursor: not-allowed;
+}
+
+.kroma-chat__form-input[aria-invalid=true] {
+  border-color: var(--kroma-chat-state-error);
+}
+
+.kroma-chat__form-submit {
+  width: fit-content;
+  min-width: 10rem;
+  justify-self: start;
+}
+
+.kroma-chat__error {
+  margin: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-tight) 0;
+  color: var(--kroma-chat-state-error);
+  font-size: var(--kroma-chat-typography-body-small);
+  line-height: var(--kroma-chat-leading-small);
+}
+
+.kroma-chat__confirmation {
+  display: grid;
+  width: min(100%, 34rem);
+  min-width: 0;
+  justify-items: center;
+  gap: var(--kroma-chat-spacing-control);
+  padding: var(--kroma-chat-spacing-section) var(--kroma-chat-spacing-card);
+  border: 0;
+  border-radius: var(--kroma-chat-radius-card);
+  background: var(--kroma-chat-surface-card);
+  text-align: center;
+}
+
+.kroma-chat__confirmation-mark {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--kroma-chat-surface-success);
+  color: var(--kroma-chat-state-success-mark);
+}
+
+.kroma-chat__confirmation-mark svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.kroma-chat__confirmation[data-status=warning] .kroma-chat__confirmation-mark {
+  background: var(--kroma-chat-surface-warning);
+  color: var(--kroma-chat-state-warning-mark);
+}
+
+.kroma-chat__confirmation[data-status=error] .kroma-chat__confirmation-mark {
+  background: var(--kroma-chat-surface-error);
+  color: var(--kroma-chat-state-error-mark);
+}
+
+.kroma-chat__confirmation-title {
+  margin: 0;
+  font-size: var(--kroma-chat-typography-display);
+  font-weight: var(--kroma-font-weight-bold, 700);
+  line-height: var(--kroma-chat-leading-display);
+}
+
+.kroma-chat__confirmation-description {
+  max-width: 30rem;
+  margin: 0;
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-body-small);
+  line-height: var(--kroma-chat-leading-small);
+}
+
+.kroma-chat__confirmation-reference {
+  margin: 0;
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-caption);
+}
+
+.kroma-chat__confirmation-summary {
+  display: grid;
+  width: 100%;
+  gap: var(--kroma-chat-spacing-tight);
+  margin: 0;
+  padding-inline-start: 1.2rem;
+  color: var(--kroma-chat-text-primary);
+  text-align: start;
+  font-size: var(--kroma-chat-typography-body-small);
+}
+
+.kroma-chat__header-action:focus-visible, .kroma-chat__option:focus-visible, .kroma-chat__rich-link:focus-visible, .kroma-chat__rich-action:focus-visible, .kroma-chat__journey-action:focus-visible, .kroma-chat__journey-item:focus-visible, .kroma-chat__category:focus-visible, .kroma-chat__product-card:focus-visible, .kroma-chat__carousel-arrow:focus-visible, .kroma-chat__variant:focus-within, .kroma-chat__quantity-button:focus-visible, .kroma-chat__cart-remove:focus-visible, .kroma-chat__send:focus-visible {
+  outline: 2px solid var(--kroma-chat-state-focus);
+  outline-offset: 2px;
+}
+
+.kroma-chat__composer textarea:focus-visible:not(:disabled) {
   outline: none;
-  outline-offset: 0;
   box-shadow: none;
 }
+
 .kroma-chat__sr-only {
   position: absolute;
   width: 1px;
@@ -13185,12 +14172,17 @@ textarea.form-control-lg {
   white-space: nowrap;
   clip-path: inset(50%);
 }
+
+.kroma-chat :where(button, input, textarea, select):disabled {
+  opacity: 0.62;
+}
+
 @media (max-width: 30rem) {
   .kroma-chat {
     width: 100%;
-    border-radius: var(--kroma-radius-md, 1rem);
-    --kroma-chat-height: min(34rem, max(11rem, calc(100dvh - 16rem)));
-    --kroma-chat-max-height: 82dvh;
+    border-radius: var(--kroma-chat-radius-card);
+    --kroma-chat-height: min(39rem, max(11rem, calc(100dvh - 13rem)));
+    --kroma-chat-max-height: 90dvh;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -13204,7 +14196,92 @@ textarea.form-control-lg {
     transition-duration: 0.01ms !important;
   }
 }
-
+@container kroma-chat (max-width: 24rem) {
+  .kroma-chat__header {
+    gap: var(--kroma-chat-spacing-tight);
+    padding: var(--kroma-chat-spacing-control) var(--kroma-chat-spacing-card);
+  }
+  .kroma-chat__messages {
+    padding: var(--kroma-chat-spacing-control);
+  }
+  .kroma-chat__bubble {
+    max-width: min(94%, 34rem);
+  }
+  .kroma-chat__product-detail {
+    padding: var(--kroma-chat-spacing-control);
+  }
+  .kroma-chat__product-detail-image {
+    max-height: 10rem;
+  }
+  .kroma-chat__journey-item {
+    padding-inline: var(--kroma-chat-spacing-control) 2.25rem;
+  }
+  .kroma-chat__product-card {
+    grid-template-columns: 3rem minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: var(--kroma-chat-spacing-control);
+    padding: var(--kroma-chat-spacing-control);
+  }
+  .kroma-chat__product-image {
+    width: 3rem;
+    height: 3rem;
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .kroma-chat__product-content {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .kroma-chat__product-action {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+  }
+  .kroma-chat__cart-item {
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: var(--kroma-chat-spacing-control);
+  }
+  .kroma-chat__cart-image {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .kroma-chat__cart-product {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .kroma-chat__cart-trailing {
+    grid-column: 2;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .kroma-chat__review-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@container kroma-chat (max-width: 19rem) {
+  .kroma-chat__product-card {
+    align-items: start;
+  }
+  .kroma-chat__product-track .kroma-chat__product-card {
+    width: 88%;
+    max-width: 88%;
+    flex-basis: 88%;
+  }
+  .kroma-chat__quantity-selector {
+    flex-wrap: wrap;
+  }
+  .kroma-chat__confirmation {
+    padding: var(--kroma-chat-spacing-card);
+  }
+}
+@media (max-width: 30rem) {
+  .kroma-chat__input,
+  .kroma-chat__form-input {
+    font-size: 16px;
+  }
+}
 @keyframes kroma-chat-typing {
   0%, 60%, 100% {
     transform: translateY(0);
@@ -13638,5 +14715,243 @@ body {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+}.kroma-chat-standalone {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 320px;
+  max-width: 100%;
+  background: var(--kroma-color-surface-canvas, var(--bs-body-bg));
+  color: var(--kroma-color-content-primary, var(--bs-body-color));
+}
+.kroma-chat-standalone *, .kroma-chat-standalone *::before, .kroma-chat-standalone *::after {
+  box-sizing: border-box;
+}
+
+.kroma-chat-page {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  grid-template-rows: auto minmax(0, 1fr);
+  justify-items: center;
+  gap: 1rem;
+  padding: clamp(0.75rem, 2vw, 1.5rem);
+  background: var(--kroma-color-surface-canvas, var(--bs-body-bg));
+}
+
+:root[data-bs-theme=dark] .kroma-chat-standalone,
+:root[data-bs-theme=dark] .kroma-chat-page {
+  background: var(--kroma-ref-gray-850, var(--kroma-color-surface-canvas, var(--bs-body-bg)));
+  color: var(--kroma-ref-gray-100, var(--kroma-color-content-primary, var(--bs-body-color)));
+}
+
+.kroma-chat-lab__toolbar {
+  display: flex;
+  width: min(100%, 62rem);
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem 1.25rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--kroma-chat-border-subtle, var(--bs-border-color));
+  color: var(--kroma-color-content-primary, var(--bs-body-color));
+}
+
+.kroma-chat-lab__control {
+  display: grid;
+  min-width: 0;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  font-size: 0.8125rem;
+}
+
+.kroma-chat-lab__control legend,
+.kroma-chat-lab__control > span {
+  float: none;
+  width: auto;
+  margin: 0;
+  color: var(--kroma-color-readable-secondary, var(--bs-secondary-color));
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.kroma-chat-lab__widths {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.kroma-chat-lab__widths button {
+  min-height: 2.35rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: var(--kroma-color-content-primary, var(--bs-body-color));
+  font: inherit;
+  cursor: pointer;
+}
+
+.kroma-chat-lab__widths button:hover,
+.kroma-chat-lab__widths button[aria-pressed=true] {
+  border-color: var(--kroma-color-primary, var(--bs-primary));
+  background: var(--kroma-color-surface-raised, var(--bs-tertiary-bg));
+}
+
+.kroma-chat-lab__control select,
+.kroma-chat-lab__control > button,
+.kroma-chat-lab__control .dropdown-toggle {
+  min-height: 2.35rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--kroma-color-border-default, var(--bs-border-color));
+  border-radius: 0.55rem;
+  background-color: var(--kroma-color-surface-raised, var(--bs-body-bg));
+  color: var(--kroma-color-content-primary, var(--bs-body-color));
+  font: inherit;
+}
+
+.kroma-chat-lab__contrast {
+  grid-template-columns: auto auto;
+  align-items: end;
+}
+
+.kroma-chat-lab__contrast > span {
+  grid-column: 1/-1;
+}
+
+.kroma-chat-page__preview {
+  display: grid;
+  width: min(var(--chat-preview-width, 390px), 100%);
+  min-width: 0;
+  max-width: 100%;
+  min-height: 0;
+  align-content: start;
+  justify-items: center;
+}
+
+.kroma-chat-page__device {
+  --kroma-chat-height: min(760px, calc(100dvh - 11rem));
+  --kroma-chat-max-height: calc(100dvh - 11rem);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: min(760px, 100dvh - 11rem);
+  min-height: min(24rem, 100dvh - 11rem);
+}
+
+.kroma-chat-lab__toolbar :focus-visible {
+  outline: 2px solid var(--kroma-color-focus-indicator, var(--bs-primary));
+  outline-offset: 2px;
+}
+
+@media (max-width: 30rem) {
+  .kroma-chat-page {
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+  .kroma-chat-lab__toolbar {
+    gap: 0.5rem 0.75rem;
+    padding: 0.65rem 0.5rem;
+  }
+  .kroma-chat-page__device {
+    --kroma-chat-height: min(760px, calc(100dvh - 15rem));
+    --kroma-chat-max-height: calc(100dvh - 15rem);
+    height: min(760px, 100dvh - 15rem);
+    min-height: min(22rem, 100dvh - 15rem);
+  }
+}
+@media (max-width: 22rem) {
+  .kroma-chat-page {
+    padding: 0;
+  }
+  .kroma-chat-lab__toolbar {
+    padding-inline: 0.5rem;
+  }
+  .kroma-chat-page__preview {
+    width: 100%;
+  }
+}
+.kroma-chat-standalone--adaptive {
+  width: 100%;
+  height: 100vh;
+  height: 100lvh;
+  min-height: 100vh;
+  min-height: 100lvh;
+  overflow: hidden;
+}
+
+.kroma-chat-page[data-chat-layout-adaptive] {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: var(--chat-visual-viewport-height, 100vh);
+  height: var(--chat-visual-viewport-height, 100dvh);
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.kroma-chat-page[data-chat-layout-adaptive] .kroma-chat-lab__toolbar {
+  display: none;
+}
+
+.kroma-chat-page[data-chat-layout-adaptive] .kroma-chat-page__preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.kroma-chat-page[data-chat-layout-adaptive] .kroma-chat-page__device {
+  --kroma-chat-width: 100%;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.kroma-chat-page[data-chat-layout-adaptive] {
+  inset-block-start: var(--chat-visual-viewport-top, 0px);
+  inset-block-end: auto;
+}
+
+.kroma-chat-page[data-chat-layout-adaptive] .kroma-chat__header,
+.kroma-chat-page[data-chat-layout-adaptive] .kroma-chat__composer-area {
+  padding-inline: max(1rem, (100vw - 56rem) / 2);
+}
+
+.kroma-chat-page[data-chat-layout-adaptive] .kroma-chat__header {
+  padding-block-start: max(var(--kroma-chat-spacing-control), env(safe-area-inset-top, 0px));
+}
+
+.kroma-chat-page[data-chat-layout-adaptive] .kroma-chat__messages {
+  width: min(100%, 56rem);
+  align-self: center;
+  padding-inline: clamp(1rem, 3vw, 2rem);
+}
+
+.kroma-chat-page[data-chat-layout-adaptive] .kroma-chat__composer {
+  width: min(100%, 56rem);
+  margin-inline: auto;
+}
+
+.kroma-chat-page[data-chat-keyboard-open] .kroma-chat__composer-area {
+  padding-bottom: var(--kroma-chat-spacing-control);
+}
+
+@media (max-width: 30rem) {
+  .kroma-chat-page:not([data-chat-layout-adaptive]) {
+    grid-template-rows: auto auto;
   }
 }

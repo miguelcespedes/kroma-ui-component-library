@@ -1,6 +1,6 @@
 import { VirtualKeyboard } from "../input/virtual-keyboard";
-import { VirtualKeyboardController } from "../input/virtual-keyboard-controller";
-import { VirtualTextDisplay } from "../input/virtual-text-display";
+import { VirtualKeyboardController, type VirtualKeyboardLayoutName } from "../input/virtual-keyboard-controller";
+import { VirtualTextDisplay, type VirtualTextDisplayCallbacks } from "../input/virtual-text-display";
 
 export type ChatInputMode = "native" | "virtual";
 
@@ -16,7 +16,7 @@ export type ChatComposerOptions = {
   onSend: (message: string) => void;
 };
 
-/** Owns both native and controlled virtual entry; send delivery remains host-owned. */
+/** Composes native textarea mode and the instance-local simple-keyboard adapter. */
 export class ChatComposer {
   readonly element: HTMLDivElement;
   readonly form: HTMLFormElement;
@@ -30,15 +30,18 @@ export class ChatComposer {
   private readonly actions: HTMLDivElement;
   private readonly modeButton: HTMLButtonElement;
   private readonly keyboardButton: HTMLButtonElement;
-  private readonly keyboard: VirtualKeyboard | null;
   private readonly keyboardShowcase: HTMLElement | null;
+  private readonly showcaseLayouts = new Map<VirtualKeyboardLayoutName, HTMLButtonElement>();
   private readonly unsubscribeController: () => void;
+  private keyboard: VirtualKeyboard | null = null;
+  private showcaseToggle: HTMLButtonElement | null = null;
   private disabled: boolean;
   private inputMode: ChatInputMode;
 
   constructor(private readonly options: ChatComposerOptions) {
     this.disabled = Boolean(options.disabled);
     this.inputMode = options.inputMode || "native";
+    const showKeyboardShowcase = Boolean(options.showKeyboardShowcase);
     this.element = document.createElement("div");
     this.element.className = "kroma-chat__composer-area";
 
@@ -58,11 +61,19 @@ export class ChatComposer {
     this.input.placeholder = options.placeholder;
     this.input.disabled = this.disabled;
 
-    this.controller = new VirtualKeyboardController(this.input.maxLength, this.inputMode === "virtual");
-    this.display = new VirtualTextDisplay(this.controller, options.inputLabel, options.placeholder);
+    this.controller = new VirtualKeyboardController(this.inputMode === "virtual" || showKeyboardShowcase);
+    const displayCallbacks: VirtualTextDisplayCallbacks = {
+      onCaretChange: (start, end) => {
+        this.keyboard?.setCaretPosition(start, end);
+        this.keyboard?.setOpen(true);
+      },
+      onPhysicalKey: (event) => this.keyboard?.handlePhysicalKey(event, () => this.form.requestSubmit()),
+      onPhysicalKeyRelease: () => this.keyboard?.restoreCaretAfterPhysicalKey(),
+    };
+    this.display = new VirtualTextDisplay(options.inputLabel, options.placeholder, displayCallbacks);
     this.display.setDisabled(this.disabled);
-    this.input.hidden = this.inputMode === "virtual";
     this.display.setVisible(this.inputMode === "virtual");
+    this.input.hidden = this.inputMode === "virtual";
 
     this.actions = document.createElement("div");
     this.actions.className = "kroma-chat__composer-actions";
@@ -72,17 +83,11 @@ export class ChatComposer {
     this.actions.append(this.keyboardButton, this.modeButton, this.sendButton);
     this.form.append(label, this.input, this.display.element, this.actions);
 
-    this.keyboard = options.showKeyboardShowcase ? null : new VirtualKeyboard({
-      controller: this.controller,
-      disabled: this.disabled,
-      onSend: () => {
-        this.form.requestSubmit();
-        if (this.inputMode === "virtual" && !this.disabled) this.display.element.focus();
-      },
-    });
-    this.keyboardShowcase = options.showKeyboardShowcase ? this.createKeyboardShowcase() : null;
-    if (this.keyboard) this.element.append(this.form, this.keyboard.element);
-    else this.element.append(this.form, this.keyboardShowcase as HTMLElement);
+    if (this.inputMode === "virtual" || showKeyboardShowcase) this.createKeyboard();
+    this.keyboardShowcase = showKeyboardShowcase ? this.createKeyboardShowcase() : null;
+    this.element.append(this.form);
+    if (this.keyboardShowcase) this.element.append(this.keyboardShowcase);
+    else if (this.keyboard) this.element.append(this.keyboard.element);
 
     this.errorMessage = document.createElement("p");
     this.errorMessage.className = "kroma-chat__error";
@@ -92,12 +97,9 @@ export class ChatComposer {
 
     const signal = this.listeners.signal;
     this.input.addEventListener("input", () => {
-      this.syncControllerFromNative();
       this.resizeInput();
       this.updateSendButton();
     }, { signal });
-    this.input.addEventListener("select", () => this.syncControllerFromNative(), { signal });
-    this.input.addEventListener("keyup", () => this.syncControllerFromNative(), { signal });
     this.input.addEventListener("keydown", (event) => {
       if (event.isComposing) return;
       if (event.key === "Enter" && !event.shiftKey) {
@@ -109,12 +111,16 @@ export class ChatComposer {
     this.modeButton.addEventListener("click", () => this.toggleInputMode(), { signal });
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
-      const message = this.controller.state.value.trim();
+      const message = this.currentValue().trim();
       if (!message || this.disabled) return;
       options.onSend(message);
       this.clear();
+      if (this.inputMode === "virtual" && !this.disabled) this.display.element.focus();
     }, { signal });
-    this.unsubscribeController = this.controller.subscribe(() => this.updateSendButton());
+    this.unsubscribeController = this.controller.subscribe(() => {
+      this.updateSendButton();
+      this.updateShowcaseControls();
+    });
     this.updateModePresentation();
     this.updateSendButton();
   }
@@ -122,15 +128,29 @@ export class ChatComposer {
   setInputMode(mode: ChatInputMode) {
     if (this.inputMode === mode) return;
     if (mode === "virtual") {
-      this.syncControllerFromNative();
+      const value = this.input.value;
+      const start = this.input.selectionStart || 0;
+      const end = this.input.selectionEnd || start;
       this.input.blur();
+      this.inputMode = mode;
+      if (!this.keyboard) this.createKeyboard();
+      if (!this.keyboardShowcase && this.keyboard && !this.keyboard.element.isConnected) {
+        this.element.insertBefore(this.keyboard.element, this.errorMessage);
+      }
+      this.keyboard?.setInput(value, start, end);
+      this.controller.setOpen(true);
     } else {
-      this.input.value = this.controller.state.value;
-      this.input.rows = Math.min(6, Math.max(1, this.input.value.split("\n").length));
-      this.input.setSelectionRange(this.controller.state.cursor, this.controller.state.cursor);
+      this.input.value = this.keyboard ? this.keyboard.value : this.input.value;
+      const caret = this.keyboard?.getCaretRange() || { start: this.input.value.length, end: this.input.value.length };
+      this.input.setSelectionRange(caret.start, caret.end);
+      this.inputMode = mode;
+      this.controller.setOpen(Boolean(this.keyboardShowcase));
+      if (!this.keyboardShowcase && this.keyboard) {
+        this.keyboard.destroy();
+        this.keyboard.element.remove();
+        this.keyboard = null;
+      }
     }
-    this.inputMode = mode;
-    this.controller.setOpen(mode === "virtual");
     this.updateModePresentation();
     this.updateSendButton();
   }
@@ -163,7 +183,7 @@ export class ChatComposer {
 
   focus() {
     if (this.inputMode === "virtual") {
-      this.controller.setOpen(true);
+      this.keyboard?.setOpen(true);
       this.display.element.focus();
     } else {
       this.input.focus();
@@ -173,7 +193,7 @@ export class ChatComposer {
   clear() {
     this.input.value = "";
     this.input.rows = 1;
-    this.controller.clear();
+    if (this.inputMode === "virtual") this.keyboard?.clear();
     this.setError(null);
     this.updateSendButton();
   }
@@ -186,23 +206,36 @@ export class ChatComposer {
     this.disposers.forEach((dispose) => dispose());
   }
 
-  private syncControllerFromNative() {
-    if (this.inputMode !== "native") return;
-    this.controller.setValue(this.input.value, this.input.selectionStart || 0);
+  private createKeyboard() {
+    if (this.keyboard) return;
+    this.keyboard = new VirtualKeyboard({
+      inputName: this.options.id,
+      controller: this.controller,
+      maxLength: this.input.maxLength,
+      disabled: this.disabled,
+      onChange: (value, start, end) => {
+        this.display.update(value, start, end);
+        this.updateSendButton();
+      },
+      onEnter: () => this.form.requestSubmit(),
+    });
+  }
+
+  private currentValue() {
+    return this.inputMode === "virtual" ? this.keyboard?.value || "" : this.input.value;
   }
 
   private toggleInputMode() {
     const nextMode = this.inputMode === "native" ? "virtual" : "native";
     this.setInputMode(nextMode);
     this.options.onInputModeChange?.(nextMode);
-    if (nextMode === "native") this.input.focus();
+    if (nextMode === "native" && !this.disabled) this.input.focus();
   }
 
   private toggleVirtualKeyboard() {
-    const open = !this.controller.state.open;
-    this.controller.setOpen(open);
+    this.keyboard?.setOpen(!this.controller.state.open);
     this.updateModePresentation();
-    if (!open) this.keyboardButton.focus();
+    if (!this.controller.state.open) this.keyboardButton.focus();
     else this.display.element.focus();
   }
 
@@ -220,7 +253,7 @@ export class ChatComposer {
   }
 
   private updateSendButton() {
-    this.sendButton.disabled = this.disabled || !this.controller.state.value.trim();
+    this.sendButton.disabled = this.disabled || !this.currentValue().trim();
   }
 
   private resizeInput() {
@@ -278,27 +311,34 @@ export class ChatComposer {
     const title = document.createElement("h3");
     title.className = "kroma-chat__keyboard-showcase-title";
     title.textContent = "Teclado virtual · variantes";
-    showcase.append(title);
 
-    const samples = [
-      { label: "Alfabético", symbols: false, shifted: false },
-      { label: "Shift", symbols: false, shifted: true },
-      { label: "Numérico y símbolos", symbols: true, shifted: false },
+    const controls = document.createElement("div");
+    controls.className = "kroma-chat__keyboard-showcase-layouts";
+    const layouts: ReadonlyArray<{ label: string; name: VirtualKeyboardLayoutName }> = [
+      { label: "ABC", name: "default" },
+      { label: "Shift", name: "shift" },
+      { label: "123", name: "numbers" },
+      { label: "#+=", name: "symbols" },
     ];
-    samples.forEach((sample) => {
-      const group = document.createElement("div");
-      group.className = "kroma-chat__keyboard-showcase-sample";
-      const sampleLabel = document.createElement("span");
-      sampleLabel.className = "kroma-chat__keyboard-showcase-label";
-      sampleLabel.textContent = sample.label;
-      const controller = new VirtualKeyboardController(2000, true);
-      if (sample.shifted) controller.toggleShift();
-      if (sample.symbols) controller.toggleSymbols();
-      const keyboard = new VirtualKeyboard({ controller, disabled: true, preview: true, label: sample.label });
-      this.disposers.push(() => keyboard.destroy());
-      group.append(sampleLabel, keyboard.element);
-      showcase.append(group);
+    layouts.forEach(({ label, name }) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "kroma-chat__keyboard-showcase-layout";
+      button.textContent = label;
+      button.setAttribute("aria-pressed", String(this.controller.state.layoutName === name));
+      button.addEventListener("click", () => this.keyboard?.setLayoutDemo(name), { signal: this.listeners.signal });
+      this.showcaseLayouts.set(name, button);
+      controls.append(button);
     });
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "kroma-chat__keyboard-showcase-toggle";
+    toggle.dataset.keyboardShowcaseToggle = "true";
+    toggle.addEventListener("click", () => this.keyboard?.setOpen(!this.controller.state.open), { signal: this.listeners.signal });
+    this.showcaseToggle = toggle;
+    this.updateShowcaseControls();
+    controls.append(toggle);
 
     const composerSamples = document.createElement("div");
     composerSamples.className = "kroma-chat__keyboard-showcase-composers";
@@ -307,8 +347,10 @@ export class ChatComposer {
     const disabledLabel = document.createElement("span");
     disabledLabel.className = "kroma-chat__keyboard-showcase-label";
     disabledLabel.textContent = "Composer deshabilitado";
-    composerSamples.append(disabledLabel);
-    showcase.append(composerSamples);
+
+    showcase.append(title, controls);
+    if (this.keyboard) showcase.append(this.keyboard.element);
+    showcase.append(composerSamples, disabledLabel);
     return showcase;
   }
 
@@ -318,13 +360,25 @@ export class ChatComposer {
     const caption = document.createElement("span");
     caption.className = "kroma-chat__keyboard-showcase-label";
     caption.textContent = label;
-    const controller = new VirtualKeyboardController(2000);
-    if (value) controller.setValue(value);
-    const display = new VirtualTextDisplay(controller, label, this.options.placeholder);
+    const display = new VirtualTextDisplay(label, this.options.placeholder, {
+      onCaretChange: () => undefined,
+      onPhysicalKey: () => undefined,
+      onPhysicalKeyRelease: () => undefined,
+    });
     display.element.classList.add("kroma-chat__virtual-display--sample");
     display.setDisabled(true);
+    display.update(value, value.length);
     this.disposers.push(() => display.destroy());
     sample.append(caption, display.element);
     return sample;
+  }
+
+  private updateShowcaseControls() {
+    const state = this.controller.state;
+    this.showcaseLayouts.forEach((button, layout) => button.setAttribute("aria-pressed", String(state.layoutName === layout)));
+    if (this.showcaseToggle) {
+      this.showcaseToggle.textContent = state.open ? "Ocultar teclado" : "Mostrar teclado";
+      this.showcaseToggle.setAttribute("aria-expanded", String(state.open));
+    }
   }
 }

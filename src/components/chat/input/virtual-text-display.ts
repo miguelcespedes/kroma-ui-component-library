@@ -1,17 +1,23 @@
-import { VirtualKeyboardController } from "./virtual-keyboard-controller";
+export type VirtualTextDisplayCallbacks = {
+  onCaretChange: (start: number, end: number) => void;
+  onPhysicalKey: (event: KeyboardEvent) => void;
+  onPhysicalKeyRelease: () => void;
+};
 
-/** Read-only DOM projection of controlled text; edits are delegated to the controller. */
+/** Visual projection of simple-keyboard's value/caret; it never stores authoritative text. */
 export class VirtualTextDisplay {
   readonly element: HTMLDivElement;
   private readonly textLayer: HTMLSpanElement;
-  private readonly unsubscribe: () => void;
+  private value = "";
+  private cursorStart = 0;
+  private cursorEnd = 0;
   private disabled = false;
   private visible = true;
 
   constructor(
-    private readonly controller: VirtualKeyboardController,
     inputLabel: string,
     private readonly placeholder: string,
+    private readonly callbacks: VirtualTextDisplayCallbacks,
   ) {
     this.element = document.createElement("div");
     this.element.className = "kroma-chat__virtual-display";
@@ -26,16 +32,22 @@ export class VirtualTextDisplay {
     this.element.append(this.textLayer);
     this.element.addEventListener("click", (event) => {
       if (this.disabled) return;
-      this.controller.setCursor(this.cursorAtPoint(event.clientX, event.clientY));
-      this.controller.setOpen(true);
+      const cursor = this.cursorAtPoint(event.clientX, event.clientY);
+      this.callbacks.onCaretChange(cursor, cursor);
     });
-    this.element.addEventListener("keydown", (event) => this.handlePhysicalKey(event));
-    this.unsubscribe = controller.subscribe(() => { if (this.visible) this.render(); });
+    this.element.addEventListener("keydown", (event) => this.callbacks.onPhysicalKey(event));
+    this.element.addEventListener("keyup", () => this.callbacks.onPhysicalKeyRelease());
+    this.render();
+  }
+
+  update(value: string, cursorStart = value.length, cursorEnd = cursorStart) {
+    this.value = value;
+    this.cursorStart = Math.max(0, Math.min(cursorStart, value.length));
+    this.cursorEnd = Math.max(0, Math.min(cursorEnd, value.length));
     this.render();
   }
 
   setVisible(visible: boolean) {
-    if (this.visible === visible) return;
     this.visible = visible;
     this.element.hidden = !visible;
     if (visible) this.render();
@@ -53,31 +65,35 @@ export class VirtualTextDisplay {
   }
 
   destroy() {
-    this.unsubscribe();
     this.element.replaceChildren();
   }
 
   private render() {
-    const { value, cursor } = this.controller.state;
+    if (!this.visible) return;
     this.textLayer.replaceChildren();
-    if (!value) {
+    if (!this.value) {
       this.textLayer.append(this.createCaret());
       const placeholder = document.createElement("span");
       placeholder.className = "kroma-chat__virtual-display-placeholder";
       placeholder.textContent = this.placeholder;
       this.textLayer.append(placeholder);
     } else {
+      const selectionStart = Math.min(this.cursorStart, this.cursorEnd);
+      const selectionEnd = Math.max(this.cursorStart, this.cursorEnd);
       let offset = 0;
-      for (const character of value) {
-        if (cursor === offset) this.textLayer.append(this.createCaret());
+      for (const character of this.value) {
+        if (this.cursorStart === offset) this.textLayer.append(this.createCaret());
         const characterNode = document.createElement("span");
         characterNode.dataset.start = String(offset);
         characterNode.dataset.end = String(offset + character.length);
+        if (selectionStart !== selectionEnd && offset >= selectionStart && offset < selectionEnd) {
+          characterNode.className = "kroma-chat__virtual-display-selection";
+        }
         characterNode.textContent = character;
         this.textLayer.append(characterNode);
         offset += character.length;
       }
-      if (cursor === offset) this.textLayer.append(this.createCaret());
+      if (this.cursorStart === offset) this.textLayer.append(this.createCaret());
     }
     this.keepCaretVisible();
   }
@@ -92,7 +108,7 @@ export class VirtualTextDisplay {
   private cursorAtPoint(x: number, y: number) {
     const characters = [...this.textLayer.querySelectorAll<HTMLElement>("[data-start][data-end]")];
     if (!characters.length) return 0;
-    let nearest = { index: this.controller.state.value.length, distance: Number.POSITIVE_INFINITY };
+    let nearest = { index: this.value.length, distance: Number.POSITIVE_INFINITY };
     characters.forEach((character) => {
       const rect = character.getBoundingClientRect();
       const verticalDistance = y < rect.top ? rect.top - y : y > rect.bottom ? y - rect.bottom : 0;
@@ -113,22 +129,5 @@ export class VirtualTextDisplay {
     const rect = caret.getBoundingClientRect();
     if (rect.bottom > viewport.bottom) this.element.scrollTop += rect.bottom - viewport.bottom;
     else if (rect.top < viewport.top) this.element.scrollTop -= viewport.top - rect.top;
-  }
-
-  private handlePhysicalKey(event: KeyboardEvent) {
-    if (this.disabled || event.isComposing || event.altKey || event.ctrlKey || event.metaKey) return;
-    if (event.key === "Backspace") {
-      event.preventDefault();
-      this.controller.backspace();
-    } else if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-      event.preventDefault();
-      this.controller.moveCursor(event.key === "ArrowLeft" ? -1 : 1);
-    } else if (event.key === "Enter") {
-      event.preventDefault();
-      this.controller.insert("\n");
-    } else if (event.key.length === 1) {
-      event.preventDefault();
-      this.controller.insert(event.key);
-    }
   }
 }

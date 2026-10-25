@@ -25,7 +25,7 @@ chat?.addMessage({ author: "assistant", type: "text", text: "Hello." });
 
 Component listeners are disposed when the element disconnects and reinitialized if it is connected again.
 
-The `mode`, `input-mode`, `chat-title`, `subtitle`, `avatar`, `status`, `messages-label`, `empty-state`, `input-label`, `placeholder`, `send-label`, and `typing-label` attributes configure the element. `input-mode="virtual"` selects KromaChat's controlled Spanish virtual keyboard; the visible composer switch can return to `native` at any time. The default `native` mode preserves the textarea, IME composition, dictation, and assistive-technology input. The virtual surface supports controlled character editing and hardware key input but intentionally does not emulate IME composition or system dictation. The `options` message remains an alias for the original QuickReplies contract.
+The `mode`, `input-mode`, `chat-title`, `subtitle`, `avatar`, `status`, `messages-label`, `empty-state`, `input-label`, `placeholder`, `send-label`, and `typing-label` attributes configure the element. `input-mode="virtual"` selects `simple-keyboard` 3.8.199 through KromaChat's private per-composer adapter; the visible composer switch can return to `native` at any time. The default `native` mode preserves the textarea, IME composition, dictation, and assistive-technology input. In virtual mode the library's internal value and caret are authoritative; the displayed div is only a projection and hardware-key bridge. The virtual surface intentionally does not emulate IME composition or system dictation. The dependency's default stylesheet is imported through the Vite entry; KromaChat constrains the engine to its composer flow without replacing its native theme. The `options` message remains an alias for the original QuickReplies contract.
 
 ## Kitchen Mode
 
@@ -80,7 +80,7 @@ The former `KromaChatElement` class export remains an alias of `KromaChat`; only
 
 - `kroma-chat.ts` composes the custom element; `index.ts` is the public TypeScript entry point.
 - `core/` contains backend-agnostic models, event contracts and renderer dispatch.
-- `layout/` owns the header, message history and composer; `input/` owns the controlled virtual text state, keyboard layouts and semantic key renderer.
+- `layout/` owns the header, message history and composer; `input/` contains the per-composer simple-keyboard adapter, Spanish layout configuration, keyboard-mode controller and visual text projection. Virtual text and caret live in the single simple-keyboard instance; the display and native textarea are mode-specific views/inputs. Engine instances use unique input and root names, disable cross-instance input synchronization, and are destroyed with their composer.
 - `messages/`, `navigation/`, `catalog/`, `commerce/`, `forms/`, and `feedback/` contain their named presentation controls.
 - `shared/` contains reusable action, icon, image and formatting primitives.
 - `kroma-chat.scss` is the stylesheet entry point; `styles/` separates token aliases and the layout, messages, navigation, catalog, commerce, forms, feedback and state families.

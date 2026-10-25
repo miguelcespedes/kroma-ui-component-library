@@ -1,127 +1,33 @@
-.kroma-chat {
-  &__virtual-keyboard {
-    display: grid;
-    width: 100%;
-    min-width: 0;
-    max-block-size: 16rem;
-    gap: var(--kroma-chat-key-gap-block);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding: var(--kroma-chat-key-gap-block) 0 var(--kroma-chat-key-gap-block);
-    border-radius: var(--kroma-chat-radius-card);
-    background: var(--kroma-chat-keyboard-surface);
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-user-select: none;
-  }
-
-  &__virtual-keyboard[hidden] { display: none; }
-
-  &__virtual-keyboard-row {
-    display: flex;
-    min-width: 0;
-    justify-content: center;
-    gap: var(--kroma-chat-key-gap-inline);
-  }
-
-  &__virtual-keyboard-row[data-row="2"] { padding-inline: 2%; }
-
-  &__virtual-key {
-    display: grid;
-    min-width: 0;
-    min-height: var(--kroma-chat-key-height);
-    flex: 1 1 0;
-    place-items: center;
-    padding: 0 .125rem;
-    border: 1px solid var(--kroma-chat-key-border);
-    border-radius: var(--kroma-chat-key-radius);
-    background: var(--kroma-chat-key-surface);
-    box-shadow: var(--kroma-chat-key-shadow);
-    color: var(--kroma-chat-key-content);
-    font: inherit;
-    font-size: var(--kroma-chat-key-font-size);
-    font-weight: var(--kroma-chat-weight-medium);
-    line-height: 1;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), box-shadow var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
-    -webkit-tap-highlight-color: transparent;
-
-    &:disabled { color: var(--kroma-chat-text-disabled); cursor: not-allowed; opacity: .58; }
-  }
-
-  &__virtual-key[data-flex="0.75"] { flex-grow: .75; }
-  &__virtual-key[data-flex="0.8"] { flex-grow: .8; }
-  &__virtual-key[data-flex="1.2"] { flex-grow: 1.2; }
-  &__virtual-key[data-flex="1.25"] { flex-grow: 1.25; }
-  &__virtual-key[data-flex="1.4"] { flex-grow: 1.4; }
-  &__virtual-key[data-flex="1.45"] { flex-grow: 1.45; }
-  &__virtual-key[data-flex="1.5"] { flex-grow: 1.5; }
-  &__virtual-key[data-flex="3.5"] { flex-grow: 3.5; }
-  &__virtual-key[data-flex="4"] { flex-grow: 4; }
-
-  &__virtual-key--functional {
-    background: var(--kroma-chat-key-functional-surface);
-    font-size: var(--kroma-chat-key-functional-font-size);
-    font-weight: var(--kroma-chat-weight-semibold);
-  }
-  &__virtual-key[data-action="shift"][aria-pressed="true"] { border-color: var(--kroma-chat-border-selected); background: var(--kroma-chat-key-pressed-surface); color: var(--kroma-chat-text-accent); }
-  &__virtual-key[data-caps-lock="true"] { border-color: var(--kroma-chat-border-selected); }
-  &__virtual-key[data-action="space"] { font-size: var(--kroma-chat-key-functional-font-size); font-weight: var(--kroma-chat-weight-medium); }
-
-  &__virtual-keyboard[data-preview] { gap: .1875rem; padding: .25rem 0 0; background: transparent; }
-  &__virtual-keyboard[data-preview] &__virtual-keyboard-row { gap: .1875rem; }
-  &__virtual-keyboard[data-preview] &__virtual-key { min-height: 1.75rem; border-radius: var(--kroma-chat-radius-small); box-shadow: none; font-size: .6875rem; }
-
-  &__keyboard-showcase {
-    display: grid;
-    max-height: 14rem;
-    min-width: 0;
-    gap: var(--kroma-chat-spacing-control);
-    overflow-y: auto;
-    padding-block: var(--kroma-chat-spacing-control);
-    border-top: 1px solid var(--kroma-chat-border-subtle);
-    overscroll-behavior: contain;
-  }
-
-  &__keyboard-showcase-title { margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-body-small); font-weight: var(--kroma-chat-weight-semibold); }
-  &__keyboard-showcase-sample,
-  &__keyboard-showcase-composer { display: grid; min-width: 0; gap: var(--kroma-chat-spacing-tight); }
-  &__keyboard-showcase-label { color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-caption); }
-  &__keyboard-showcase-composers { display: grid; min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--kroma-chat-spacing-control); }
-  &__virtual-display--sample { min-height: 2.5rem; max-height: 3rem; padding-inline: var(--kroma-chat-spacing-control); border: 1px solid var(--kroma-chat-border-subtle); border-radius: var(--kroma-chat-radius-input); background: var(--kroma-chat-surface); font-size: var(--kroma-chat-typography-body-small); }
+// Keep simple-keyboard's distributed visual theme intact; these rules only bound it to the chat flex region.
+.kroma-chat .hg-theme-default {
+  width: 100%;
+  max-block-size: 16rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
-@container kroma-chat (max-width: 22rem) {
-  .kroma-chat__virtual-keyboard { padding-inline: 0; --kroma-chat-key-gap-inline: var(--kroma-chat-key-gap-inline-compact); }
+.kroma-chat__keyboard-showcase {
+  display: grid;
+  max-height: 14rem;
+  min-width: 0;
+  gap: var(--kroma-chat-spacing-control);
+  overflow-y: auto;
+  padding-block: var(--kroma-chat-spacing-control);
+  border-top: 1px solid var(--kroma-chat-border-subtle);
+  overscroll-behavior: contain;
 }
 
-@container kroma-chat (max-height: 28rem) {
-  .kroma-chat__virtual-keyboard {
-    --kroma-chat-key-height: var(--kroma-chat-key-height-compact);
-    --kroma-chat-key-gap-block: var(--kroma-chat-key-gap-block-compact);
-    --kroma-chat-key-gap-inline: var(--kroma-chat-key-gap-inline-compact);
-  }
-}
+.kroma-chat__keyboard-showcase-title { margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-body-small); font-weight: var(--kroma-chat-weight-semibold); }
+.kroma-chat__keyboard-showcase-composers { display: grid; min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--kroma-chat-spacing-control); }
+.kroma-chat__keyboard-showcase-sample,
+.kroma-chat__keyboard-showcase-composer { display: grid; min-width: 0; gap: var(--kroma-chat-spacing-tight); }
+.kroma-chat__keyboard-showcase-label { color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-caption); }
+.kroma-chat__keyboard-showcase-layouts { display: flex; min-width: 0; flex-wrap: wrap; gap: var(--kroma-chat-spacing-tight); }
+.kroma-chat__keyboard-showcase-layout,
+.kroma-chat__keyboard-showcase-toggle { min-height: 2rem; padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control); border: 1px solid var(--kroma-chat-border-subtle); border-radius: var(--kroma-chat-radius-control); background: var(--kroma-chat-surface); color: var(--kroma-chat-text-primary); font: inherit; font-size: var(--kroma-chat-typography-body-small); }
+.kroma-chat__keyboard-showcase-layout[aria-pressed="true"] { border-color: var(--kroma-chat-border-selected); background: var(--kroma-chat-surface-selected); }
+.kroma-chat__virtual-display--sample { min-height: 2.5rem; max-height: 3rem; padding-inline: var(--kroma-chat-spacing-control); border: 1px solid var(--kroma-chat-border-subtle); border-radius: var(--kroma-chat-radius-input); background: var(--kroma-chat-surface); font-size: var(--kroma-chat-typography-body-small); }
 
 @supports (height: 1cqb) {
-  .kroma-chat__virtual-keyboard { max-block-size: min(15rem, 38cqb); }
-}
-
-@media (hover: hover) {
-  .kroma-chat__virtual-key:hover:not(:disabled) { background: var(--kroma-chat-key-hover-surface); }
-  .kroma-chat__virtual-key--functional:hover:not(:disabled) { background: var(--kroma-chat-key-functional-hover); }
-}
-
-.kroma-chat__virtual-key:active:not(:disabled) {
-  background: var(--kroma-chat-key-pressed-surface);
-  box-shadow: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .kroma-chat__virtual-display-caret { animation: none; }
-}
-
-@keyframes kroma-chat-virtual-caret {
-  50% { opacity: 0; }
+  .kroma-chat .hg-theme-default { max-block-size: min(16rem, 38cqb); }
 }

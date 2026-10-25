@@ -102,25 +102,6 @@
   --kroma-chat-motion-fast: var(--kroma-motion-duration-fast, .15s);
   --kroma-chat-motion-standard: var(--kroma-motion-easing-standard, ease);
 
-  --kroma-chat-keyboard-surface: var(--kroma-ref-gray-100, var(--kroma-chat-canvas));
-  --kroma-chat-key-surface: var(--kroma-chat-surface);
-  --kroma-chat-key-functional-surface: var(--kroma-ref-gray-300, var(--kroma-chat-surface-hover));
-  --kroma-chat-key-functional-hover: var(--kroma-ref-gray-500, var(--kroma-chat-key-pressed-surface));
-  --kroma-chat-key-hover-surface: var(--kroma-ref-gray-300, var(--kroma-chat-surface-hover));
-  --kroma-chat-key-pressed-surface: var(--kroma-ref-gray-500, var(--kroma-chat-surface-selected));
-  --kroma-chat-key-content: var(--kroma-chat-text-primary);
-  --kroma-chat-key-border: var(--kroma-ref-gray-300, var(--kroma-chat-border-subtle));
-  --kroma-chat-key-shadow: 0 2px 0 var(--kroma-chat-key-border);
-  --kroma-chat-key-radius: .625rem;
-  --kroma-chat-key-gap-inline: .3125rem;
-  --kroma-chat-key-gap-block: .5rem;
-  --kroma-chat-key-gap-inline-compact: .25rem;
-  --kroma-chat-key-gap-block-compact: .375rem;
-  --kroma-chat-key-height: 3.125rem;
-  --kroma-chat-key-height-compact: 2.5rem;
-  --kroma-chat-key-font-size: 1.375rem;
-  --kroma-chat-key-functional-font-size: .875rem;
-
   // Legacy shorthands stay scoped to KromaChat while selectors migrate to named roles.
   --chat-surface: var(--kroma-chat-surface);
   --chat-history: var(--kroma-chat-canvas);
@@ -152,10 +133,6 @@
   &[data-density="compact"] { @include compact; }
 }
 
-@supports (height: 1svh) {
-  .kroma-chat { --kroma-chat-key-height: clamp(3rem, 6svh, 3.375rem); }
-}
-
 @supports (color: color-mix(in srgb, white 50%, black)) {
   .kroma-chat {
     --kroma-chat-elevated: var(--kroma-ref-surface-raised, color-mix(in srgb, var(--kroma-chat-surface) 90%, var(--kroma-chat-text-primary) 10%));
@@ -181,13 +158,6 @@
   --kroma-chat-border-interactive: var(--kroma-ref-gray-750, var(--kroma-color-border-default, var(--bs-border-color, #dee2e6)));
   --kroma-chat-text-primary: var(--kroma-ref-gray-100, var(--kroma-color-content-primary, var(--bs-body-color, #212529)));
   --kroma-chat-text-secondary: var(--kroma-ref-gray-500, var(--kroma-color-readable-secondary, var(--bs-secondary-color, #6c757d)));
-  --kroma-chat-keyboard-surface: var(--kroma-ref-gray-850, var(--kroma-chat-canvas));
-  --kroma-chat-key-functional-surface: var(--kroma-ref-gray-750, var(--kroma-chat-surface-hover));
-  --kroma-chat-key-functional-hover: var(--kroma-ref-gray-700, var(--kroma-chat-surface-hover));
-  --kroma-chat-key-hover-surface: var(--kroma-ref-gray-700, var(--kroma-chat-surface-hover));
-  --kroma-chat-key-pressed-surface: var(--kroma-ref-gray-700, var(--kroma-chat-surface-selected));
-  --kroma-chat-key-border: var(--kroma-ref-gray-750, var(--kroma-chat-border-subtle));
-  --kroma-chat-key-shadow: 0 2px 0 var(--kroma-ref-gray-850, var(--kroma-chat-border-subtle));
   --kroma-chat-action-primary-hover: var(--kroma-chat-accent);
   --kroma-chat-action-primary-hover-content: var(--kroma-chat-on-accent);
   --kroma-chat-action-primary-disabled: var(--kroma-chat-surface);

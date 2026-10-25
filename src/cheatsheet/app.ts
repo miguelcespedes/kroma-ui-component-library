@@ -1,3 +1,4 @@
+import "simple-keyboard/build/css/index.css";
 import * as bootstrap from "bootstrap";
 import "./app.scss";
 import { initializeContrastDropdown } from "../components/contrast-dropdown/contrast-dropdown";

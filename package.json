@@ -15,7 +15,8 @@
     "start": "vite preview --config vite.config.js"
   },
   "dependencies": {
-    "bootstrap": "5.3.8"
+    "bootstrap": "5.3.8",
+    "simple-keyboard": "^3.8.199"
   },
   "devDependencies": {
     "playwright": "^1.55.0",
