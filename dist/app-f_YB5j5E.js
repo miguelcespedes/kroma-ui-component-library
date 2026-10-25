@@ -9760,6 +9760,7 @@ class ChatComposer {
       if (!(target instanceof Node)) return;
       if (this.keyboard?.element.contains(target) || this.keyboardShowcase?.contains(target)) return;
       if (this.keyboardTarget?.contains(target)) return;
+      if (this.sendButton.contains(target)) return;
       if (this.keyboardTarget) {
         this.setKeyboardTarget(null);
         return;
@@ -11597,7 +11598,7 @@ class KromaChat extends HTMLElement {
   loadKitchenConversation() {
     const revision = ++this.modeRevision;
     void __vitePreload(async () => {
-      const { createKitchenMessages } = await import("./kitchen.messages-ByUaOU2N.js");
+      const { createKitchenMessages } = await import("./kitchen.messages-DQbpkP4p.js");
       return { createKitchenMessages };
     }, true ? [] : void 0, import.meta.url).then(({ createKitchenMessages }) => {
       if (!this.isConnected || this.mode !== "kitchen" || revision !== this.modeRevision) return;
@@ -12243,4 +12244,4 @@ export {
   poloImage as p,
   sneakerImage as s
 };
-//# sourceMappingURL=app-WzcooMD1.js.map
+//# sourceMappingURL=app-f_YB5j5E.js.map

@@ -100,6 +100,9 @@ export class ChatComposer {
       if (!(target instanceof Node)) return;
       if (this.keyboard?.element.contains(target) || this.keyboardShowcase?.contains(target)) return;
       if (this.keyboardTarget?.contains(target)) return;
+      // Keep the submit target stable until its click is dispatched. Closing
+      // the dock on pointerdown can reflow the composer before pointerup.
+      if (this.sendButton.contains(target)) return;
       if (this.keyboardTarget) {
         this.setKeyboardTarget(null);
         return;

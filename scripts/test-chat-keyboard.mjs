@@ -24,6 +24,10 @@ try {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(url);
+  await page.locator("[data-theme-selector]").click();
+  await page.locator('[data-theme-value="kroma-entrepreneur"]').click();
+  await page.waitForFunction(() => document.documentElement.dataset.kromaTheme === "kroma-entrepreneur"
+    && document.querySelector("[data-theme-dropdown]")?.dataset.themeState === "ready");
   const chat = page.locator("#chat kroma-chat");
   const display = chat.locator(".kroma-chat__virtual-display");
   await display.click();
@@ -57,12 +61,76 @@ try {
   await display.focus();
   await page.keyboard.type("d");
   assert.match(await display.innerText(), /d/, "physical keyboard input still reaches the composer");
-  assert.equal(await display.evaluate((element) => getComputedStyle(element).outlineStyle), "none", "physical typing does not add a rectangular outline inside the rounded field");
-  assert.equal(await composerArea.locator(".kroma-chat__composer-field").evaluate((element) => getComputedStyle(element).outlineStyle), "none", "physical typing keeps a single outer focus border");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Shift+Tab");
+  const focusProbe = await display.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const fieldStyle = getComputedStyle(element.closest(".kroma-chat__composer-field"));
+    return {
+      active: document.activeElement === element,
+      focusVisible: element.matches(":focus-visible"),
+      outlineStyle: style.outlineStyle,
+      outlineWidth: style.outlineWidth,
+      outlineOffset: style.outlineOffset,
+      boxShadow: style.boxShadow,
+      fieldBorder: fieldStyle.borderTopColor,
+      fieldFocusToken: fieldStyle.getPropertyValue("--kroma-chat-state-focus").trim(),
+    };
+  });
+  assert.equal(focusProbe.active, true, "Shift+Tab returns focus to the virtual textbox");
+  assert.equal(focusProbe.focusVisible, true, "keyboard navigation exposes the textbox focus-visible state");
+  assert.equal(focusProbe.outlineStyle, "none", `keyboard focus ring is rendered only by the outer field, not the inner textbox: ${JSON.stringify(focusProbe)}`);
+  assert.equal(await composerArea.locator(".kroma-chat__composer-field").evaluate((element) => getComputedStyle(element).outlineStyle), "none", "outer field uses its focus border instead of a second outline");
   await key("{bksp}").click();
+
+  const verifyComposerFocus = async () => {
+    await display.click();
+    await page.keyboard.type("h");
+    assert.match(await display.innerText(), /h/, "physical key inserts into the virtual textbox");
+    await page.keyboard.press("Tab");
+    const tabStop = await page.evaluate(() => ({
+      isSendButton: document.activeElement?.matches(".kroma-chat__send"),
+      outlineStyle: document.activeElement ? getComputedStyle(document.activeElement).outlineStyle : "none",
+    }));
+    assert.equal(tabStop.isSendButton, true, "Tab advances from the textbox to the send button");
+    assert.equal(tabStop.outlineStyle, "solid", "other interactive controls retain their keyboard focus indicator");
+    const unfocusedBorder = await composerArea.locator(".kroma-chat__composer-field").evaluate((element) => getComputedStyle(element).borderTopColor);
+    await page.keyboard.press("Shift+Tab");
+    // Let the field's 150ms border-color transition settle before comparing
+    // the resolved semantic token with the computed border color.
+    await page.waitForTimeout(200);
+    const focusState = await display.evaluate((element) => {
+      const field = element.closest(".kroma-chat__composer-field");
+      const tokenProbe = document.createElement("span");
+      tokenProbe.style.color = "var(--kroma-chat-state-focus)";
+      field?.append(tokenProbe);
+      const expectedFocusColor = tokenProbe.isConnected ? getComputedStyle(tokenProbe).color : "";
+      tokenProbe.remove();
+      return {
+        active: document.activeElement === element,
+        focusVisible: element.matches(":focus-visible"),
+        innerOutline: getComputedStyle(element).outlineStyle,
+        innerOutlineOffset: getComputedStyle(element).outlineOffset,
+        fieldOutline: field ? getComputedStyle(field).outlineStyle : "none",
+        fieldBorder: field ? getComputedStyle(field).borderTopColor : "",
+        expectedFocusColor,
+        outerRadius: field ? getComputedStyle(field).borderRadius : "",
+      };
+    });
+    assert.equal(focusState.active, true, "Shift+Tab returns focus to the virtual textbox");
+    assert.equal(focusState.focusVisible, true, "textbox remains visibly keyboard-focused");
+    assert.equal(focusState.innerOutline, "none", `inner textbox has no rectangular focus outline: ${JSON.stringify(focusState)}`);
+    assert.equal(focusState.innerOutlineOffset, "0px", "inner textbox has no offset focus ring");
+    assert.equal(focusState.fieldOutline, "none", "outer field uses its border, not an extra outline");
+    assert.equal(focusState.fieldBorder, focusState.expectedFocusColor, "outer field border uses the semantic focus token");
+    assert.notEqual(focusState.fieldBorder, unfocusedBorder, "outer border clearly changes between normal and focused states");
+    assert.equal(focusState.outerRadius, "24px", "focus styling preserves the 1.5rem outer radius");
+    await key("{bksp}").click();
+  };
 
   for (const theme of ["light", "dark"]) {
     await page.evaluate((mode) => document.documentElement.setAttribute("data-bs-theme", mode), theme);
+    await verifyComposerFocus();
     for (const width of [360, 390, 430]) {
       await page.setViewportSize({ width, height: 900 });
       const metrics = await keyboard.evaluate((element) => {
@@ -262,6 +330,16 @@ try {
   sends = await chat.evaluate((element) => element.dataset.keyboardSent === "true" ? 1 : 0);
   assert.equal(sends, 1, "Enter sends the composed message");
   assert.equal(await display.innerText(), "", "sending clears the composer");
+  await display.click();
+  await page.keyboard.type("send by click");
+  assert.equal(await keyboard.isVisible(), true, "typing opens the virtual keyboard before clicking Send");
+  await chat.evaluate((element) => element.addEventListener("kroma-chat-send", () => {
+    element.dataset.keyboardSendCount = String(Number(element.dataset.keyboardSendCount || 0) + 1);
+  }));
+  await chat.locator(".kroma-chat__send").click();
+  assert.equal(await chat.getAttribute("data-keyboard-send-count"), "1", "clicking Send submits while the virtual keyboard is open");
+  assert.equal(await display.innerText(), "", "click submission clears the composer");
+  assert.equal(await keyboard.isHidden(), true, "successful submission closes the virtual keyboard");
   assert.deepEqual(errors, [], "keyboard interactions produce no browser errors");
   console.log("Chat keyboard Playwright checks passed: 360/390/430px, light/dark popup surfaces, short/long/edge presses, pointer slide/cancel, excluded keys and input behavior.");
 } finally {

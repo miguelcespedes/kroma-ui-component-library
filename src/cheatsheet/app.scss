@@ -427,8 +427,9 @@ body {
   }
 }
 
-// Accesibilidad del catálogo.
-[data-kroma-theme]:not([data-kroma-theme="bootstrap"]) :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+// Accesibilidad del catálogo. El textbox virtual de Kroma Chat delega su foco
+// visual al campo redondeado mediante :focus-within, no al rectángulo interior.
+[data-kroma-theme]:not([data-kroma-theme="bootstrap"]) :is(a, button, input, select, textarea, summary, [tabindex]):not(.kroma-chat__virtual-display):focus-visible {
   outline: var(--kroma-focus-ring-width, 2px) solid var(--kroma-color-focus-indicator);
   outline-offset: var(--kroma-focus-ring-offset, 2px);
 }

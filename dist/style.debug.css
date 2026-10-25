@@ -12665,7 +12665,6 @@ textarea.form-control-lg {
 
 .kroma-chat__composer-field:focus-within {
   border-color: var(--kroma-chat-state-focus);
-  outline: none;
 }
 
 .kroma-chat__composer-field, .kroma-chat__composer-actions {
@@ -14348,8 +14347,9 @@ textarea.form-control-lg {
   outline-offset: 2px;
 }
 
-.kroma-chat__virtual-display:focus {
+.kroma-chat .kroma-chat__virtual-display:focus-visible {
   outline: none;
+  outline-offset: 0;
   box-shadow: none;
 }
 
@@ -14896,7 +14896,7 @@ body {
     padding-top: 1rem;
   }
 }
-[data-kroma-theme]:not([data-kroma-theme=bootstrap]) :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+[data-kroma-theme]:not([data-kroma-theme=bootstrap]) :is(a, button, input, select, textarea, summary, [tabindex]):not(.kroma-chat__virtual-display):focus-visible {
   outline: var(--kroma-focus-ring-width, 2px) solid var(--kroma-color-focus-indicator);
   outline-offset: var(--kroma-focus-ring-offset, 2px);
 }
