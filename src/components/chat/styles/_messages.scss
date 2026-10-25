@@ -102,6 +102,8 @@
   }
 
   &__options--inactive .kroma-chat__option { cursor: default; }
+  &__options--selected .kroma-chat__option:disabled { color: var(--kroma-chat-text-secondary); opacity: .9; }
+  &__message[data-controls-disabled="true"] :where(button, input, select, textarea):disabled { opacity: .86; }
 
   &__choice {
     display: flex;

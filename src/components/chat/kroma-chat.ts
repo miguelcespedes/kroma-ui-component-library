@@ -1,4 +1,4 @@
-import { ChatComposer } from "./layout/chat-composer";
+import { ChatComposer, type ChatInteractionMode } from "./layout/chat-composer";
 import { ChatHeader, type ChatHeaderAction } from "./layout/chat-header";
 import { ChatMessageList } from "./layout/chat-message-list";
 import { CHAT_EVENTS, emitKromaChatEvent } from "./core/chat.events";
@@ -71,6 +71,7 @@ export type {
   KromaChatEventMap,
 } from "./core/chat.events";
 export type { ChatHeaderAction, ChatHeaderOptions } from "./layout/chat-header";
+export type { ChatInteractionMode } from "./layout/chat-composer";
 const tagName = "kroma-chat";
 let nextElementId = 0;
 type StoredMessage = { id: string; message: ChatMessage };
@@ -88,6 +89,7 @@ export class KromaChat extends HTMLElement {
   private status: string | null = null;
   private error: string | null = null;
   private composerDisabled = false;
+  private interactionModeValue: ChatInteractionMode = "guided";
   private headerActions: ChatHeaderAction[] = [];
   private header: ChatHeader | null = null;
   private messageList: ChatMessageList | null = null;
@@ -105,6 +107,16 @@ export class KromaChat extends HTMLElement {
   set mode(mode: ChatMode) {
     if (this.mode === mode) return;
     this.setAttribute("mode", mode);
+  }
+
+  get interactionMode(): ChatInteractionMode {
+    return this.composer?.mode || this.interactionModeValue;
+  }
+
+  set interactionMode(mode: ChatInteractionMode) {
+    if (this.interactionModeValue === mode && this.composer?.mode === mode) return;
+    this.interactionModeValue = mode;
+    this.composer?.setInteractionMode(mode);
   }
 
   attributeChangedCallback(name: string, previous: string | null, current: string | null) {
@@ -153,6 +165,8 @@ export class KromaChat extends HTMLElement {
       sendLabel: this.getAttribute("send-label") || "Send message",
       disabled: this.composerDisabled || this.mode === "kitchen",
       showKeyboardShowcase: this.mode === "kitchen",
+      interactionMode: this.mode === "kitchen" ? "guided" : this.interactionModeValue,
+      onInteractionModeChange: (mode) => { this.interactionModeValue = mode; },
       onSend: (message) => this.sendMessage(message),
     });
     this.header = header;
@@ -220,6 +234,10 @@ export class KromaChat extends HTMLElement {
   setOptionsDisabled(messageId: string, disabled: boolean) {
     this.disabledOptions.set(messageId, disabled);
     this.messageList?.setOptionsDisabled(messageId, disabled);
+  }
+
+  disableHistoryControls() {
+    this.messageList?.disableHistoryControls();
   }
 
   setError(message: string | null) {

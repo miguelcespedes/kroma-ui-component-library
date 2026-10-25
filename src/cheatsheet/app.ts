@@ -73,7 +73,16 @@ type DemoCategoryId = "all" | "clothing" | "accessories";
 type DemoCartLine = { readonly id: string; readonly productId: string; readonly variantId?: string; readonly quantity: number };
 type JourneyState =
   | { readonly step: "welcome"; readonly cart: readonly DemoCartLine[] }
-  | { readonly step: "unavailable"; readonly cart: readonly DemoCartLine[]; readonly service: string }
+  | { readonly step: "search-options"; readonly cart: readonly DemoCartLine[] }
+  | { readonly step: "search-query"; readonly cart: readonly DemoCartLine[] }
+  | { readonly step: "search-results"; readonly cart: readonly DemoCartLine[]; readonly query: string; readonly productIds: readonly string[] }
+  | { readonly step: "order-help"; readonly cart: readonly DemoCartLine[] }
+  | { readonly step: "advisor-reason"; readonly cart: readonly DemoCartLine[] }
+  | { readonly step: "advisor-topic"; readonly cart: readonly DemoCartLine[]; readonly reason: string }
+  | { readonly step: "advisor-follow-up"; readonly cart: readonly DemoCartLine[]; readonly reason: string; readonly topic: string }
+  | { readonly step: "advisor-note"; readonly cart: readonly DemoCartLine[] }
+  | { readonly step: "advisor-note-received"; readonly cart: readonly DemoCartLine[] }
+  | { readonly step: "cart-edit"; readonly cart: readonly DemoCartLine[]; readonly draftCart: readonly DemoCartLine[]; readonly revision: number }
   | { readonly step: "categories"; readonly cart: readonly DemoCartLine[] }
   | { readonly step: "products"; readonly cart: readonly DemoCartLine[]; readonly categoryId: DemoCategoryId }
   | { readonly step: "product-detail"; readonly cart: readonly DemoCartLine[]; readonly categoryId: DemoCategoryId; readonly productId: string; readonly variantId?: string; readonly quantity: number }
@@ -85,7 +94,15 @@ type JourneyState =
 
 type JourneyEvent =
   | { readonly type: "explore-products" }
-  | { readonly type: "unavailable"; readonly service: string }
+  | { readonly type: "search-products" }
+  | { readonly type: "search-query" }
+  | { readonly type: "search-results"; readonly query: string; readonly productIds: readonly string[] }
+  | { readonly type: "show-order-help" }
+  | { readonly type: "start-advisor" }
+  | { readonly type: "advisor-reason"; readonly reason: string }
+  | { readonly type: "advisor-topic"; readonly reason: string; readonly topic: string }
+  | { readonly type: "advisor-note" }
+  | { readonly type: "advisor-note-received" }
   | { readonly type: "home" }
   | { readonly type: "choose-category"; readonly categoryId: DemoCategoryId }
   | { readonly type: "choose-product"; readonly productId: string }
@@ -96,6 +113,10 @@ type JourneyEvent =
   | { readonly type: "back-to-categories" }
   | { readonly type: "continue-shopping" }
   | { readonly type: "view-cart" }
+  | { readonly type: "edit-cart-quantities"; readonly revision: number }
+  | { readonly type: "change-cart-quantity"; readonly lineId: string; readonly quantity: number; readonly revision: number }
+  | { readonly type: "save-cart-quantities"; readonly revision: number }
+  | { readonly type: "cancel-cart-quantities"; readonly revision: number }
   | { readonly type: "remove-item"; readonly lineId?: string }
   | { readonly type: "checkout" }
   | { readonly type: "back-to-cart" }
@@ -228,21 +249,100 @@ function quickReplies(text: string, replies: ChatOption[]): ChatMessage {
   return { author: "assistant", type: "quick-replies", text, replies };
 }
 
-function renderJourney(chat: KromaChat, state: JourneyState) {
+function renderJourney(chat: KromaChat, state: JourneyState, onProductDetail?: (messageId: string) => void) {
   switch (state.step) {
     case "welcome":
       chat.addMessage(welcomeMessage());
       return;
-    case "unavailable":
-      chat.addMessage({ author: "system", type: "status", status: "neutral", text: `${state.service} no está conectado en esta demostración.` });
-      chat.addMessage(quickReplies("Puedes explorar el catálogo ficticio o volver al menú.", [
-        { id: "browse", label: "Explorar productos", value: "explore-products" },
-        { id: "home", label: "Volver al inicio", value: "home" },
+    case "search-options":
+      chat.addMessage(quickReplies("¿Cómo prefieres buscar?", [
+        { id: "search-categories", label: "Explorar categorías", value: "explore-products" },
+        { id: "search-all", label: "Ver productos disponibles", value: "browse-all" },
+        { id: "search-name", label: "Escribir el nombre", value: "write-product-name" },
+      ]));
+      return;
+    case "search-query":
+      chat.addMessage({ author: "assistant", text: "Escribe un nombre del catálogo ficticio de esta demostración." });
+      chat.addMessage(quickReplies("También puedes explorar por categoría.", [{ id: "search-back", label: "Explorar categorías", value: "explore-products" }]));
+      return;
+    case "search-results": {
+      const products = state.productIds.map(getDemoProduct).filter((product): product is ChatProduct => Boolean(product));
+      if (products.length) {
+        const prompt = state.query ? `Coincidencias de ejemplo para “${state.query}”.` : "Estos son los productos ficticios disponibles en la demostración.";
+        chat.addMessage({ author: "assistant", type: "product-list", text: prompt, products, productActionLabel: "Ver producto" });
+        const replies: ChatOption[] = [
+          { id: "search-again", label: "Cambiar búsqueda", value: "search-again" },
+          { id: "search-categories", label: "Explorar categorías", value: "explore-products" },
+        ];
+        if (state.cart.length) replies.push({ id: "cart", label: `Ver mi selección (${state.cart.length})`, value: "view-cart" });
+        chat.addMessage(quickReplies("El catálogo de la demostración es ficticio y limitado.", replies));
+      } else {
+        chat.addMessage({ author: "system", type: "status", status: "neutral", text: `No hay coincidencias de ejemplo para “${state.query}”.` });
+        chat.addMessage(quickReplies("Puedes probar otra búsqueda o explorar las categorías.", [
+          { id: "search-again", label: "Cambiar búsqueda", value: "search-again" },
+          { id: "search-categories", label: "Explorar categorías", value: "explore-products" },
+        ]));
+      }
+      return;
+    }
+    case "order-help":
+      chat.addMessage({ author: "system", type: "status", status: "neutral", text: "La consulta de pedidos no está conectada en esta demostración. No se consultan ni se inventan estados de pedidos." });
+      chat.addMessage(quickReplies("Puedes continuar con el catálogo de ejemplo.", [
+        { id: "order-browse", label: "Explorar productos", value: "explore-products" },
+        { id: "order-home", label: "Volver al inicio", value: "home" },
+      ]));
+      return;
+    case "advisor-reason":
+      chat.addMessage({ author: "assistant", type: "choice-list", text: "¿Sobre qué necesitas orientación?", choices: [
+        { id: "advisor-product", title: "Un producto", description: "Características o variantes", value: "product" },
+        { id: "advisor-selection", title: "Mi selección", description: "Cantidades o productos guardados", value: "selection" },
+        { id: "advisor-order", title: "Un pedido", description: "La consulta real no está disponible en la demo", value: "order" },
+      ] });
+      return;
+    case "advisor-topic":
+      chat.addMessage(quickReplies("Elige el tema que mejor describe tu consulta.", state.reason === "product" ? [
+        { id: "advisor-features", label: "Características", value: "features" },
+        { id: "advisor-variants", label: "Tallas y variantes", value: "variants" },
+      ] : state.reason === "selection" ? [
+        { id: "advisor-quantities", label: "Modificar cantidades", value: "quantities" },
+        { id: "advisor-review", label: "Revisar mi selección", value: "review" },
+      ] : [
+        { id: "advisor-order-status", label: "Estado de un pedido", value: "order-status" },
+        { id: "advisor-other", label: "Otro motivo", value: "other" },
+      ]));
+      return;
+    case "advisor-follow-up":
+      chat.addMessage({ author: "system", type: "status", status: "neutral", text: "La atención humana no está conectada en esta demostración. No se ha contactado a ningún asesor." });
+      chat.addMessage(quickReplies("Si quieres, puedes añadir contexto localmente o volver a las opciones.", [
+        { id: "advisor-note", label: "Añadir información", value: "advisor-note" },
+        { id: "advisor-home", label: "Volver al inicio", value: "home" },
+      ]));
+      return;
+    case "advisor-note":
+      chat.addMessage({ author: "assistant", text: "Escribe información adicional. Permanecerá en esta demostración y no se enviará a un asesor." });
+      return;
+    case "advisor-note-received":
+      chat.addMessage({ author: "system", type: "status", status: "neutral", text: "La información solo quedó en el historial local. No se envió a un asesor ni a un servidor." });
+      chat.addMessage(quickReplies("Puedes continuar con el catálogo de ejemplo.", [
+        { id: "advisor-browse", label: "Explorar productos", value: "explore-products" },
+        { id: "advisor-home", label: "Volver al inicio", value: "home" },
+      ]));
+      return;
+    case "cart-edit":
+      chat.addMessage({ author: "assistant", text: "Ajusta las cantidades. Los cambios se aplicarán al guardar." });
+      state.draftCart.forEach((line) => {
+        const product = getDemoProduct(line.productId);
+        if (!product) return;
+        const variant = product.variants?.find((item) => item.id === line.variantId);
+        chat.addMessage({ author: "assistant", type: "quantity-selector", controlId: `cart-edit:${state.revision}:${line.id}`, productId: line.id, label: [product.name, variant?.label].filter(Boolean).join(" · "), value: line.quantity, minimum: 1, maximum: 99, decreaseLabel: "Reducir cantidad", increaseLabel: "Aumentar cantidad" });
+      });
+      chat.addMessage(quickReplies("¿Listo?", [
+        { id: "save-cart-edits", label: "Guardar cambios", value: `save-cart:${state.revision}` },
+        { id: "cancel-cart-edits", label: "Cancelar", value: `cancel-cart:${state.revision}` },
       ]));
       return;
     case "categories":
       chat.addMessage(categoriesMessage());
-      chat.addMessage(quickReplies("En cualquier momento puedes volver al menú inicial.", [{ id: "home", label: "Volver al inicio", value: "home" }]));
       return;
     case "products": {
       const products = productsByCategory[state.categoryId].map(getDemoProduct).filter((product): product is ChatProduct => Boolean(product));
@@ -252,11 +352,15 @@ function renderJourney(chat: KromaChat, state: JourneyState) {
           ? "Este es un accesorio de ejemplo. Selecciónalo para ver sus características."
           : "Explora los productos ficticios disponibles en esta demostración.";
       chat.addMessage({ author: "assistant", type: "product-list", text: prompt, products, productActionLabel: "Ver producto" });
-      const replies: ChatOption[] = [
-        { id: "categories", label: "Cambiar categoría", value: "back-categories" },
-        { id: "home", label: "Volver al inicio", value: "home" },
-      ];
-      if (state.cart.length) replies.unshift({ id: "cart", label: `Ver mi selección (${state.cart.length})`, value: "view-cart" });
+      const replies: ChatOption[] = state.cart.length
+        ? [
+          { id: "categories", label: "Cambiar categoría", value: "back-categories" },
+          { id: "cart", label: `Ver mi selección (${state.cart.length})`, value: "view-cart" },
+        ]
+        : [
+          { id: "categories", label: "Cambiar categoría", value: "back-categories" },
+          { id: "home", label: "Volver al inicio", value: "home" },
+        ];
       chat.addMessage(quickReplies("También puedes navegar por las opciones anteriores.", replies));
       return;
     }
@@ -266,7 +370,7 @@ function renderJourney(chat: KromaChat, state: JourneyState) {
         chat.addMessage({ author: "system", type: "status", status: "error", text: "No encontramos ese producto en el catálogo de ejemplo." });
         return;
       }
-      chat.addMessage({
+      const messageId = chat.addMessage({
         author: "assistant",
         type: "product-detail",
         product,
@@ -283,7 +387,10 @@ function renderJourney(chat: KromaChat, state: JourneyState) {
         backActionLabel: "Ver otros productos",
         actionMessage: "Agregar producto a mi selección",
       });
-      if (state.cart.length) chat.addMessage(quickReplies("También puedes revisar lo que ya elegiste.", [{ id: "cart", label: `Revisar selección (${state.cart.length})`, value: "view-cart" }]));
+      onProductDetail?.(messageId);
+      const detailActions: ChatOption[] = [{ id: "change-category", label: "Cambiar categoría", value: "back-categories" }];
+      if (state.cart.length) detailActions.unshift({ id: "cart", label: `Revisar selección (${state.cart.length})`, value: "view-cart" });
+      chat.addMessage(quickReplies(state.cart.length ? "También puedes cambiar de categoría o revisar lo que llevas." : "Puedes cambiar de categoría o volver a la lista.", detailActions));
       return;
     }
     case "after-add":
@@ -298,16 +405,22 @@ function renderJourney(chat: KromaChat, state: JourneyState) {
         author: "assistant",
         type: "cart-summary",
         text: "Este es el resumen de los productos seleccionados.",
-        items: toCartItems(state.cart),
+        items: toCartItems(state.cart).map((item) => ({
+          ...item,
+          actions: [
+            { id: "edit-quantity", label: "Editar cantidad", value: item.id, messageText: "Editar cantidades" },
+            { id: "remove-item", label: "Quitar", value: item.id, messageText: `Quitar ${item.product.name}` },
+          ],
+        })),
         subtotal: state.cart.length ? calculateSubtotal(state.cart) : undefined,
         subtotalTitle: "Subtotal de ejemplo",
         continueLabel: state.cart.length ? "Continuar con mis datos" : undefined,
         removeItemLabel: "Quitar",
         emptyLabel: "Tu selección está vacía. Puedes seguir explorando productos.",
       });
-      chat.addMessage(quickReplies("Puedes agregar más productos antes de continuar.", [
-        { id: "browse", label: "Agregar más productos", value: "continue-shopping" },
-        { id: "home", label: "Volver al inicio", value: "home" },
+      chat.addMessage(quickReplies("Puedes seguir explorando o solicitar orientación.", [
+        { id: "browse", label: "Seguir explorando", value: "continue-shopping" },
+        { id: "advisor", label: "Solicitar atención", value: "start-advisor" },
       ]));
       return;
     case "customer-information":
@@ -355,23 +468,30 @@ function renderJourney(chat: KromaChat, state: JourneyState) {
 function initializeCommerceJourneyDemo(chat: KromaChat) {
   const listeners = new AbortController();
   let state = freshJourney();
-  renderJourney(chat, state);
   let pendingReply = 0;
+  let productDetailMessageId: string | null = null;
+  let cartEditRevision = 0;
+  const render = () => renderJourney(chat, state, (messageId) => { productDetailMessageId = messageId; });
+  render();
 
   const transition = (event: JourneyEvent, delayed = true, renderResult = true) => {
     const next = reduceJourney(state, event);
     if (next === state) return;
+    const keepProductDetailMessage = state.step === "product-detail" && next.step === "product-detail";
     state = next;
+    if (!keepProductDetailMessage) productDetailMessageId = null;
+    chat.interactionMode = "guided";
     const revision = ++pendingReply;
+    if (renderResult) chat.disableHistoryControls();
     if (!delayed) {
-      if (renderResult) renderJourney(chat, state);
+      if (renderResult) render();
       return;
     }
     chat.setTyping(true, "El asistente está escribiendo");
     window.setTimeout(() => {
       if (revision !== pendingReply) return;
       chat.setTyping(false);
-      renderJourney(chat, state);
+      render();
     }, 420);
   };
 
@@ -380,7 +500,9 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
     switch (detail.control) {
       case "journey-menu":
         if (detail.value === "browse-products") transition({ type: "explore-products" });
-        else transition({ type: "unavailable", service: detail.value === "search-product" ? "La búsqueda de productos" : detail.value === "order-status" ? "La consulta de pedidos" : "La atención con asesor" });
+        else if (detail.value === "search-product") transition({ type: "search-products" });
+        else if (detail.value === "order-status") transition({ type: "show-order-help" });
+        else if (detail.value === "advisor") transition({ type: "start-advisor" });
         break;
       case "category-picker":
         if (detail.value === "all" || detail.value === "clothing" || detail.value === "accessories") transition({ type: "choose-category", categoryId: detail.value });
@@ -391,14 +513,16 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
         if (detail.data?.productId) transition({ type: "choose-product", productId: detail.data.productId });
         break;
       case "product-detail":
+        if (detail.messageId !== productDetailMessageId) break;
         if (detail.actionId === "back-to-products") transition({ type: "back-to-products" });
         else if (detail.actionId === "add-to-cart") transition({ type: "add-product", productId: detail.data?.productId, variantId: detail.data?.variantId, quantity: detail.data?.quantity });
         break;
       case "product-variant-selector":
-        transition({ type: "choose-variant", productId: detail.data?.productId, variantId: detail.data?.variantId }, false, false);
+        if (detail.messageId === productDetailMessageId) transition({ type: "choose-variant", productId: detail.data?.productId, variantId: detail.data?.variantId }, false, false);
         break;
       case "cart-summary":
         if (detail.actionId === "remove-item") transition({ type: "remove-item", lineId: detail.data?.lineId || detail.value });
+        else if (detail.actionId === "edit-quantity") transition({ type: "edit-cart-quantities", revision: ++cartEditRevision });
         else if (detail.actionId === "continue") transition({ type: "checkout" });
         break;
       case "order-review":
@@ -415,7 +539,14 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
 
   chat.addEventListener("kroma-chat-quantity-change", (event) => {
     const detail = (event as CustomEvent<ChatQuantityChangeDetail>).detail;
-    transition({ type: "change-quantity", productId: detail.productId, quantity: detail.quantity }, false, false);
+    if (state.step === "product-detail" && detail.messageId === productDetailMessageId) {
+      transition({ type: "change-quantity", productId: detail.productId, quantity: detail.quantity }, false, false);
+      return;
+    }
+    if (state.step === "cart-edit") {
+      const match = /^cart-edit:(\d+):(.+)$/.exec(detail.controlId);
+      if (match) transition({ type: "change-cart-quantity", revision: Number(match[1]), lineId: match[2], quantity: detail.quantity }, false, false);
+    }
   }, { signal: listeners.signal });
 
   chat.addEventListener("kroma-chat-form-submit", (event) => {
@@ -428,6 +559,16 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
 
   chat.addEventListener("kroma-chat-option-select", (event) => {
     const detail = (event as CustomEvent<ChatOptionSelectEventDetail>).detail;
+    const saveRevision = /^save-cart:(\d+)$/.exec(detail.value);
+    if (saveRevision) {
+      transition({ type: "save-cart-quantities", revision: Number(saveRevision[1]) });
+      return;
+    }
+    const cancelRevision = /^cancel-cart:(\d+)$/.exec(detail.value);
+    if (cancelRevision) {
+      transition({ type: "cancel-cart-quantities", revision: Number(cancelRevision[1]) });
+      return;
+    }
     switch (detail.value) {
       case "continue-shopping":
         transition({ type: "continue-shopping" });
@@ -435,8 +576,20 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
       case "view-cart":
         transition({ type: "view-cart" });
         break;
-      case "browse-more":
-        transition({ type: "continue-shopping" });
+      case "browse-all":
+        transition({ type: "search-results", query: "", productIds: demoProducts.map((product) => product.id) });
+        break;
+      case "write-product-name":
+      case "search-again":
+        transition({ type: "search-query" });
+        chat.interactionMode = "free-text";
+        break;
+      case "start-advisor":
+        transition({ type: "start-advisor" });
+        break;
+      case "advisor-note":
+        transition({ type: "advisor-note" });
+        chat.interactionMode = "free-text";
         break;
       case "back-to-cart":
         transition({ type: "back-to-cart" });
@@ -445,27 +598,46 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
         transition({ type: "back-to-categories" });
         break;
       case "back-home":
+      case "home":
         transition({ type: "home" });
         break;
       case "explore-products":
         transition({ type: "explore-products" });
         break;
       default:
+        if (state.step === "advisor-reason" && ["product", "selection", "order"].includes(detail.value)) {
+          transition({ type: "advisor-reason", reason: detail.value });
+        } else if (state.step === "advisor-topic") {
+          transition({ type: "advisor-topic", reason: state.reason, topic: detail.value });
+        }
         break;
     }
   }, { signal: listeners.signal });
 
-  chat.addEventListener("kroma-chat-send", () => {
+  chat.addEventListener("kroma-chat-send", (event) => {
+    const detail = (event as CustomEvent<ChatSendDetail>).detail;
+    if (state.step === "search-query") {
+      const query = detail.message.trim();
+      const normalizedQuery = normalizeSearchText(query);
+      const productIds = demoProducts.filter((product) => [product.name, product.summary, product.description, ...(product.features || [])]
+        .some((text) => normalizeSearchText(text || "").includes(normalizedQuery)))
+        .map((product) => product.id);
+      transition({ type: "search-results", query, productIds });
+      return;
+    }
+    if (state.step === "advisor-note") {
+      transition({ type: "advisor-note-received" });
+      return;
+    }
     const revision = ++pendingReply;
     chat.setTyping(true, "El asistente está escribiendo");
     window.setTimeout(() => {
       if (revision !== pendingReply) return;
       chat.setTyping(false);
-      chat.addMessage({ author: "assistant", text: "Gracias por tu mensaje. Puedo ayudarte a explorar productos o revisar tu selección." });
-      chat.addMessage(quickReplies("¿Qué te gustaría hacer?", [
-        { id: "browse", label: "Explorar productos", value: "explore-products" },
-        { id: "cart", label: "Ver mi selección", value: "view-cart" },
-      ]));
+      chat.addMessage({ author: "system", type: "status", status: "neutral", text: "La escritura libre no está conectada a un asistente en esta demostración. Usa las opciones guiadas para explorar el catálogo de ejemplo." });
+      const replies: ChatOption[] = [{ id: "browse", label: "Explorar categorías", value: "explore-products" }];
+      if (state.cart.length) replies.push({ id: "cart", label: `Ver mi selección (${state.cart.length})`, value: "view-cart" });
+      chat.addMessage(quickReplies("¿Qué prefieres hacer?", replies));
     }, 420);
   }, { signal: listeners.signal });
 
@@ -478,69 +650,113 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
 function reduceJourney(state: JourneyState, event: JourneyEvent): JourneyState {
   switch (event.type) {
     case "explore-products":
-      return { step: "categories", cart: state.cart };
-    case "unavailable":
-      return { step: "unavailable", cart: state.cart, service: event.service };
+      return ["welcome", "search-options", "search-query", "search-results", "order-help", "after-add", "cart", "customer-information", "advisor-reason", "advisor-topic", "advisor-follow-up", "advisor-note-received"].includes(state.step)
+        ? { step: "categories", cart: state.cart }
+        : state;
+    case "search-products":
+      return ["welcome", "search-options", "search-query", "search-results"].includes(state.step) ? { step: "search-options", cart: state.cart } : state;
+    case "search-query":
+      return ["search-options", "search-results"].includes(state.step) ? { step: "search-query", cart: state.cart } : state;
+    case "search-results":
+      return ["search-options", "search-query"].includes(state.step)
+        ? { step: "search-results", cart: state.cart, query: event.query, productIds: event.productIds }
+        : state;
+    case "show-order-help":
+      return state.step === "welcome" ? { step: "order-help", cart: state.cart } : state;
+    case "start-advisor":
+      return ["welcome", "cart", "after-add"].includes(state.step) ? { step: "advisor-reason", cart: state.cart } : state;
+    case "advisor-reason":
+      return state.step === "advisor-reason" ? { step: "advisor-topic", cart: state.cart, reason: event.reason } : state;
+    case "advisor-topic":
+      return state.step === "advisor-topic" && state.reason === event.reason
+        ? { step: "advisor-follow-up", cart: state.cart, reason: event.reason, topic: event.topic }
+        : state;
+    case "advisor-note":
+      return state.step === "advisor-follow-up" ? { step: "advisor-note", cart: state.cart } : state;
+    case "advisor-note-received":
+      return state.step === "advisor-note" ? { step: "advisor-note-received", cart: state.cart } : state;
     case "home":
       return { step: "welcome", cart: state.cart };
     case "choose-category":
-      return { step: "products", cart: state.cart, categoryId: event.categoryId };
+      return state.step === "categories" && demoCategories.some((category) => category.id === event.categoryId)
+        ? { step: "products", cart: state.cart, categoryId: event.categoryId }
+        : state;
     case "choose-product": {
-      if (state.step !== "products") return state;
+      if (state.step !== "products" && state.step !== "search-results") return state;
+      const allowedProducts = state.step === "products" ? productsByCategory[state.categoryId] : state.productIds;
+      if (!allowedProducts.includes(event.productId)) return state;
       const product = getDemoProduct(event.productId);
       if (!product) return state;
-      return { step: "product-detail", cart: state.cart, categoryId: state.categoryId, productId: product.id, variantId: product.variants?.[0]?.id, quantity: 1 };
+      const categoryId = state.step === "products"
+        ? state.categoryId
+        : productsByCategory.clothing.includes(product.id) ? "clothing" : productsByCategory.accessories.includes(product.id) ? "accessories" : "all";
+      return { step: "product-detail", cart: state.cart, categoryId, productId: product.id, quantity: 1 };
     }
-    case "choose-variant":
+    case "choose-variant": {
       if (state.step !== "product-detail" || (event.productId && event.productId !== state.productId)) return state;
-      return { ...state, variantId: event.variantId };
+      const variants = getDemoProduct(state.productId)?.variants || [];
+      return event.variantId && variants.some((variant) => variant.id === event.variantId) ? { ...state, variantId: event.variantId } : state;
+    }
     case "change-quantity":
       if (state.step !== "product-detail" || (event.productId && event.productId !== state.productId)) return state;
       return { ...state, quantity: Math.max(1, Math.min(10, Math.floor(event.quantity))) };
     case "add-product": {
       if (state.step !== "product-detail" || (event.productId && event.productId !== state.productId)) return state;
       const productId = state.productId;
+      const product = getDemoProduct(productId);
       const variantId = event.variantId || state.variantId;
+      if (!product || (product.variants?.length && !product.variants.some((variant) => variant.id === variantId))) return state;
       const lineId = `${productId}:${variantId || "default"}`;
       const quantity = Math.max(1, Math.min(10, Math.floor(event.quantity || state.quantity)));
       const existing = state.cart.find((line) => line.id === lineId);
       const cart = existing
-        ? state.cart.map((line) => line.id === lineId ? { ...line, quantity: line.quantity + quantity } : line)
+        ? state.cart.map((line) => line.id === lineId ? { ...line, quantity: Math.min(99, line.quantity + quantity) } : line)
         : [...state.cart, { id: lineId, productId, variantId, quantity }];
       return { step: "after-add", cart, categoryId: state.categoryId, productId };
     }
     case "back-to-products":
-      if (state.step !== "product-detail") return state;
-      return { step: "products", cart: state.cart, categoryId: state.categoryId };
+      return state.step === "product-detail" ? { step: "products", cart: state.cart, categoryId: state.categoryId } : state;
     case "back-to-categories":
-      if (state.step !== "products") return state;
-      return { step: "categories", cart: state.cart };
+      return state.step === "products" || state.step === "product-detail" ? { step: "categories", cart: state.cart } : state;
     case "continue-shopping":
       if (state.step === "after-add") return { step: "products", cart: state.cart, categoryId: state.categoryId };
       if (state.step === "cart" || state.step === "customer-information") return { step: "categories", cart: state.cart };
       return state;
     case "view-cart":
-      return state.cart.length ? { step: "cart", cart: state.cart } : state;
+      return state.cart.length && ["welcome", "search-results", "products", "product-detail", "after-add", "advisor-topic", "advisor-follow-up", "advisor-note-received"].includes(state.step)
+        ? { step: "cart", cart: state.cart }
+        : state;
+    case "edit-cart-quantities":
+      return state.step === "cart" && state.cart.length
+        ? { step: "cart-edit", cart: state.cart, draftCart: state.cart.map((line) => ({ ...line })), revision: event.revision }
+        : state;
+    case "change-cart-quantity":
+      if (state.step !== "cart-edit" || state.revision !== event.revision || !state.draftCart.some((line) => line.id === event.lineId)) return state;
+      return { ...state, draftCart: state.draftCart.map((line) => line.id === event.lineId ? { ...line, quantity: Math.max(1, Math.min(99, Math.floor(event.quantity))) } : line) };
+    case "save-cart-quantities":
+      return state.step === "cart-edit" && state.revision === event.revision ? { step: "cart", cart: state.draftCart } : state;
+    case "cancel-cart-quantities":
+      return state.step === "cart-edit" && state.revision === event.revision ? { step: "cart", cart: state.cart } : state;
     case "remove-item":
-      if (state.step !== "cart" || !event.lineId) return state;
+      if (state.step !== "cart" || !event.lineId || !state.cart.some((line) => line.id === event.lineId)) return state;
       return { step: "cart", cart: state.cart.filter((line) => line.id !== event.lineId) };
     case "checkout":
       return state.step === "cart" && state.cart.length ? { step: "customer-information", cart: state.cart } : state;
     case "back-to-cart":
-      if (state.step === "customer-information" || state.step === "order-review") return { step: "cart", cart: state.cart };
-      return state;
+      return state.step === "customer-information" || state.step === "order-review" ? { step: "cart", cart: state.cart } : state;
     case "submit-customer":
-      if (state.step !== "customer-information") return state;
-      return { step: "order-review", cart: state.cart, customer: event.customer };
+      return state.step === "customer-information" ? { step: "order-review", cart: state.cart, customer: event.customer } : state;
     case "edit-customer":
-      if (state.step !== "order-review") return state;
-      return { step: "customer-information", cart: state.cart, customer: state.customer };
+      return state.step === "order-review" ? { step: "customer-information", cart: state.cart, customer: state.customer } : state;
     case "confirm-order":
-      if (state.step !== "order-review") return state;
-      return { step: "completed", cart: state.cart, customer: state.customer, reference: "SIM-001" };
+      return state.step === "order-review" ? { step: "completed", cart: state.cart, customer: state.customer, reference: "SIM-001" } : state;
     case "restart":
       return { step: "welcome", cart: [] };
     default:
       return state;
   }
+}
+
+function normalizeSearchText(value: string) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es").trim();
 }

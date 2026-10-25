@@ -140,6 +140,20 @@ export class ChatMessageList {
     });
   }
 
+  disableHistoryControls() {
+    this.element.querySelectorAll<HTMLLIElement>("li[data-message-id]").forEach((message) => {
+      const controls = message.querySelectorAll<HTMLButtonElement | HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("button, input, select, textarea");
+      if (!controls.length) return;
+      message.dataset.controlsDisabled = "true";
+      message.setAttribute("aria-disabled", "true");
+      controls.forEach((control) => { control.disabled = true; });
+      message.querySelectorAll<HTMLElement>(".kroma-chat__options").forEach((group) => {
+        group.dataset.hostDisabled = "true";
+        group.classList.add("kroma-chat__options--inactive");
+      });
+    });
+  }
+
   restoreOptionSelection(messageId: string, optionId: string) {
     const group = this.findMessage(messageId)?.querySelector<HTMLElement>(".kroma-chat__options");
     if (!group) return;
@@ -227,7 +241,7 @@ export class ChatMessageList {
   }
 
   private consumeAction(detail: ChatActionDetail) {
-    const policy = detail.control === "cart-summary" && detail.actionId === "remove-item"
+    const policy = detail.control === "cart-summary" && (detail.actionId === "remove-item" || detail.actionId === "edit-quantity")
       ? "line-once"
       : actionReusePolicies[detail.control];
     if (policy === "repeatable") return true;

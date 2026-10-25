@@ -105,6 +105,14 @@
     &:has(.kroma-chat__input[aria-invalid="true"]) { border-color: var(--kroma-chat-state-error); }
   }
 
+  &__composer-area[data-interaction-mode="guided"] &__composer {
+    min-height: 2.5rem;
+    padding: 0;
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+  }
+
   &__input {
     width: 100%;
     min-width: 0;
@@ -147,7 +155,32 @@
   &__virtual-display-placeholder { color: var(--kroma-chat-text-secondary); }
   &__virtual-display-caret { display: inline-block; width: 0; height: 1.2em; vertical-align: text-bottom; border-inline-start: 1.5px solid currentColor; animation: kroma-chat-virtual-caret 1s steps(2, start) infinite; }
 
-  &__composer-actions { display: flex; flex: 0 0 auto; align-items: center; gap: var(--kroma-chat-spacing-tight); }
+  &__composer-actions { display: flex; min-width: 0; flex: 0 0 auto; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--kroma-chat-spacing-tight); }
+  &__composer-guided-entry,
+  &__composer-guided-return,
+  &__composer-input-mode,
+  &__keyboard-toggle {
+    display: inline-flex;
+    min-height: 2.25rem;
+    align-items: center;
+    justify-content: center;
+    padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
+    border: 0;
+    border-radius: var(--kroma-chat-radius-pill);
+    background: transparent;
+    color: var(--kroma-chat-text-accent);
+    font: inherit;
+    font-size: var(--kroma-chat-typography-body-small);
+    line-height: var(--kroma-chat-leading-small);
+    cursor: pointer;
+
+    &:hover:not(:disabled) { background: var(--kroma-chat-surface-hover); }
+    &:disabled { color: var(--kroma-chat-text-disabled); cursor: not-allowed; }
+  }
+  &__composer-guided-entry { min-height: 2.5rem; justify-content: flex-start; padding-inline: var(--kroma-chat-spacing-tight); font-weight: var(--kroma-chat-weight-medium); }
+  &__composer-guided-return { color: var(--kroma-chat-text-secondary); }
+  &__composer-input-mode { color: var(--kroma-chat-text-secondary); }
+  &__keyboard-toggle { color: var(--kroma-chat-text-accent); }
 
   &__composer-area,
   &__composer,

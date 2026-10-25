@@ -19,12 +19,14 @@ chat?.addMessage({ author: "assistant", type: "text", text: "Hello." });
 | `setHeaderActions(actions)` | Configure header buttons; selections emit `kroma-chat-action` with `control: "header"`. |
 | `setComposerDisabled(disabled)` | Disable or enable the text composer. |
 | `setOptionsDisabled(messageId, disabled)` | Disable one message's QuickReplies or ChoiceList. |
+| `disableHistoryControls()` | Mark current transcript controls completed when the host advances to a new interaction stage. |
 | `setError(message)` | Show or clear a composer error. |
 | `mode` | Typed `"default" | "kitchen"` property reflected by the `mode` attribute. Changing it rebuilds the transcript. |
+| `interactionMode` | Typed `"guided" | "free-text"` property for the composer. Defaults to `guided` and changes without rebuilding the transcript. |
 
 Component listeners are disposed when the element disconnects and reinitialized if it is connected again.
 
-The `mode`, `chat-title`, `subtitle`, `avatar`, `status`, `messages-label`, `empty-state`, `input-label`, `placeholder`, `send-label`, and `typing-label` attributes configure the element. The composer always uses `simple-keyboard` 3.8.199 through KromaChat's private per-composer adapter; it does not expose a switch to the mobile system keyboard. The virtual keyboard starts closed, opens only when the user clicks the message entry surface, and closes when they click outside the entry surface or virtual keyboard. The library's internal value and caret are authoritative; the displayed div is only a projection and hardware-key bridge. The virtual surface intentionally does not emulate IME composition or system dictation. The dependency's default stylesheet is imported through the Vite entry; KromaChat constrains the engine to its composer flow without replacing its native theme. The `options` message remains an alias for the original QuickReplies contract.
+The `mode`, `chat-title`, `subtitle`, `avatar`, `status`, `messages-label`, `empty-state`, `input-label`, `placeholder`, `send-label`, and `typing-label` attributes configure the element. The conversation starts in `guided`; the compact composer action enters `free-text` without changing or rebuilding the message history. Free-text mode uses the existing `simple-keyboard` 3.8.199 adapter by default. The user can switch to the native textarea for IME, dictation and assistive-technology input, then return to the virtual keyboard or guided actions without losing the draft. Hiding the virtual keyboard does not clear the text. The virtual keyboard opens on explicit entry into free-text mode or when its text surface is selected; it does not open while navigating message controls. Hosts can call `disableHistoryControls()` after a stage transition so stale actions stay visible as completed history but cannot be repeated. The dependency's default stylesheet is imported through the Vite entry; KromaChat constrains the engine to its composer flow without replacing its native theme. The `options` message remains an alias for the original QuickReplies contract.
 
 ## Kitchen Mode
 
@@ -42,7 +44,7 @@ const mode: ChatMode = "kitchen";
 if (chat) chat.mode = mode;
 ```
 
-Changing mode rebuilds the transcript. Kitchen Mode loads its catalog asynchronously from the optional `kitchen/` module, leaves the composer visible but disabled, presents the virtual keyboard's alphabetic, shifted, numeric, and composer examples, and suppresses host action, send, quantity and form-submit events. QuickReplies and ChoiceList may still show a local selected state without adding user messages. It does not run the host's commerce journey or call services.
+Changing the development `mode` rebuilds the transcript. Kitchen Mode loads its catalog asynchronously from the optional `kitchen/` module, leaves the composer visible but disabled, presents the virtual keyboard's alphabetic, shifted, numeric, and composer examples, and suppresses host action, send, quantity and form-submit events. QuickReplies and ChoiceList may still show a local selected state without adding user messages. It does not run the host's commerce journey or call services. Kitchen Mode and the guided/free-text composer mode are independent; the Cheatsheet's extended capture page remains the visual-inspection mode for the complete conversation history.
 
 The Cheatsheet's `/chat/` page provides the mode selector, clear/dark theme controls and responsive width/density controls. Its normal mode keeps the existing mock commerce journey; Kitchen Mode presents every example in order in that same `<kroma-chat>` instance.
 
@@ -79,7 +81,7 @@ The former `KromaChatElement` class export remains an alias of `KromaChat`; only
 
 - `kroma-chat.ts` composes the custom element; `index.ts` is the public TypeScript entry point.
 - `core/` contains backend-agnostic models, event contracts and renderer dispatch.
-- `layout/` owns the header, message history and composer; `input/` contains the per-composer simple-keyboard adapter, Spanish layout configuration, keyboard-mode controller and visual text projection. Virtual text and caret live in the single simple-keyboard instance; the display and native textarea are mode-specific views/inputs. Engine instances use unique input and root names, disable cross-instance input synchronization, and are destroyed with their composer.
+- `layout/` owns the header, message history and composer; `input/` contains the per-composer simple-keyboard adapter, Spanish layout configuration, keyboard-mode controller and virtual text projection. The composer coordinates guided/free-text and virtual/native input modes, preserving one draft across transitions. Virtual text and caret live in the single simple-keyboard instance; the accessible native textarea is an alternative input, not a second keyboard engine. Engine instances use unique input and root names, disable cross-instance input synchronization, and are destroyed with their composer.
 - `messages/`, `navigation/`, `catalog/`, `commerce/`, `forms/`, and `feedback/` contain their named presentation controls.
 - `shared/` contains reusable action, icon, image and formatting primitives.
 - `kroma-chat.scss` is the stylesheet entry point; `styles/` separates token aliases and the layout, messages, navigation, catalog, commerce, forms, feedback and state families.
