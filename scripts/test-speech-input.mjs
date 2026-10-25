@@ -3,304 +3,113 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import ts from "typescript";
 
-const compile = async (path) => {
-  const source = await readFile(resolve(path), "utf8");
-  return ts.transpileModule(source, {
-    compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
-  }).outputText;
-};
-const asModuleUrl = (source) => `data:text/javascript;base64,${Buffer.from(source).toString("base64")}`;
-const audioModuleUrl = asModuleUrl(await compile("src/components/chat/input/audio-capture.ts"));
-const adapterSource = (await compile("src/components/chat/input/whisper-transcription-adapter.ts"))
-  .replaceAll('from "browser-whisper"', 'from "browser-whisper"');
-const adapterModuleUrl = asModuleUrl(adapterSource);
-const insertionModuleUrl = asModuleUrl(await compile("src/components/chat/input/speech-transcript-insertion.ts"));
-const controllerSource = (await compile("src/components/chat/input/speech-input-controller.ts"))
-  .replace('from "./audio-capture"', `from "${audioModuleUrl}"`)
-  .replace('from "./whisper-transcription-adapter"', `from "${adapterModuleUrl}"`);
-const { SpeechInputController, detectSpeechInputSupport } = await import(asModuleUrl(controllerSource));
-const { AudioCapture } = await import(audioModuleUrl);
-const { WhisperTranscriptionAdapter } = await import(adapterModuleUrl);
-const { insertSpeechTranscript } = await import(insertionModuleUrl);
+const source = await readFile(resolve("src/components/chat/input/speech-input-controller.ts"), "utf8");
+const compiled = ts.transpileModule(source, {
+  compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+}).outputText;
+const { SpeechInputController, detectSpeechRecognitionFactory } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString("base64")}`);
 
-class FakeAdapter {
-  ready = false;
-  preparationState = "idle";
-  prepareCalls = 0;
-  preparationListeners = new Set();
-  transcribeCalls = 0;
-  transcript = "Hola, este es un dictado local.";
-  prepareError = null;
-  transcribeError = null;
-  subscribePreparation(listener) {
-    this.preparationListeners.add(listener);
-    listener(this.preparationState);
-    return () => this.preparationListeners.delete(listener);
-  }
-  setPreparationState(state) {
-    this.preparationState = state;
-    this.preparationListeners.forEach((listener) => listener(state));
-  }
-  async prepare(onProgress, signal) {
-    this.prepareCalls += 1;
-    if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
-    this.setPreparationState("preparing");
-    onProgress?.({ stage: "loading", progress: 0.45 });
-    if (this.prepareError) throw this.prepareError;
-    this.ready = true;
-    this.setPreparationState("ready");
-  }
-  async transcribe(_file, onProgress, signal) {
-    this.transcribeCalls += 1;
-    if (signal.aborted) throw new DOMException("Aborted", "AbortError");
-    onProgress?.({ stage: "transcribing", progress: 1 });
-    if (this.transcribeError) throw this.transcribeError;
-    return this.transcript;
-  }
-}
-
-class FakeCapture {
+class FakeRecognition {
+  lang = "";
+  continuous = true;
+  interimResults = false;
+  maxAlternatives = 3;
+  onstart = null;
+  onend = null;
+  onerror = null;
+  onresult = null;
   started = false;
   stopped = false;
-  cancelled = false;
-  destroyed = false;
-  constructor(onEvent, { stopResult = new File(["audio"], "capture.webm", { type: "audio/webm" }), stopError = null } = {}) {
-    this.onEvent = onEvent;
-    this.stopResult = stopResult;
-    this.stopError = stopError;
+  aborted = false;
+
+  start() { this.started = true; }
+  stop() { this.stopped = true; }
+  abort() { this.aborted = true; }
+  emitStart() { this.onstart?.(); }
+  emitEnd() { this.onend?.(); }
+  emitError(error) { this.onerror?.({ error }); }
+  emitResults(results) {
+    const list = results.map(({ transcript, isFinal }) => ({ 0: { transcript }, length: 1, isFinal }));
+    this.onresult?.({ results: Object.assign(list, { length: list.length }) });
   }
-  async start() { this.started = true; }
-  async stop() {
-    this.stopped = true;
-    if (this.stopError) throw this.stopError;
-    return this.stopResult;
-  }
-  cancel() { this.cancelled = true; }
-  destroy() { this.destroyed = true; }
-  emit(event) { this.onEvent(event); }
 }
 
-const adapter = new FakeAdapter();
-const captures = [];
-const statuses = [];
-const results = [];
-const controller = new SpeechInputController({
-  adapter,
-  supported: () => true,
-  createCapture: (onEvent) => {
-    const capture = new FakeCapture(onEvent);
-    captures.push(capture);
-    return capture;
-  },
-});
-controller.subscribeStatus((status) => statuses.push(status));
-controller.subscribeResults((result) => results.push(result));
+let recognition;
+const controller = new SpeechInputController(() => (recognition = new FakeRecognition()));
+const states = [];
+const transcripts = [];
+controller.subscribeStatus(({ state }) => states.push(state));
+controller.subscribeResults((result) => transcripts.push(result));
 
-assert.equal(await controller.start(), false);
+assert.equal(controller.supported, true);
 assert.equal(controller.status.state, "idle");
-assert.equal(controller.status.message, "", "background preparation stays invisible to the composer");
-assert.equal(adapter.prepareCalls, 0, "the composer never initiates engine preparation");
-assert.equal(captures.length, 0, "the microphone remains off until the shared engine is ready");
+assert.equal(controller.start(), true);
+assert.equal(controller.status.state, "starting");
+assert.equal(recognition.lang, "es-PE");
+assert.equal(recognition.continuous, false);
+assert.equal(recognition.interimResults, true);
+assert.equal(recognition.maxAlternatives, 1);
+recognition.emitStart();
+assert.equal(controller.status.state, "listening");
 
-await adapter.prepare();
-assert.equal(adapter.prepareCalls, 1);
-assert.equal(controller.status.state, "ready");
-assert.equal(controller.status.modelReady, true);
-assert.equal(controller.status.message, "", "engine preparation progress is never exposed in the composer");
+recognition.emitResults([{ transcript: "Hola ", isFinal: true }, { transcript: "mun", isFinal: false }]);
+recognition.emitResults([{ transcript: "Hola ", isFinal: true }, { transcript: "mundo", isFinal: false }]);
+assert.equal(transcripts.at(-1).transcript, "Hola mundo", "updated interim results replace earlier provisional text without duplication");
+assert.equal(transcripts.at(-1).finalTranscript, "Hola ");
+assert.equal(transcripts.at(-1).interimTranscript, "mundo");
+recognition.emitResults([{ transcript: "Hola mundo", isFinal: true }]);
+assert.equal(transcripts.at(-1).transcript, "Hola mundo", "final results replace the provisional transcript");
 
-assert.equal(await controller.start(), true);
-assert.equal(controller.status.state, "recording");
-assert.equal(captures.at(-1).started, true);
-captures.at(-1).emit("muted");
-assert.match(controller.status.message, /silenciado/i);
-captures.at(-1).emit("resumed");
-assert.match(controller.status.message, /escuchando/i);
-assert.equal(await controller.stop(), true);
-assert.equal(captures.at(-1).stopped, true);
-assert.equal(controller.status.state, "completed");
-assert.equal(results.length, 1);
-assert.equal(results[0].transcript, adapter.transcript);
-assert.equal(results[0].finalTranscript, adapter.transcript);
-assert.equal(results[0].interimTranscript, "", "the stable first implementation does not fabricate interim transcription");
-assert.equal(adapter.transcribeCalls, 1);
+assert.equal(controller.stop(), true);
+assert.equal(controller.status.state, "stopping");
+assert.equal(recognition.stopped, true);
+recognition.emitEnd();
+assert.equal(controller.status.state, "idle");
 
-const emptyAudioError = new Error("No audio captured");
-emptyAudioError.name = "EmptyAudioError";
-const failedStop = new FakeCapture(() => {}, { stopError: emptyAudioError });
-const emptyController = new SpeechInputController({
-  adapter,
-  supported: () => true,
-  createCapture: () => failedStop,
-});
-assert.equal(await emptyController.start(), true);
-assert.equal(await emptyController.stop(), false);
-assert.equal(emptyController.status.state, "error");
-assert.equal(emptyController.status.message, "No se detectó voz");
-emptyController.destroy();
-
-const deniedCapture = new FakeCapture(() => {});
-deniedCapture.start = async () => { throw Object.assign(new Error("denied"), { name: "NotAllowedError" }); };
-const deniedController = new SpeechInputController({
-  adapter,
-  supported: () => true,
-  createCapture: () => deniedCapture,
-});
-assert.equal(await deniedController.start(), false);
-await new Promise((resolve) => setImmediate(resolve));
-assert.equal(deniedController.status.state, "error");
-assert.match(deniedController.status.message, /permiso/i);
-assert.equal(deniedCapture.destroyed, true);
-deniedController.destroy();
-
-adapter.transcribeError = new Error("model failed");
-assert.equal(await controller.start(), true);
-assert.equal(await controller.stop(), false);
+controller.start();
+recognition.emitStart();
+recognition.emitError("not-allowed");
 assert.equal(controller.status.state, "error");
-assert.match(controller.status.message, /no fue posible procesar el audio/i);
-adapter.transcribeError = null;
+assert.match(controller.status.message, /permiso/i, "permission denial has an accessible explanation");
+recognition.emitEnd();
+assert.equal(controller.status.state, "error", "end after an error does not erase the error status");
 
-assert.equal(await controller.start(), true);
-const activeCapture = captures.at(-1);
+controller.start();
+recognition.emitError("audio-capture");
+assert.match(controller.status.message, /micrófono/i, "missing audio capture device is explained");
+recognition.emitEnd();
+controller.start();
+recognition.emitError("network");
+assert.match(controller.status.message, /conexión/i, "network errors are explained");
+recognition.emitEnd();
+controller.start();
+recognition.emitError("no-speech");
+assert.match(controller.status.message, /voz/i, "silence is explained without interrupting the chat");
+recognition.emitEnd();
+
+controller.start();
+const cancelled = recognition;
 controller.cancel();
-assert.equal(activeCapture.cancelled, true);
-assert.equal(activeCapture.destroyed, true);
-assert.equal(controller.status.state, "ready");
+assert.equal(cancelled.aborted, true);
+assert.equal(cancelled.onresult, null, "cancel detaches recognition event listeners");
+assert.equal(controller.status.state, "idle");
 
-const unsupported = new SpeechInputController({ adapter, supported: () => false });
+controller.start();
+recognition.emitEnd();
+assert.equal(controller.status.state, "error", "unexpected end while starting does not leave a stale listening state");
+controller.start();
+const destroyed = recognition;
+controller.destroy();
+assert.equal(destroyed.aborted, true, "destroy aborts active recognition");
+assert.equal(destroyed.onresult, null, "destroy releases recognition callbacks");
+
+const unsupported = new SpeechInputController(null);
 assert.equal(unsupported.supported, false);
 assert.equal(unsupported.status.state, "unsupported");
-assert.equal(unsupported.status.message, "", "unsupported environments do not put disclaimers in the composer");
-assert.equal(await unsupported.start(), false);
+assert.equal(unsupported.status.message, "", "unsupported browsers do not show a disclaimer in the composer");
+assert.equal(unsupported.start(), false);
 unsupported.destroy();
+assert.equal(detectSpeechRecognitionFactory({ isSecureContext: false, SpeechRecognition: FakeRecognition }), null, "recognition is not exposed outside secure browser contexts");
+assert.equal(typeof detectSpeechRecognitionFactory({ isSecureContext: true, webkitSpeechRecognition: FakeRecognition }), "function", "webkit-prefixed browser capability is detected without user-agent sniffing");
 
-const previousMediaRecorder = globalThis.MediaRecorder;
-Object.defineProperty(globalThis, "MediaRecorder", { configurable: true, value: class {} });
-assert.equal(detectSpeechInputSupport({
-  isSecureContext: true,
-  crossOriginIsolated: false,
-  navigator: { mediaDevices: { getUserMedia: () => Promise.resolve() } },
-}), true, "a secure WebGPU-capable browser is not rejected only because cross-origin isolation is unavailable");
-if (previousMediaRecorder === undefined) delete globalThis.MediaRecorder;
-else Object.defineProperty(globalThis, "MediaRecorder", { configurable: true, value: previousMediaRecorder });
-
-// Adapter-level contract: one worker/model preparation is shared, language is Whisper's "es",
-// async segments are joined once, cancellation is forwarded, and the engine can be disposed.
-let engineCreations = 0;
-let downloads = 0;
-let receivedLanguage = "";
-let cancelledStream = false;
-let disposed = false;
-const mockEngine = {
-  async downloadModel(options) {
-    downloads += 1;
-    options.onProgress?.({ stage: "loading", progress: 0.5 });
-  },
-  transcribe(_file, options) {
-    receivedLanguage = options.language;
-    const stream = {
-      async *[Symbol.asyncIterator]() {
-        yield { text: "Hola ", start: 0, end: 0.4 };
-        yield { text: "mundo", start: 0.4, end: 0.8 };
-      },
-      cancel() { cancelledStream = true; },
-    };
-    return stream;
-  },
-  dispose() { disposed = true; },
-};
-const whisperAdapter = new WhisperTranscriptionAdapter(async () => {
-  engineCreations += 1;
-  return mockEngine;
-});
-const progressUpdates = [];
-await Promise.all([
-  whisperAdapter.prepare((progress) => progressUpdates.push(progress.progress)),
-  whisperAdapter.prepare((progress) => progressUpdates.push(progress.progress)),
-]);
-assert.equal(engineCreations, 1, "concurrent preparation reuses one engine");
-assert.equal(downloads, 1, "concurrent preparation downloads the model once");
-assert.deepEqual(progressUpdates, [0.5, 0.5], "all concurrent requesters receive shared download progress");
-assert.equal(await whisperAdapter.transcribe(new File(["audio"], "voice.webm")), "Hola mundo");
-assert.equal(receivedLanguage, "es", "Whisper receives Spanish language ID rather than regional es-PE");
-await whisperAdapter.dispose();
-assert.equal(disposed, true);
-
-assert.deepEqual(insertSpeechTranscript("Tengo una consulta", 6, 10, "Hola mundo", 2000), {
-  value: "Tengo Hola mundo consulta",
-  caretStart: 16,
-  caretEnd: 16,
-}, "recognized text replaces the active selection and preserves text on both sides");
-assert.deepEqual(insertSpeechTranscript("Hola mundo", 4, 4, "hoy", 2000), {
-  value: "Hola hoy mundo",
-  caretStart: 8,
-  caretEnd: 8,
-}, "cursor insertion preserves pre-existing text and spacing");
-assert.deepEqual(insertSpeechTranscript("abc", 1, 1, "", 2000), {
-  value: "abc", caretStart: 1, caretEnd: 1,
-}, "an empty result never changes the draft");
-assert.equal(insertSpeechTranscript("abc", 1, 1, "long", 6).value.length, 6, "transcript insertion respects the composer maximum");
-
-// MediaRecorder capture is short-lived, keeps audio constraints browser-controlled, and releases tracks.
-class FakeTrack extends EventTarget {
-  readyState = "live";
-  stopCount = 0;
-  stop() { this.stopCount += 1; this.readyState = "ended"; this.dispatchEvent(new Event("ended")); }
-}
-class FakeRecorder extends EventTarget {
-  state = "inactive";
-  mimeType = "audio/webm;codecs=opus";
-  startedWith = null;
-  start(timeslice) { this.state = "recording"; this.startedWith = timeslice; }
-  stop() {
-    this.state = "inactive";
-    const data = new Event("dataavailable");
-    Object.defineProperty(data, "data", { value: new Blob(["known test audio"], { type: this.mimeType }) });
-    this.dispatchEvent(data);
-    this.dispatchEvent(new Event("stop"));
-  }
-}
-const track = new FakeTrack();
-let requestedConstraints;
-let fakeRecorder;
-const audioCapture = new AudioCapture({
-  supported: true,
-  maxDurationMs: 30_000,
-  mediaDevices: { getUserMedia: async (constraints) => {
-    requestedConstraints = constraints;
-    return { getAudioTracks: () => [track], getTracks: () => [track] };
-  } },
-  recorderFactory: (_stream, options) => {
-    assert.match(options.mimeType, /audio\/webm/);
-    fakeRecorder = new FakeRecorder();
-    return fakeRecorder;
-  },
-  isTypeSupported: (type) => type.startsWith("audio/webm"),
-});
-await audioCapture.start();
-assert.equal(fakeRecorder.startedWith, 1000, "audio is emitted in bounded recorder chunks");
-assert.deepEqual(requestedConstraints.audio, { echoCancellation: true, noiseSuppression: true, autoGainControl: true });
-const audioFile = await audioCapture.stop();
-assert.ok(audioFile.size > 0);
-assert.equal(track.stopCount, 1, "the microphone track is released after stopping");
-audioCapture.destroy();
-
-let interruptedCount = 0;
-const interruptedTrack = new FakeTrack();
-const interruptedCapture = new AudioCapture({
-  supported: true,
-  onEvent: (event) => { if (event === "interrupted") interruptedCount += 1; },
-  mediaDevices: { getUserMedia: async () => ({ getAudioTracks: () => [interruptedTrack], getTracks: () => [interruptedTrack] }) },
-  recorderFactory: () => new FakeRecorder(),
-  isTypeSupported: () => false,
-});
-await interruptedCapture.start();
-interruptedTrack.readyState = "ended";
-interruptedTrack.dispatchEvent(new Event("ended"));
-assert.equal(interruptedCount, 1, "device removal is surfaced as an interruption");
-interruptedCapture.destroy();
-
-controller.destroy();
-assert.equal(statuses.some(({ state }) => state === "recording"), true);
-assert.equal(statuses.some(({ state }) => state === "transcribing"), true);
-assert.equal(statuses.some(({ state }) => state === "completed"), true);
-console.log(`Speech input checks passed: silent preparation state, local capture lifecycle, errors, cancellation, Whisper adapter and ${statuses.length} controller updates.`);
+console.log(`Speech input controller checks passed: ${states.length} state updates and ${transcripts.length} transcript snapshots.`);

@@ -55,6 +55,7 @@ El cheatsheet sigue siendo privado; no añadir exports npm ni infraestructura de
 
 ## Cambios y seguridad
 
+- No tomar decisiones de negocio o producto por iniciativa propia. Si una tarea deja ambiguos los objetivos, la UX, las restricciones, las prioridades o los trade-offs, preguntar y esperar la definición explícita del usuario antes de implementar. Implementar solo el comportamiento definido por el usuario; no convertir una recomendación propia en una decisión.
 - Las cabeceras `[INSTRUCCIONES PARA AGENTES/LLM - CONSERVAR]` expresan el contrato de su archivo; actualizar su texto si se modifica su responsabilidad, no dejarlas obsoletas.
 - No editar `node_modules/bootstrap` ni archivos fuera del repositorio.
 - Antes de modificar un tema, leer sus cabeceras y validar el impacto en light y dark.

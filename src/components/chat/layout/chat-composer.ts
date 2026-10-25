@@ -303,8 +303,7 @@ export class ChatComposer {
     this.display.setVisible(!externalInput);
     this.display.setEditing(!guided && !externalInput);
     this.form.hidden = externalInput;
-    this.speechButton.hidden = Boolean(this.keyboardShowcase) || externalInput
-      || !this.speechInput.status.modelReady || !this.speechInput.supported;
+    this.speechButton.hidden = Boolean(this.keyboardShowcase) || externalInput || !this.speechInput.supported;
     this.sendButton.hidden = Boolean(this.keyboardShowcase) || externalInput;
     if (this.keyboardDock) this.keyboardDock.hidden = !this.controller.state.open;
     if (!virtualInput && !this.keyboardShowcase) this.controller.setOpen(false);
@@ -312,7 +311,7 @@ export class ChatComposer {
 
   private updateSendButton() {
     this.sendButton.disabled = this.disabled || !this.currentValue().trim();
-    this.speechButton.disabled = this.disabled || !this.speechInput.supported || !this.speechInput.status.modelReady;
+    this.speechButton.disabled = this.disabled || !this.speechInput.supported || this.speechInput.status.state === "stopping";
   }
 
   private createSendButton(sendLabel: string) {
@@ -345,7 +344,7 @@ export class ChatComposer {
       : this.speechInput.status.message);
     button.setAttribute("aria-pressed", "false");
     button.title = this.speechInput.status.message || "Dictar mensaje por voz";
-    button.hidden = true;
+    button.hidden = !this.speechInput.supported;
     const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("viewBox", "0 0 24 24");
     icon.setAttribute("aria-hidden", "true");
@@ -367,19 +366,15 @@ export class ChatComposer {
 
   private toggleSpeechInput() {
     const state = this.speechInput.status.state;
-    if (!this.speechInput.status.modelReady) return;
-    if (state === "recording") {
-      void this.speechInput.stop();
+    if (state === "starting" || state === "listening") {
+      this.speechInput.stop();
       return;
     }
-    if (state === "transcribing") {
-      this.speechInput.cancel();
-      return;
-    }
-    if (!this.speechInput.supported || this.disabled) return;
+    if (state === "stopping" || !this.speechInput.supported || this.disabled) return;
 
     this.captureSpeechInsertion();
-    void this.speechInput.start();
+    if (this.speechInput.start()) this.keyboard?.setOpen(false);
+    else this.speechInsertion = null;
   }
 
   private captureSpeechInsertion() {
@@ -394,29 +389,22 @@ export class ChatComposer {
   }
 
   private updateSpeechStatus(status: SpeechInputStatus) {
-    const active = status.state === "recording";
+    const active = ["starting", "listening", "stopping"].includes(status.state);
     const isError = status.state === "error";
     this.speechButton.dataset.speechState = status.state;
-    this.speechButton.hidden = !status.modelReady || !this.speechInput.supported
+    this.speechButton.hidden = !this.speechInput.supported
       || Boolean(this.keyboardShowcase) || this.keyboardTarget !== null;
     this.speechButton.setAttribute("aria-pressed", String(active));
     this.speechButton.setAttribute("aria-label", active
-      ? "Detener grabación y transcribir"
-      : status.state === "transcribing" ? "Cancelar transcripción"
-        : this.speechInput.supported ? "Iniciar dictado por voz" : status.message);
+      ? status.state === "stopping" ? "Deteniendo dictado por voz" : "Detener dictado por voz"
+      : this.speechInput.supported ? "Iniciar dictado por voz" : status.message);
     this.speechButton.title = status.message || "Dictar mensaje por voz";
-    this.speechButton.disabled = this.disabled || !this.speechInput.supported || !status.modelReady;
-    this.speechButton.setAttribute("aria-busy", String(status.state === "transcribing"));
+    this.speechButton.disabled = this.disabled || !this.speechInput.supported || status.state === "stopping";
     this.speechStatus.textContent = status.message;
     this.speechStatus.dataset.state = status.state;
     this.speechStatus.hidden = !status.message;
-    if (status.state === "recording" || status.state === "transcribing") {
-      if (this.controller.state.open) this.speechHidKeyboard = true;
-      this.keyboard?.setOpen(false);
-    }
-
-    if (["idle", "ready", "completed"].includes(status.state) || isError || status.state === "unsupported") {
-      const returnFocusToComposer = ["ready", "completed"].includes(status.state) && this.speechInsertion !== null;
+    if (status.state === "idle" || isError || status.state === "unsupported") {
+      const returnFocusToComposer = status.state === "idle" && this.speechInsertion !== null;
       this.speechInsertion = null;
       if (isError && this.speechHidKeyboard && this.interactionMode === "free-text") this.keyboard?.setOpen(true);
       this.speechHidKeyboard = false;
@@ -431,7 +419,7 @@ export class ChatComposer {
       insertion.value,
       insertion.start,
       insertion.end,
-      result.finalTranscript || result.transcript,
+      result.transcript,
       COMPOSER_MAX_LENGTH,
     );
     this.keyboard?.setInput(inserted.value, inserted.caretStart, inserted.caretEnd);

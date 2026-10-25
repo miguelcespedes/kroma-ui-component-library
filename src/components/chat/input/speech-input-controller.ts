@@ -1,27 +1,8 @@
-import { AudioCapture, type AudioCaptureEvent } from "./audio-capture";
-import {
-  getSharedWhisperTranscriptionAdapter,
-  type WhisperProgressListener,
-  type WhisperTranscriptionPort,
-} from "./whisper-transcription-adapter";
-
-export type SpeechInputState =
-  | "idle"
-  | "preparing"
-  | "downloading"
-  | "loading"
-  | "ready"
-  | "recording"
-  | "transcribing"
-  | "completed"
-  | "error"
-  | "unsupported";
+export type SpeechInputState = "idle" | "starting" | "listening" | "stopping" | "error" | "unsupported";
 
 export type SpeechInputStatus = Readonly<{
   state: SpeechInputState;
   message: string;
-  progress: number | null;
-  modelReady: boolean;
 }>;
 
 export type SpeechInputTranscript = Readonly<{
@@ -30,62 +11,54 @@ export type SpeechInputTranscript = Readonly<{
   interimTranscript: string;
 }>;
 
+export type SpeechRecognitionAlternativeLike = { transcript: string };
+export type SpeechRecognitionResultLike = {
+  readonly isFinal: boolean;
+  readonly length: number;
+  readonly [index: number]: SpeechRecognitionAlternativeLike;
+};
+export type SpeechRecognitionResultListLike = {
+  readonly length: number;
+  readonly [index: number]: SpeechRecognitionResultLike;
+};
+export type SpeechRecognitionLike = {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+  onerror: ((event: { error: string }) => void) | null;
+  onresult: ((event: { results: SpeechRecognitionResultListLike }) => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+};
+
+export type SpeechRecognitionFactory = () => SpeechRecognitionLike;
 export type SpeechInputStatusListener = (status: SpeechInputStatus) => void;
 export type SpeechInputResultListener = (result: SpeechInputTranscript) => void;
-export type AudioCapturePort = {
-  start(): Promise<void>;
-  stop(): Promise<File>;
-  cancel(): void;
-  destroy(): void;
-};
-export type SpeechInputControllerOptions = Readonly<{
-  adapter?: WhisperTranscriptionPort;
-  createCapture?: (onEvent: (event: AudioCaptureEvent) => void) => AudioCapturePort;
-  supported?: () => boolean;
-}>;
 
-const DEFAULT_STATUS: SpeechInputStatus = {
-  state: "idle",
-  message: "",
-  progress: null,
-  modelReady: false,
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+type SpeechRecognitionWindow = Window & {
+  SpeechRecognition?: SpeechRecognitionConstructor;
+  webkitSpeechRecognition?: SpeechRecognitionConstructor;
 };
 
-/** Public speech-input facade. Coordinates local model preparation, short capture, and transcription. */
+const DEFAULT_STATUS: SpeechInputStatus = { state: "idle", message: "" };
+
+/** Owns Web Speech API lifecycle and exposes transcripts without coupling them to chat state. */
 export class SpeechInputController {
   private readonly statusListeners = new Set<SpeechInputStatusListener>();
   private readonly resultListeners = new Set<SpeechInputResultListener>();
-  private readonly adapter: WhisperTranscriptionPort;
-  private readonly createCapture: NonNullable<SpeechInputControllerOptions["createCapture"]>;
-  private readonly isSupported: () => boolean;
+  private recognition: SpeechRecognitionLike | null = null;
   private currentStatus: SpeechInputStatus;
-  private capture: AudioCapturePort | null = null;
-  private transcriptionAbort: AbortController | null = null;
-  private requestSequence = 0;
   private destroyed = false;
-  private readonly unsubscribePreparation: (() => void) | null;
 
-  constructor(options: SpeechInputControllerOptions = {}) {
-    this.adapter = options.adapter ?? getSharedWhisperTranscriptionAdapter();
-    this.adapter.retain?.();
-    this.createCapture = options.createCapture ?? ((onEvent) => new AudioCapture({ onEvent }));
-    this.isSupported = options.supported ?? detectSpeechInputSupport;
-    this.currentStatus = this.isSupported()
-      ? { ...DEFAULT_STATUS, modelReady: this.adapter.ready }
-      : { ...DEFAULT_STATUS, state: "unsupported" };
-    if (this.adapter.ready && this.isSupported()) {
-      this.currentStatus = { ...this.currentStatus, state: "ready" };
-    }
-    this.unsubscribePreparation = this.adapter.subscribePreparation?.((state) => {
-      if (this.destroyed || !this.isSupported() || ["recording", "transcribing"].includes(this.currentStatus.state)) return;
-      if (state === "ready") {
-        this.publish({ ...DEFAULT_STATUS, state: "ready", modelReady: true });
-      } else if (state === "error") {
-        this.publish({ ...DEFAULT_STATUS, state: "error", modelReady: false });
-      } else if (state === "idle" && !this.adapter.ready) {
-        this.publish({ ...DEFAULT_STATUS, state: "idle", modelReady: false });
-      }
-    }) ?? null;
+  constructor(private readonly factory = detectSpeechRecognitionFactory()) {
+    this.currentStatus = factory
+      ? DEFAULT_STATUS
+      : { state: "unsupported", message: "" };
   }
 
   get status() {
@@ -93,7 +66,7 @@ export class SpeechInputController {
   }
 
   get supported() {
-    return this.isSupported();
+    return this.factory !== null;
   }
 
   subscribeStatus(listener: SpeechInputStatusListener) {
@@ -107,208 +80,162 @@ export class SpeechInputController {
     return () => this.resultListeners.delete(listener);
   }
 
-  /** The first microphone activation only requests model-download consent. */
-  async start() {
-    if (this.destroyed || !this.supported || !this.adapter.ready || this.isBusy()) return false;
-    return this.startCapture();
-  }
+  start() {
+    if (this.destroyed || !this.factory || ["starting", "listening", "stopping"].includes(this.currentStatus.state)) return false;
+    if (this.recognition) {
+      const previous = this.recognition;
+      this.detachRecognition(previous);
+      try {
+        previous.abort();
+      } catch {
+        // A previous failed session may already have ended.
+      }
+    }
 
-  /** Stops recording and transcribes once. No partial transcript is fabricated. */
-  async stop() {
-    if (!this.capture || this.currentStatus.state !== "recording") return false;
-    const capture = this.capture;
-    this.publish({ ...this.currentStatus, state: "transcribing", progress: null, message: "Transcribiendo audio…" });
-    let file: File;
+    let recognition: SpeechRecognitionLike;
     try {
-      file = await capture.stop();
-    } catch (error) {
-      if (this.capture === capture) this.capture = null;
-      this.publish({
-        ...this.currentStatus,
-        state: "error",
-        message: errorName(error) === "EmptyAudioError" ? "No se detectó voz" : "No fue posible procesar el audio. Puedes intentarlo de nuevo o escribir el mensaje.",
-      });
+      recognition = this.factory();
+    } catch {
+      this.publishStatus("error", "No se pudo preparar el reconocimiento de voz. Puedes escribir el mensaje.");
       return false;
     }
-    if (this.destroyed || this.capture !== capture) return false;
-    this.capture = null;
-    const requestId = ++this.requestSequence;
-    const abortController = new AbortController();
-    this.transcriptionAbort = abortController;
-    const onProgress: WhisperProgressListener = ({ stage, progress }) => {
-      if (!this.isCurrent(requestId)) return;
-      const percent = Math.round(Math.max(0, Math.min(1, progress)) * 100);
-      this.publish({
-        ...this.currentStatus,
-        state: "transcribing",
-        progress: percent,
-        message: "Transcribiendo audio…",
-      });
+
+    recognition.lang = "es-PE";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+    this.recognition = recognition;
+    this.publishStatus("starting", "Preparando el dictado…");
+
+    recognition.onstart = () => {
+      if (this.recognition !== recognition || this.destroyed) return;
+      this.publishStatus("listening", "Escuchando. Puedes detener el dictado cuando quieras.");
     };
-    try {
-      const transcript = await this.adapter.transcribe(file, onProgress, abortController.signal);
-      if (!this.isCurrent(requestId)) return false;
-      if (!transcript.trim()) {
-        this.publish({
-          ...DEFAULT_STATUS,
-          state: "completed",
-          modelReady: true,
-          message: "No se detectó voz. Puedes intentarlo de nuevo o escribir el mensaje.",
-        });
-        return false;
+    recognition.onresult = (event) => {
+      if (this.recognition !== recognition || this.destroyed) return;
+      const finalParts: string[] = [];
+      const interimParts: string[] = [];
+      for (let index = 0; index < event.results.length; index += 1) {
+        const result = event.results[index];
+        const transcript = result[0]?.transcript || "";
+        (result.isFinal ? finalParts : interimParts).push(transcript);
       }
-      const finalTranscript = transcript.trim();
+      const finalTranscript = finalParts.join("");
+      const interimTranscript = interimParts.join("");
       this.resultListeners.forEach((listener) => listener({
-        transcript: finalTranscript,
+        transcript: `${finalTranscript}${interimTranscript}`,
         finalTranscript,
-        interimTranscript: "",
+        interimTranscript,
       }));
-      this.publish({
-        ...DEFAULT_STATUS,
-        state: "completed",
-        modelReady: true,
-        message: "Dictado agregado. Revísalo y envíalo cuando quieras.",
-      });
+    };
+    recognition.onerror = (event) => {
+      if (this.recognition !== recognition || this.destroyed) return;
+      this.publishStatus("error", messageForSpeechError(event.error));
+    };
+    recognition.onend = () => {
+      if (this.recognition !== recognition || this.destroyed) return;
+      this.recognition = null;
+      if (this.currentStatus.state === "error") return;
+      if (this.currentStatus.state === "starting") {
+        this.publishStatus("error", "El reconocimiento terminó antes de empezar. Puedes intentarlo de nuevo o escribir.");
+        return;
+      }
+      this.publishStatus("idle", "");
+    };
+
+    try {
+      recognition.start();
       return true;
     } catch (error) {
-      if (!this.isCurrent(requestId)) return false;
-      if (isAbortError(error)) {
-        this.publish({ ...DEFAULT_STATUS, state: "ready", modelReady: this.adapter.ready, message: "Transcripción cancelada. Puedes grabar de nuevo o escribir." });
-      } else {
-        this.publish({
-          ...DEFAULT_STATUS,
-          state: "error",
-          modelReady: this.adapter.ready,
-          message: "No fue posible procesar el audio. Puedes intentarlo de nuevo o escribir el mensaje.",
-        });
-      }
+      this.detachRecognition(recognition);
+      this.publishStatus("error", messageForStartError(error));
       return false;
-    } finally {
-      if (this.transcriptionAbort === abortController) this.transcriptionAbort = null;
     }
+  }
+
+  stop() {
+    if (!this.recognition || !["starting", "listening"].includes(this.currentStatus.state)) return false;
+    const recognition = this.recognition;
+    this.publishStatus("stopping", "Deteniendo el dictado…");
+    try {
+      recognition.stop();
+    } catch {
+      this.detachRecognition(recognition);
+      this.publishStatus("error", "No se pudo detener el dictado correctamente. Puedes seguir escribiendo.");
+      return false;
+    }
+    return true;
   }
 
   cancel() {
-    this.requestSequence += 1;
-    this.transcriptionAbort?.abort();
-    this.transcriptionAbort = null;
-    this.capture?.cancel();
-    this.capture?.destroy();
-    this.capture = null;
-    if (!this.destroyed) {
-      this.publish({
-        ...DEFAULT_STATUS,
-        state: this.adapter.ready ? "ready" : "idle",
-        modelReady: this.adapter.ready,
-      });
+    const recognition = this.recognition;
+    if (recognition) {
+      this.detachRecognition(recognition);
+      try {
+        recognition.abort();
+      } catch {
+        // The recognition may already have ended; cleanup is still complete.
+      }
     }
+    if (!this.destroyed && this.currentStatus.state !== "unsupported") this.publishStatus("idle", "");
   }
 
   destroy() {
     if (this.destroyed) return;
-    this.cancel();
     this.destroyed = true;
-    this.unsubscribePreparation?.();
-    this.adapter.release?.();
+    const recognition = this.recognition;
+    if (recognition) {
+      this.detachRecognition(recognition);
+      try {
+        recognition.abort();
+      } catch {
+        // Ignore an already-ended recognition instance.
+      }
+    }
     this.statusListeners.clear();
     this.resultListeners.clear();
   }
 
-  private async startCapture() {
-    const requestId = ++this.requestSequence;
-    const capture = this.createCapture((event) => this.handleCaptureEvent(event, capture));
-    this.capture = capture;
-    this.publish({
-      ...this.currentStatus,
-      state: "recording",
-      progress: null,
-      modelReady: true,
-      message: "Solicitando acceso al micrófono…",
-    });
-    try {
-      await capture.start();
-      if (!this.isCurrent(requestId) || this.capture !== capture) {
-        capture.cancel();
-        capture.destroy();
-        return false;
-      }
-      this.publish({ ...this.currentStatus, state: "recording", message: "Escuchando… Pulsa el micrófono para detener y transcribir." });
-      return true;
-    } catch (error) {
-      if (this.capture === capture) this.capture = null;
-      capture.destroy();
-      if (!this.isCurrent(requestId)) return false;
-      this.publish({
-        ...this.currentStatus,
-        state: "error",
-        message: captureErrorMessage(error),
-      });
-      return false;
-    }
+  private detachRecognition(recognition: SpeechRecognitionLike) {
+    if (this.recognition === recognition) this.recognition = null;
+    recognition.onstart = null;
+    recognition.onend = null;
+    recognition.onerror = null;
+    recognition.onresult = null;
   }
 
-  private handleCaptureEvent(event: AudioCaptureEvent, capture: AudioCapturePort) {
-    if (this.capture !== capture || this.destroyed) return;
-    if (event === "limit") {
-      this.publish({ ...this.currentStatus, message: "Límite de 30 segundos alcanzado. Transcribiendo audio…" });
-      void this.stop();
-    } else if (event === "muted") {
-      this.publish({ ...this.currentStatus, message: "El micrófono está silenciado. Revisa el dispositivo o continúa escribiendo." });
-    } else if (event === "resumed") {
-      this.publish({ ...this.currentStatus, message: "Escuchando… Pulsa el micrófono para detener y transcribir." });
-    } else if (event === "interrupted" || event === "error") {
-      capture.cancel();
-      this.capture = null;
-      this.publish({ ...this.currentStatus, state: "error", message: "Se perdió la captura del micrófono. Puedes volver a intentarlo o escribir el mensaje." });
-    }
-  }
-
-  private isBusy() {
-    return ["downloading", "loading", "recording", "transcribing"].includes(this.currentStatus.state);
-  }
-
-  private isCurrent(requestId: number) {
-    return !this.destroyed && requestId === this.requestSequence;
-  }
-
-  private publish(status: SpeechInputStatus) {
-    this.currentStatus = status;
+  private publishStatus(state: SpeechInputState, message: string) {
+    this.currentStatus = { state, message };
     this.statusListeners.forEach((listener) => listener(this.currentStatus));
   }
 }
 
-export function detectSpeechInputSupport(scope: Window | null = typeof window === "undefined" ? null : window) {
-  if (!scope?.isSecureContext || !scope.navigator?.mediaDevices?.getUserMedia) return false;
-  if (typeof MediaRecorder === "undefined") return false;
-  // Cross-origin isolation is only required for threaded WASM; WebGPU may work without it.
-  return true;
+export function detectSpeechRecognitionFactory(scope: Window | null = typeof window === "undefined" ? null : window) {
+  if (!scope || !scope.isSecureContext) return null;
+  const speechWindow = scope as SpeechRecognitionWindow;
+  const Recognition = speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
+  return Recognition ? () => new Recognition() : null;
 }
 
-function captureErrorMessage(error: unknown) {
-  switch (errorName(error)) {
-    case "NotAllowedError":
-    case "SecurityError":
-      return "No se concedió permiso para usar el micrófono. Puedes revisar el permiso del sitio o escribir el mensaje.";
-    case "NotFoundError":
-    case "DevicesNotFoundError":
-      return "No se encontró un micrófono disponible. Conecta uno o escribe el mensaje.";
-    case "NotReadableError":
-    case "TrackStartError":
-      return "No se pudo acceder al micrófono. Comprueba que no esté ocupado o desconectado.";
-    case "NotSupportedError":
-      return "Este navegador no ofrece captura de audio compatible para el dictado local.";
-    case "AbortError":
-      return "Se canceló el acceso al micrófono. Puedes intentarlo de nuevo.";
+function messageForSpeechError(error: string) {
+  switch (error) {
+    case "not-allowed":
+    case "service-not-allowed":
+      return "No se concedió permiso para usar el micrófono. Puedes escribir el mensaje.";
+    case "audio-capture":
+      return "No se encontró un micrófono disponible. Puedes escribir el mensaje.";
+    case "no-speech":
+      return "No se detectó voz. Puedes intentarlo de nuevo o escribir el mensaje.";
+    case "network":
+      return "El servicio de voz del navegador no pudo conectarse. Verifica tu conexión o inténtalo de nuevo; también puedes escribir el mensaje.";
     default:
-      return "No se pudo iniciar el micrófono. Comprueba el dispositivo o escribe el mensaje.";
+      return "Ocurrió un error durante el dictado. Puedes intentarlo de nuevo o escribir el mensaje.";
   }
 }
 
-function errorName(error: unknown) {
-  if (error && typeof error === "object" && "name" in error && typeof error.name === "string") return error.name;
-  return error instanceof Error ? error.name : "UnknownError";
-}
-
-function isAbortError(error: unknown) {
-  return errorName(error) === "AbortError";
+function messageForStartError(error: unknown) {
+  if (typeof DOMException !== "undefined" && error instanceof DOMException && error.name === "NotAllowedError") {
+    return messageForSpeechError("not-allowed");
+  }
+  return "No se pudo iniciar el dictado. Comprueba el permiso del micrófono o escribe el mensaje.";
 }

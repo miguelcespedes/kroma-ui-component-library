@@ -22,24 +22,32 @@ try {
   browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ viewport: { width: 430, height: 900 } });
   const page = await context.newPage();
-  await page.route("https://**", (route) => route.abort());
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.addInitScript(() => {
-    window.__microphoneRequests = 0;
-    Object.defineProperty(navigator, "mediaDevices", {
-      configurable: true,
-      value: {
-        getUserMedia() {
-          window.__microphoneRequests += 1;
-          return Promise.reject(new Error("Unexpected microphone access during background preparation test"));
-        },
-      },
-    });
-    class FakeMediaRecorder extends EventTarget {
-      static isTypeSupported() { return true; }
+    class FakeSpeechRecognition {
+      static lastInstance;
+      static holdStop = false;
+      lang = "";
+      continuous = true;
+      interimResults = false;
+      maxAlternatives = 5;
+      onstart = null;
+      onend = null;
+      onerror = null;
+      onresult = null;
+      constructor() { FakeSpeechRecognition.lastInstance = this; }
+      start() { queueMicrotask(() => this.onstart?.()); }
+      stop() { if (!FakeSpeechRecognition.holdStop) queueMicrotask(() => this.onend?.()); }
+      abort() { this.onend?.(); }
+      emitEnd() { this.onend?.(); }
+      emitResults(parts) {
+        const results = parts.map(({ transcript, isFinal }) => ({ 0: { transcript }, isFinal, length: 1 }));
+        this.onresult?.({ results: Object.assign(results, { length: results.length }) });
+      }
     }
-    Object.defineProperty(window, "MediaRecorder", { configurable: true, value: FakeMediaRecorder });
+    Object.defineProperty(window, "SpeechRecognition", { configurable: true, value: FakeSpeechRecognition });
+    window.__FakeSpeechRecognition = FakeSpeechRecognition;
 
     class FakeSpeechSynthesisUtterance {
       constructor(text) {
@@ -77,7 +85,6 @@ try {
   });
   await page.goto(url);
   await page.waitForFunction(() => document.querySelector("kroma-chat")?.isConnected === true);
-  assert.equal(await page.evaluate(() => window.crossOriginIsolated), true, "the chat route serves the COOP/COEP headers required by browser-whisper");
 
   const chat = page.locator("kroma-chat");
   const display = chat.locator(".kroma-chat__virtual-display");
@@ -87,13 +94,9 @@ try {
   const sendButton = chat.locator(".kroma-chat__send");
   const botMessage = chat.locator('li[data-author="assistant"]').first();
   const playbackButton = botMessage.locator(".kroma-chat__speak-button");
-  assert.equal(await speechButton.isHidden(), true, "the microphone stays hidden until the engine is ready");
-  await page.waitForFunction(() => performance.getEntriesByType("resource").some((entry) =>
-    /\/index-[\w-]+\.js(?:$|\?)/.test(new URL(entry.name).pathname)), null, { timeout: 10_000 });
-  assert.equal(await speechButton.isHidden(), true, "background preparation does not expose a partially initialized engine");
-  assert.equal(await page.evaluate(() => window.__microphoneRequests), 0, "background preparation never requests microphone access");
-  assert.doesNotMatch(await chat.innerText(), /Hugging Face|120 MB|whisper-tiny|Descargando modelo/i, "preparation details are not exposed in the composer");
-  assert.equal(await chat.locator(".kroma-chat__speech-prepare, .kroma-chat__speech-cancel").count(), 0, "the composer has no installation controls");
+  assert.equal(await speechButton.isVisible(), true, "the microphone is available when the browser provides Web Speech API");
+  assert.equal(await speechButton.isDisabled(), false);
+  assert.equal(await speechStatus.isHidden(), true, "no voice-service notice is shown before dictation starts");
   assert.equal(await playbackButton.count(), 1, "assistant text responses have their own playback button");
   assert.equal(await chat.locator('li[data-author="user"] .kroma-chat__speak-button').count(), 0, "user messages do not get a playback button");
   const bubbleBounds = await botMessage.locator(".kroma-chat__bubble").boundingBox();
@@ -123,20 +126,53 @@ try {
     x: insertionCharacterBounds.x - displayBoundsBeforeSpeech.x + 1,
     y: insertionCharacterBounds.y - displayBoundsBeforeSpeech.y + insertionCharacterBounds.height / 2,
   } });
-  assert.equal(await keyboard.isVisible(), true, "the virtual keyboard remains usable while background preparation runs");
-  assert.equal(await display.innerText(), "Tengo una consulta", "background preparation does not change the existing draft");
+  assert.equal(await keyboard.isVisible(), true, "the virtual keyboard is available before dictation starts");
+  assert.equal(await display.innerText(), "Tengo una consulta", "starting dictation does not change the existing draft");
+  await speechButton.click();
+  await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "listening");
+  assert.equal(await speechButton.getAttribute("aria-pressed"), "true");
+  assert.equal(await keyboard.isHidden(), true, "dictation hides the virtual keyboard without clearing the draft");
+  const recognitionSettings = await page.evaluate(() => ({
+    lang: window.__FakeSpeechRecognition.lastInstance.lang,
+    continuous: window.__FakeSpeechRecognition.lastInstance.continuous,
+    interimResults: window.__FakeSpeechRecognition.lastInstance.interimResults,
+  }));
+  assert.deepEqual(recognitionSettings, { lang: "es-PE", continuous: false, interimResults: true });
+  await page.evaluate(() => window.__FakeSpeechRecognition.lastInstance.emitResults([
+    { transcript: "Hola ", isFinal: true },
+    { transcript: "¿cómo estás?", isFinal: false },
+  ]));
+  assert.equal(await display.innerText(), "Tengo Hola ¿cómo estás? una consulta", "interim recognition is inserted at the current caret");
+  await page.evaluate(() => window.__FakeSpeechRecognition.lastInstance.emitResults([
+    { transcript: "Hola, ¿cómo estás hoy?", isFinal: true },
+  ]));
+  assert.equal(await display.innerText(), "Tengo Hola, ¿cómo estás hoy? una consulta", "final recognition replaces interim text without submitting the draft");
+  await page.evaluate(() => { window.__FakeSpeechRecognition.holdStop = true; });
+  await speechButton.click();
+  await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "stopping");
+  await page.evaluate(() => {
+    window.__FakeSpeechRecognition.lastInstance.emitEnd();
+    window.__FakeSpeechRecognition.holdStop = false;
+  });
+  await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "idle");
+  await display.click();
+  assert.equal(await keyboard.isVisible(), true, "the virtual keyboard reopens for editing after dictation");
   await keyboard.locator('button[data-skbtn="a"]').click();
-  assert.equal(await display.innerText(), "Tengo auna consulta", "virtual keyboard remains usable while dictation is unavailable");
+  const keyboardEditedDraft = await display.innerText();
+  assert.notEqual(keyboardEditedDraft, "Tengo Hola, ¿cómo estás hoy? una consulta", "virtual keyboard edits recognized text");
+  assert.match(keyboardEditedDraft, /a/, "virtual keyboard input is present in the draft");
   await display.focus();
   await page.keyboard.type("x");
-  assert.equal(await display.innerText(), "Tengo axuna consulta", "physical typing remains usable while dictation is unavailable");
+  const physicallyEditedDraft = await display.innerText();
+  assert.notEqual(physicallyEditedDraft, keyboardEditedDraft, "physical typing edits recognized text");
+  assert.match(physicallyEditedDraft, /x/, "physical keyboard input is present in the draft");
 
   await sendButton.click();
   await page.waitForFunction(() => document.querySelector(".kroma-chat__virtual-display")?.innerText === "");
   assert.equal(await display.innerText(), "", "manual send submits and clears the edited draft");
   assert.deepEqual(errors, [], "dictation integration produces no browser errors");
   assert.equal(await speechStatus.getAttribute("role"), "status", "speech feedback is announced politely");
-  console.log("Chat speech Playwright checks passed: automatic deferred preparation, hidden microphone, no premature permission request, keyboard editing and manual send.");
+  console.log("Chat speech Playwright checks passed: Web Speech API insertion, interim/final replacement, playback, keyboard editing and manual send.");
 } finally {
   await browser?.close();
   server.kill();

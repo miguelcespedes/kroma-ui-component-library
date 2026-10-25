@@ -185,7 +185,8 @@
     svg { width: var(--kroma-chat-icon-action-size); height: var(--kroma-chat-icon-action-size); }
     &:hover:not(:disabled) { border-color: var(--kroma-chat-border-interactive); color: var(--kroma-chat-text-primary); }
     &:disabled { color: var(--kroma-chat-text-disabled); cursor: not-allowed; opacity: .7; }
-    &[data-speech-state="recording"] {
+    &[data-speech-state="listening"],
+    &[data-speech-state="stopping"] {
       border-color: var(--kroma-chat-state-focus);
       background: var(--kroma-chat-state-focus);
       color: var(--kroma-chat-on-accent);
@@ -193,9 +194,10 @@
 
       svg { stroke-width: 2.2; }
     }
-    &[data-speech-state="transcribing"] { border-color: var(--kroma-chat-state-focus); color: var(--kroma-chat-state-focus); }
+    &[data-speech-state="starting"] { border-color: var(--kroma-chat-state-focus); color: var(--kroma-chat-state-focus); }
     &[data-speech-state="error"] { border-color: var(--kroma-chat-state-error); color: var(--kroma-chat-state-error); }
-    &[data-speech-state="recording"]::after {
+    &[data-speech-state="listening"]::after,
+    &[data-speech-state="stopping"]::after {
       position: absolute;
       inset-block-start: .3rem;
       inset-inline-end: .3rem;
