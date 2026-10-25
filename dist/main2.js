@@ -1,4 +1,4 @@
-import "./app-MQxMtcWO.js";
+import "./app-BWAIfpnQ.js";
 const preview = document.querySelector("[data-chat-preview]");
 const chat = document.querySelector("kroma-chat[data-demo='commerce-journey']");
 const lab = document.querySelector("[data-chat-lab]");

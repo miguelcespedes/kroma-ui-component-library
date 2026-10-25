@@ -24,7 +24,6 @@ export class ChatComposer {
   private readonly listeners = new AbortController();
   private readonly disposers: Array<() => void> = [];
   private readonly actions: HTMLDivElement;
-  private readonly keyboardButton: HTMLButtonElement;
   private readonly keyboardShowcase: HTMLElement | null;
   private readonly showcaseLayouts = new Map<VirtualKeyboardLayoutName, HTMLButtonElement>();
   private readonly unsubscribeController: () => void;
@@ -54,7 +53,7 @@ export class ChatComposer {
     this.input.placeholder = options.placeholder;
     this.input.disabled = this.disabled;
 
-    this.controller = new VirtualKeyboardController(true);
+    this.controller = new VirtualKeyboardController(false);
     const displayCallbacks: VirtualTextDisplayCallbacks = {
       onCaretChange: (start, end) => {
         this.keyboard?.setCaretPosition(start, end);
@@ -70,9 +69,8 @@ export class ChatComposer {
 
     this.actions = document.createElement("div");
     this.actions.className = "kroma-chat__composer-actions";
-    this.keyboardButton = this.createKeyboardButton();
     this.sendButton = this.createSendButton(options.sendLabel);
-    this.actions.append(this.keyboardButton, this.sendButton);
+    this.actions.append(this.sendButton);
     this.form.append(label, this.input, this.display.element, this.actions);
 
     this.createKeyboard();
@@ -88,7 +86,12 @@ export class ChatComposer {
     this.element.append(this.errorMessage);
 
     const signal = this.listeners.signal;
-    this.keyboardButton.addEventListener("click", () => this.toggleVirtualKeyboard(), { signal });
+    document.addEventListener("pointerdown", (event) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (this.display.element.contains(target) || this.keyboard?.element.contains(target)) return;
+      this.controller.setOpen(false);
+    }, { capture: true, signal });
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       const message = this.currentValue().trim();
@@ -101,7 +104,6 @@ export class ChatComposer {
       this.updateSendButton();
       this.updateShowcaseControls();
     });
-    this.updateKeyboardPresentation();
     this.updateSendButton();
   }
 
@@ -132,7 +134,6 @@ export class ChatComposer {
   }
 
   focus() {
-    this.keyboard?.setOpen(true);
     this.display.element.focus();
   }
 
@@ -171,32 +172,8 @@ export class ChatComposer {
     return this.keyboard?.value || "";
   }
 
-  private toggleVirtualKeyboard() {
-    this.keyboard?.setOpen(!this.controller.state.open);
-    this.updateKeyboardPresentation();
-    if (!this.controller.state.open) this.keyboardButton.focus();
-    else this.display.element.focus();
-  }
-
-  private updateKeyboardPresentation() {
-    this.input.hidden = true;
-    this.display.setVisible(true);
-    this.keyboardButton.hidden = Boolean(this.keyboardShowcase);
-    this.keyboardButton.setAttribute("aria-expanded", String(this.controller.state.open));
-    this.keyboardButton.setAttribute("aria-label", this.controller.state.open ? "Ocultar teclado virtual" : "Mostrar teclado virtual");
-    this.keyboardButton.textContent = this.controller.state.open ? "⌃" : "⌄";
-  }
-
   private updateSendButton() {
     this.sendButton.disabled = this.disabled || !this.currentValue().trim();
-  }
-
-  private createKeyboardButton() {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "kroma-chat__keyboard-toggle";
-    button.textContent = "⌄";
-    return button;
   }
 
   private createSendButton(sendLabel: string) {

@@ -9614,7 +9614,7 @@ class ChatComposer {
     this.input.maxLength = 2e3;
     this.input.placeholder = options.placeholder;
     this.input.disabled = this.disabled;
-    this.controller = new VirtualKeyboardController(true);
+    this.controller = new VirtualKeyboardController(false);
     const displayCallbacks = {
       onCaretChange: (start2, end2) => {
         this.keyboard?.setCaretPosition(start2, end2);
@@ -9629,9 +9629,8 @@ class ChatComposer {
     this.input.hidden = true;
     this.actions = document.createElement("div");
     this.actions.className = "kroma-chat__composer-actions";
-    this.keyboardButton = this.createKeyboardButton();
     this.sendButton = this.createSendButton(options.sendLabel);
-    this.actions.append(this.keyboardButton, this.sendButton);
+    this.actions.append(this.sendButton);
     this.form.append(label, this.input, this.display.element, this.actions);
     this.createKeyboard();
     this.keyboardShowcase = showKeyboardShowcase ? this.createKeyboardShowcase() : null;
@@ -9644,7 +9643,12 @@ class ChatComposer {
     this.errorMessage.hidden = true;
     this.element.append(this.errorMessage);
     const signal = this.listeners.signal;
-    this.keyboardButton.addEventListener("click", () => this.toggleVirtualKeyboard(), { signal });
+    document.addEventListener("pointerdown", (event) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (this.display.element.contains(target) || this.keyboard?.element.contains(target)) return;
+      this.controller.setOpen(false);
+    }, { capture: true, signal });
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       const message = this.currentValue().trim();
@@ -9657,7 +9661,6 @@ class ChatComposer {
       this.updateSendButton();
       this.updateShowcaseControls();
     });
-    this.updateKeyboardPresentation();
     this.updateSendButton();
   }
   options;
@@ -9671,7 +9674,6 @@ class ChatComposer {
   listeners = new AbortController();
   disposers = [];
   actions;
-  keyboardButton;
   keyboardShowcase;
   showcaseLayouts = /* @__PURE__ */ new Map();
   unsubscribeController;
@@ -9703,7 +9705,6 @@ class ChatComposer {
     }
   }
   focus() {
-    this.keyboard?.setOpen(true);
     this.display.element.focus();
   }
   clear() {
@@ -9737,29 +9738,8 @@ class ChatComposer {
   currentValue() {
     return this.keyboard?.value || "";
   }
-  toggleVirtualKeyboard() {
-    this.keyboard?.setOpen(!this.controller.state.open);
-    this.updateKeyboardPresentation();
-    if (!this.controller.state.open) this.keyboardButton.focus();
-    else this.display.element.focus();
-  }
-  updateKeyboardPresentation() {
-    this.input.hidden = true;
-    this.display.setVisible(true);
-    this.keyboardButton.hidden = Boolean(this.keyboardShowcase);
-    this.keyboardButton.setAttribute("aria-expanded", String(this.controller.state.open));
-    this.keyboardButton.setAttribute("aria-label", this.controller.state.open ? "Ocultar teclado virtual" : "Mostrar teclado virtual");
-    this.keyboardButton.textContent = this.controller.state.open ? "⌃" : "⌄";
-  }
   updateSendButton() {
     this.sendButton.disabled = this.disabled || !this.currentValue().trim();
-  }
-  createKeyboardButton() {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "kroma-chat__keyboard-toggle";
-    button.textContent = "⌄";
-    return button;
   }
   createSendButton(sendLabel) {
     const button = document.createElement("button");
@@ -11302,7 +11282,7 @@ class KromaChat extends HTMLElement {
   loadKitchenConversation() {
     const revision = ++this.modeRevision;
     void __vitePreload(async () => {
-      const { createKitchenMessages } = await import("./kitchen.messages-DOuT9TrU.js");
+      const { createKitchenMessages } = await import("./kitchen.messages-BbUSHLv7.js");
       return { createKitchenMessages };
     }, true ? [] : void 0, import.meta.url).then(({ createKitchenMessages }) => {
       if (!this.isConnected || this.mode !== "kitchen" || revision !== this.modeRevision) return;
@@ -11768,4 +11748,4 @@ export {
   poloImage as p,
   sneakerImage as s
 };
-//# sourceMappingURL=app-MQxMtcWO.js.map
+//# sourceMappingURL=app-BWAIfpnQ.js.map

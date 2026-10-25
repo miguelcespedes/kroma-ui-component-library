@@ -12696,32 +12696,6 @@ textarea.form-control-lg {
   gap: var(--kroma-chat-spacing-tight);
 }
 
-.kroma-chat__keyboard-toggle {
-  display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
-  flex: 0 0 2.5rem;
-  place-items: center;
-  padding: 0;
-  border: 0;
-  border-radius: var(--kroma-chat-radius-control);
-  background: transparent;
-  color: var(--kroma-chat-text-secondary);
-  font: inherit;
-  font-size: 1.125rem;
-  cursor: pointer;
-}
-
-.kroma-chat__keyboard-toggle:hover:not(:disabled) {
-  background: var(--kroma-chat-surface-hover);
-  color: var(--kroma-chat-text-primary);
-}
-
-.kroma-chat__keyboard-toggle:disabled {
-  color: var(--kroma-chat-text-disabled);
-  cursor: not-allowed;
-}
-
 .kroma-chat__composer-area, .kroma-chat__composer, .kroma-chat__input, .kroma-chat__virtual-display {
   max-width: 100%;
 }
