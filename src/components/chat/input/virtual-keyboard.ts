@@ -306,7 +306,7 @@ export class VirtualKeyboard {
     const button = event.target.closest<HTMLButtonElement>("button.hg-button");
     if (!button || !this.element.contains(button) || button.disabled) return;
     const character = button.dataset.skbtn || "";
-    if (Array.from(character).length !== 1 || !/^\p{L}$/u.test(character)) return;
+    if (!isPrintableKeyCharacter(character)) return;
     this.previewPointerId = event.pointerId;
     this.showKeyPreview(button, character);
   };
@@ -320,7 +320,7 @@ export class VirtualKeyboard {
       return;
     }
     const character = button.dataset.skbtn || "";
-    if (Array.from(character).length === 1 && /^\p{L}$/u.test(character)) this.showKeyPreview(button, character);
+    if (isPrintableKeyCharacter(character)) this.showKeyPreview(button, character);
     else this.hideKeyPreview();
   };
 
@@ -410,4 +410,8 @@ function nextCodePoint(value: string, index: number) {
   if (index >= value.length) return value.length;
   const code = value.charCodeAt(index);
   return code >= 0xd800 && code <= 0xdbff && index + 1 < value.length ? index + 2 : index + 1;
+}
+
+function isPrintableKeyCharacter(value: string) {
+  return Array.from(value).length === 1 && /^[\p{L}\p{M}\p{N}\p{P}\p{S}]$/u.test(value);
 }

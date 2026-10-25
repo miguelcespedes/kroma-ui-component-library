@@ -173,7 +173,13 @@ export class KromaChat extends HTMLElement {
     this.header = header;
     this.messageList = messageList;
     this.composer = composer;
-    this.replaceChildren(header.element, messageList.element, messageList.emptyState, composer.element);
+    this.replaceChildren(
+      header.element,
+      messageList.element,
+      messageList.emptyState,
+      composer.element,
+      ...(composer.keyboardDock ? [composer.keyboardDock] : []),
+    );
     if (this.headerActions.length && this.mode !== "kitchen") this.setHeaderActions(this.headerActions);
     if (this.error) composer.setError(this.error);
     this.history.forEach(({ id, message }) => messageList.addMessage(message, id));

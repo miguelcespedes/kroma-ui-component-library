@@ -35,7 +35,7 @@ export const SIMPLE_KEYBOARD_DISPLAY: Record<string, string> = {
   "{symbols}": "#+=",
   "{abc}": "ABC",
   "{space}": "Espacio",
-  "{enter}": "Enter",
+  "{enter}": "↵",
 };
 
 export const SIMPLE_KEYBOARD_BUTTON_ATTRIBUTES: KeyboardButtonAttributes[] = [

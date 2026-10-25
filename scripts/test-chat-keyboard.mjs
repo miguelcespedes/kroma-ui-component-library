@@ -31,6 +31,35 @@ try {
   await keyboard.waitFor({ state: "visible" });
   const key = (value) => keyboard.locator(`button[data-skbtn="${value}"]`);
   const popup = page.locator("body > .kroma-chat__key-preview");
+  const composerArea = chat.locator(".kroma-chat__composer-area");
+  const keyboardDock = chat.locator(".kroma-chat__keyboard-dock");
+  assert.equal(await keyboard.locator('button[data-skbtn="{language}"]').count(), 0, "keyboard omits the language/globe key from the reference image");
+  assert.equal(await chat.locator(".kroma-chat__composer-field").evaluate((element) => getComputedStyle(element).outlineStyle), "none", "focused composer uses a single border instead of a doubled blue outline");
+  assert.equal(await key("{enter}").innerText(), "↵", "Enter key uses the return symbol rather than text");
+  assert.equal(await key("{enter}").getAttribute("aria-label"), "Enviar mensaje", "Enter keeps its accessible action label");
+  assert.equal(await chat.locator(".kroma-chat__composer-field").evaluate((element) => getComputedStyle(element).borderRadius), "24px", "text field uses a softly rounded shell");
+  assert.equal(await chat.locator(".kroma-chat__composer-field").evaluate((element) => element.contains(element.closest(".kroma-chat__send"))), false, "send button sits outside the text field");
+  assert.equal(await chat.locator(".kroma-chat__composer-field").evaluate((element) => element.closest(".kroma-chat__keyboard-dock")), null, "composer is structurally independent from the keyboard dock");
+  assert.equal(await keyboard.evaluate((element) => element.parentElement?.classList.contains("kroma-chat__keyboard-dock")), true, "keyboard lives in its own bottom dock");
+  assert.equal(await chat.locator(".kroma-chat__send").evaluate((element) => getComputedStyle(element).borderRadius), "50%", "send button is circular");
+  assert.equal(await chat.locator(".kroma-chat__send").evaluate((element) => element.getBoundingClientRect().width), await chat.locator(".kroma-chat__send").evaluate((element) => element.getBoundingClientRect().height), "send button is a circle");
+  assert.ok(await chat.locator(".kroma-chat__composer-field").evaluate((element) => {
+    const fieldHeight = element.getBoundingClientRect().height;
+    const buttonHeight = element.closest(".kroma-chat__composer")?.querySelector(".kroma-chat__send")?.getBoundingClientRect().height ?? 0;
+    return fieldHeight >= 40 && fieldHeight <= buttonHeight;
+  }), "text field is compact and visually balanced with the send button");
+  assert.equal(await chat.locator(".kroma-chat__send").evaluate((element) => element.parentElement?.previousElementSibling?.classList.contains("kroma-chat__composer-field")), true, "send action sits in a sibling control to the right of the text field");
+  assert.ok(await chat.locator(".kroma-chat__send").evaluate((element) => {
+    const field = element.closest(".kroma-chat__composer")?.querySelector(".kroma-chat__composer-field");
+    return Boolean(field && element.getBoundingClientRect().left > field.getBoundingClientRect().right);
+  }), "send button is positioned to the right of the text field");
+  assert.equal(await chat.locator(".kroma-chat__send svg path").getAttribute("d"), "M12 19V5m-7 7 7-7 7 7", "send action uses a clean upward arrow icon");
+  await display.focus();
+  await page.keyboard.type("d");
+  assert.match(await display.innerText(), /d/, "physical keyboard input still reaches the composer");
+  assert.equal(await display.evaluate((element) => getComputedStyle(element).outlineStyle), "none", "physical typing does not add a rectangular outline inside the rounded field");
+  assert.equal(await composerArea.locator(".kroma-chat__composer-field").evaluate((element) => getComputedStyle(element).outlineStyle), "none", "physical typing keeps a single outer focus border");
+  await key("{bksp}").click();
 
   for (const theme of ["light", "dark"]) {
     await page.evaluate((mode) => document.documentElement.setAttribute("data-bs-theme", mode), theme);
@@ -45,11 +74,15 @@ try {
         const keyStyle = getComputedStyle(button("a"));
         return {
           bounds: rect(element),
+          dockBounds: rect(element.parentElement),
           rows: [...element.querySelectorAll(".hg-row")].map(rect),
           keys: [...element.querySelectorAll("button.hg-button")].map(rect),
           noInnerScroll: element.scrollHeight <= element.clientHeight + 1,
           keyColor: keyStyle.color,
           hostColor: getComputedStyle(element.closest(".kroma-chat")).color,
+          keySurface: keyStyle.backgroundColor,
+          dockSurface: getComputedStyle(element.parentElement).backgroundColor,
+          dockRadius: Number.parseFloat(getComputedStyle(element.parentElement).borderRadius),
           fontWeight: Number(keyStyle.fontWeight),
           primarySurface: keyStyle.backgroundColor,
           utilitySurface: getComputedStyle(button("{shift}")).backgroundColor,
@@ -62,9 +95,15 @@ try {
       assert.equal(metrics.keyColor, metrics.hostColor, `${theme} letters use Kroma semantic content color`);
       assert.ok(metrics.fontWeight >= 500 && metrics.fontWeight <= 600, "key labels use medium weight");
       assert.notEqual(metrics.primarySurface, metrics.utilitySurface, `${theme} utility keys use a secondary surface`);
+      assert.notEqual(metrics.dockSurface, metrics.keySurface, `${theme} keyboard sits on a darker contrasting surface`);
+      assert.ok(metrics.dockRadius >= 20, `${theme} keyboard dock has generous rounded corners`);
       assert.ok(metrics.spaceWidth >= metrics.commaWidth * 2.5, `space dominates the bottom row at ${width}px`);
       assert.ok(metrics.keys.every((key) => key.height >= 39 && key.top >= metrics.bounds.top - 1 && key.bottom <= metrics.bounds.bottom + 1), `${theme} keys are touch-sized and not clipped at ${width}px`);
       assert.ok(metrics.rows.every((row) => row.left >= metrics.bounds.left - 1 && row.right <= metrics.bounds.right + 1), `${theme} rows fit the keyboard at ${width}px`);
+      assert.ok(metrics.bounds.left - metrics.dockBounds.left <= 10
+        && metrics.dockBounds.right - metrics.bounds.right <= 10, `keyboard uses the dock width with a compact gutter at ${width}px`);
+      const [composerBounds, dockBounds] = await Promise.all([composerArea.boundingBox(), keyboardDock.boundingBox()]);
+      assert.ok(composerBounds && dockBounds && composerBounds.y + composerBounds.height <= dockBounds.y + 1, `composer floats immediately above the keyboard dock at ${width}px`);
     }
   }
 
@@ -136,6 +175,20 @@ try {
   await holdKey("á", "á", 80);
   await key("{bksp}").click();
   await key("{abc}").click();
+
+  await key("{numbers}").click();
+  await holdKey("1", "1", 80);
+  assert.equal((await display.innerText()).split("1").length - 1, 1, "number press inserts one digit");
+  await key("{bksp}").click();
+  await holdKey("0", "0", 80);
+  await key("{bksp}").click();
+  await key("{symbols}").click();
+  await holdKey("€", "€", 80);
+  assert.equal((await display.innerText()).split("€").length - 1, 1, "symbol press inserts one symbol");
+  await key("{bksp}").click();
+  await key("{abc}").click();
+  await holdKey(",", ",", 80);
+  await key("{bksp}").click();
 
   await key("{shift}").dispatchEvent("pointerdown", { pointerId: 42, isPrimary: true, button: 0 });
   assert.equal(await popup.getAttribute("data-visible"), "false", "Shift does not show a preview");

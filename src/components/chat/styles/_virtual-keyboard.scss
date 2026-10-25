@@ -1,11 +1,12 @@
 // Keep simple-keyboard's engine and generated rows; this layer only styles its chat surface.
 .kroma-chat .hg-theme-default {
   width: 100%;
+  margin: 0;
   max-block-size: none;
   overflow: visible;
   padding: .375rem 0 0;
   border-radius: 0;
-  background: var(--kroma-chat-canvas);
+  background: transparent;
   color: var(--kroma-chat-text-primary);
   font-family: var(--kroma-chat-font-family);
   font-size: var(--kroma-chat-typography-key);
@@ -166,7 +167,9 @@
 .kroma-chat__virtual-display--sample { min-height: 2.5rem; max-height: 3rem; padding-inline: var(--kroma-chat-spacing-control); border: 1px solid var(--kroma-chat-border-subtle); border-radius: var(--kroma-chat-radius-input); background: var(--kroma-chat-surface); font-size: var(--kroma-chat-typography-body-small); }
 
 @container kroma-chat (max-width: 24rem) {
-  .kroma-chat .hg-theme-default { padding-block-start: .3125rem; }
+  .kroma-chat .hg-theme-default {
+    padding-block-start: .3125rem;
+  }
 
   .kroma-chat .hg-theme-default button.hg-button {
     min-height: 2.5rem;

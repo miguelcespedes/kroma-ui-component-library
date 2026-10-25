@@ -25,8 +25,10 @@ export class ChatComposer {
   readonly sendButton: HTMLButtonElement;
   readonly errorMessage: HTMLParagraphElement;
   readonly controller: VirtualKeyboardController;
+  readonly keyboardDock: HTMLDivElement | null;
   private readonly listeners = new AbortController();
   private readonly disposers: Array<() => void> = [];
+  private readonly composerField: HTMLDivElement;
   private readonly actions: HTMLDivElement;
   private readonly keyboardShowcase: HTMLElement | null;
   private readonly showcaseLayouts = new Map<VirtualKeyboardLayoutName, HTMLButtonElement>();
@@ -50,6 +52,8 @@ export class ChatComposer {
 
     this.form = document.createElement("form");
     this.form.className = "kroma-chat__composer";
+    this.composerField = document.createElement("div");
+    this.composerField.className = "kroma-chat__composer-field";
     this.controller = new VirtualKeyboardController(false);
     const displayCallbacks: VirtualTextDisplayCallbacks = {
       onCaretChange: (start, end) => {
@@ -70,14 +74,19 @@ export class ChatComposer {
     this.actions.className = "kroma-chat__composer-actions";
     this.sendButton = this.createSendButton(options.sendLabel);
     this.actions.append(this.sendButton);
-    this.form.append(this.display.element, this.actions);
+    this.composerField.append(this.display.element);
+    this.form.append(this.composerField, this.actions);
 
     this.createKeyboard();
     this.keyboardShowcase = showKeyboardShowcase ? this.createKeyboardShowcase() : null;
+    this.keyboardDock = this.keyboard && !this.keyboardShowcase ? document.createElement("div") : null;
+    if (this.keyboardDock) {
+      this.keyboardDock.className = "kroma-chat__keyboard-dock";
+      this.keyboardDock.append(this.keyboard!.element);
+    }
     if (this.interactionMode === "free-text" && !this.keyboardShowcase) this.keyboard?.setOpen(true);
     this.element.append(this.form);
     if (this.keyboardShowcase) this.element.append(this.keyboardShowcase);
-    else if (this.keyboard) this.element.append(this.keyboard.element);
 
     this.errorMessage = document.createElement("p");
     this.errorMessage.className = "kroma-chat__error";
@@ -266,7 +275,9 @@ export class ChatComposer {
     this.element.dataset.interactionMode = this.interactionMode;
     this.display.setVisible(!externalInput);
     this.display.setEditing(!guided && !externalInput);
+    this.form.hidden = externalInput;
     this.sendButton.hidden = Boolean(this.keyboardShowcase) || externalInput;
+    if (this.keyboardDock) this.keyboardDock.hidden = !this.controller.state.open;
     if (!virtualInput && !this.keyboardShowcase) this.controller.setOpen(false);
   }
 
@@ -287,10 +298,9 @@ export class ChatComposer {
     icon.setAttribute("aria-hidden", "true");
     icon.setAttribute("focusable", "false");
     const outerPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    outerPath.setAttribute("d", "M4.5 12 20 4.5l-4.1 15-3.1-6.1L4.5 12Z");
-    const innerPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    innerPath.setAttribute("d", "m12.8 13.4 4.7-4.7");
-    icon.append(outerPath, innerPath);
+    outerPath.setAttribute("d", "M12 19V5m-7 7 7-7 7 7");
+    icon.setAttribute("stroke-width", "2");
+    icon.append(outerPath);
     button.append(label, icon);
     return button;
   }
