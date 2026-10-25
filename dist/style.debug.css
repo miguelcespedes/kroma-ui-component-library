@@ -12726,6 +12726,75 @@ textarea.form-control-lg {
   gap: var(--kroma-chat-spacing-tight);
 }
 
+.kroma-chat__speech-button {
+  position: relative;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--kroma-chat-border-subtle);
+  border-radius: 50%;
+  background: var(--kroma-chat-surface-control);
+  color: var(--kroma-chat-text-secondary);
+  cursor: pointer;
+  transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), border-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), opacity var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+}
+
+.kroma-chat__speech-button svg {
+  width: var(--kroma-chat-icon-action-size);
+  height: var(--kroma-chat-icon-action-size);
+}
+
+.kroma-chat__speech-button:hover:not(:disabled) {
+  border-color: var(--kroma-chat-border-interactive);
+  color: var(--kroma-chat-text-primary);
+}
+
+.kroma-chat__speech-button:disabled {
+  color: var(--kroma-chat-text-disabled);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.kroma-chat__speech-button[data-speech-state=listening] {
+  border-color: var(--kroma-chat-state-focus);
+  background: var(--kroma-chat-state-focus);
+  color: var(--kroma-chat-on-accent);
+}
+
+.kroma-chat__speech-button[data-speech-state=starting], .kroma-chat__speech-button[data-speech-state=stopping] {
+  border-color: var(--kroma-chat-state-focus);
+  color: var(--kroma-chat-state-focus);
+}
+
+.kroma-chat__speech-button[data-speech-state=error] {
+  border-color: var(--kroma-chat-state-error);
+  color: var(--kroma-chat-state-error);
+}
+
+.kroma-chat__speech-button[data-speech-state=listening]::after {
+  position: absolute;
+  inset-block-start: 0.3rem;
+  inset-inline-end: 0.3rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--kroma-chat-on-accent);
+  content: "";
+}
+
+.kroma-chat__speech-status {
+  margin: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-tight) 0;
+  color: var(--kroma-chat-text-secondary);
+  font-size: var(--kroma-chat-typography-body-small);
+  line-height: var(--kroma-chat-leading-small);
+}
+
+.kroma-chat__speech-status[data-state=error] {
+  color: var(--kroma-chat-state-error);
+}
+
 .kroma-chat__composer-area, .kroma-chat__composer, .kroma-chat__virtual-display {
   max-width: 100%;
 }
@@ -14342,7 +14411,7 @@ textarea.form-control-lg {
   line-height: var(--kroma-chat-leading-small);
 }
 
-.kroma-chat__header-action:focus-visible, .kroma-chat__option:focus-visible, .kroma-chat__rich-link:focus-visible, .kroma-chat__rich-action:focus-visible, .kroma-chat__journey-action:focus-visible, .kroma-chat__journey-item:focus-visible, .kroma-chat__category:focus-visible, .kroma-chat__product-card:focus-visible, .kroma-chat__carousel-arrow:focus-visible, .kroma-chat__variant:focus-within, .kroma-chat__quantity-button:focus-visible, .kroma-chat__cart-remove:focus-visible, .kroma-chat__send:focus-visible {
+.kroma-chat__header-action:focus-visible, .kroma-chat__option:focus-visible, .kroma-chat__rich-link:focus-visible, .kroma-chat__rich-action:focus-visible, .kroma-chat__journey-action:focus-visible, .kroma-chat__journey-item:focus-visible, .kroma-chat__category:focus-visible, .kroma-chat__product-card:focus-visible, .kroma-chat__carousel-arrow:focus-visible, .kroma-chat__variant:focus-within, .kroma-chat__quantity-button:focus-visible, .kroma-chat__cart-remove:focus-visible, .kroma-chat__speech-button:focus-visible, .kroma-chat__send:focus-visible {
   outline: 2px solid var(--kroma-chat-state-focus);
   outline-offset: 2px;
 }

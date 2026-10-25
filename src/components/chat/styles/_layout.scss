@@ -164,6 +164,51 @@
 
   &__composer-actions { display: flex; min-width: 0; flex: 0 0 auto; align-items: center; gap: var(--kroma-chat-spacing-tight); }
 
+  &__speech-button {
+    position: relative;
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid var(--kroma-chat-border-subtle);
+    border-radius: 50%;
+    background: var(--kroma-chat-surface-control);
+    color: var(--kroma-chat-text-secondary);
+    cursor: pointer;
+    transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard),
+      border-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard),
+      color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard),
+      opacity var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+
+    svg { width: var(--kroma-chat-icon-action-size); height: var(--kroma-chat-icon-action-size); }
+    &:hover:not(:disabled) { border-color: var(--kroma-chat-border-interactive); color: var(--kroma-chat-text-primary); }
+    &:disabled { color: var(--kroma-chat-text-disabled); cursor: not-allowed; opacity: .7; }
+    &[data-speech-state="listening"] { border-color: var(--kroma-chat-state-focus); background: var(--kroma-chat-state-focus); color: var(--kroma-chat-on-accent); }
+    &[data-speech-state="starting"],
+    &[data-speech-state="stopping"] { border-color: var(--kroma-chat-state-focus); color: var(--kroma-chat-state-focus); }
+    &[data-speech-state="error"] { border-color: var(--kroma-chat-state-error); color: var(--kroma-chat-state-error); }
+    &[data-speech-state="listening"]::after {
+      position: absolute;
+      inset-block-start: .3rem;
+      inset-inline-end: .3rem;
+      width: .4rem;
+      height: .4rem;
+      border-radius: 50%;
+      background: var(--kroma-chat-on-accent);
+      content: "";
+    }
+  }
+
+  &__speech-status {
+    margin: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-tight) 0;
+    color: var(--kroma-chat-text-secondary);
+    font-size: var(--kroma-chat-typography-body-small);
+    line-height: var(--kroma-chat-leading-small);
+
+    &[data-state="error"] { color: var(--kroma-chat-state-error); }
+  }
+
   &__composer-area,
   &__composer,
   &__virtual-display { max-width: 100%; }

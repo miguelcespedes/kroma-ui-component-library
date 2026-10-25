@@ -9,6 +9,8 @@
     "test:theme-browser": "node scripts/test-theme-browser.mjs",
     "test:theme-browser:all": "node scripts/test-theme-browser.mjs --all",
     "test:chat-keyboard": "node scripts/test-chat-keyboard.mjs",
+    "test:chat-speech": "node scripts/test-chat-speech.mjs",
+    "test:speech-input": "node scripts/test-speech-input.mjs",
     "test:negative": "node scripts/test-negative.mjs",
     "metrics:architecture": "node scripts/report-architecture-metrics.mjs",
     "build:min": "node scripts/clean-dist.mjs && vite build --config vite.config.js --mode min",

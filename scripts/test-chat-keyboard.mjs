@@ -87,7 +87,17 @@ try {
     await display.click();
     await page.keyboard.type("h");
     assert.match(await display.innerText(), /h/, "physical key inserts into the virtual textbox");
+    const microphoneEnabled = await composerArea.locator(".kroma-chat__speech-button").isEnabled();
     await page.keyboard.press("Tab");
+    if (microphoneEnabled) {
+      const microphoneStop = await page.evaluate(() => ({
+        isMicrophone: document.activeElement?.matches(".kroma-chat__speech-button"),
+        outlineStyle: document.activeElement ? getComputedStyle(document.activeElement).outlineStyle : "none",
+      }));
+      assert.equal(microphoneStop.isMicrophone, true, "Tab exposes the available microphone control");
+      assert.equal(microphoneStop.outlineStyle, "solid", "microphone retains its keyboard focus indicator");
+      await page.keyboard.press("Tab");
+    }
     const tabStop = await page.evaluate(() => ({
       isSendButton: document.activeElement?.matches(".kroma-chat__send"),
       outlineStyle: document.activeElement ? getComputedStyle(document.activeElement).outlineStyle : "none",
@@ -96,6 +106,7 @@ try {
     assert.equal(tabStop.outlineStyle, "solid", "other interactive controls retain their keyboard focus indicator");
     const unfocusedBorder = await composerArea.locator(".kroma-chat__composer-field").evaluate((element) => getComputedStyle(element).borderTopColor);
     await page.keyboard.press("Shift+Tab");
+    if (microphoneEnabled) await page.keyboard.press("Shift+Tab");
     // Let the field's 150ms border-color transition settle before comparing
     // the resolved semantic token with the computed border color.
     await page.waitForTimeout(200);

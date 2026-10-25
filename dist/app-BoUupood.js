@@ -9587,6 +9587,180 @@ class VirtualKeyboardController {
     this.listeners.forEach((listener) => listener(state));
   }
 }
+const DEFAULT_STATUS = { state: "idle", message: "" };
+class SpeechInputController {
+  constructor(factory = detectSpeechRecognitionFactory()) {
+    this.factory = factory;
+    this.currentStatus = factory ? DEFAULT_STATUS : { state: "unsupported", message: unsupportedMessage() };
+  }
+  factory;
+  statusListeners = /* @__PURE__ */ new Set();
+  resultListeners = /* @__PURE__ */ new Set();
+  recognition = null;
+  currentStatus;
+  destroyed = false;
+  get status() {
+    return this.currentStatus;
+  }
+  get supported() {
+    return this.factory !== null;
+  }
+  subscribeStatus(listener) {
+    this.statusListeners.add(listener);
+    listener(this.currentStatus);
+    return () => this.statusListeners.delete(listener);
+  }
+  subscribeResults(listener) {
+    this.resultListeners.add(listener);
+    return () => this.resultListeners.delete(listener);
+  }
+  start() {
+    if (this.destroyed || !this.factory || ["starting", "listening", "stopping"].includes(this.currentStatus.state)) return false;
+    if (this.recognition) {
+      const previous = this.recognition;
+      this.detachRecognition(previous);
+      try {
+        previous.abort();
+      } catch {
+      }
+    }
+    let recognition;
+    try {
+      recognition = this.factory();
+    } catch {
+      this.publishStatus("error", "No se pudo preparar el reconocimiento de voz. Puedes escribir el mensaje.");
+      return false;
+    }
+    recognition.lang = "es-PE";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+    this.recognition = recognition;
+    this.publishStatus("starting", "Preparando el dictado…");
+    recognition.onstart = () => {
+      if (this.recognition !== recognition || this.destroyed) return;
+      this.publishStatus("listening", "Escuchando. Puedes detener el dictado cuando quieras.");
+    };
+    recognition.onresult = (event) => {
+      if (this.recognition !== recognition || this.destroyed) return;
+      const finalParts = [];
+      const interimParts = [];
+      for (let index = 0; index < event.results.length; index += 1) {
+        const result = event.results[index];
+        const transcript = result[0]?.transcript || "";
+        (result.isFinal ? finalParts : interimParts).push(transcript);
+      }
+      const finalTranscript = finalParts.join("");
+      const interimTranscript = interimParts.join("");
+      this.resultListeners.forEach((listener) => listener({
+        transcript: `${finalTranscript}${interimTranscript}`,
+        finalTranscript,
+        interimTranscript
+      }));
+    };
+    recognition.onerror = (event) => {
+      if (this.recognition !== recognition || this.destroyed) return;
+      this.publishStatus("error", messageForSpeechError(event.error));
+    };
+    recognition.onend = () => {
+      if (this.recognition !== recognition || this.destroyed) return;
+      this.recognition = null;
+      if (this.currentStatus.state === "error") return;
+      if (this.currentStatus.state === "starting") {
+        this.publishStatus("error", "El reconocimiento terminó antes de empezar. Puedes intentarlo de nuevo o escribir.");
+        return;
+      }
+      this.publishStatus("idle", "");
+    };
+    try {
+      recognition.start();
+      return true;
+    } catch (error) {
+      this.detachRecognition(recognition);
+      this.publishStatus("error", messageForStartError(error));
+      return false;
+    }
+  }
+  stop() {
+    if (!this.recognition || !["starting", "listening"].includes(this.currentStatus.state)) return false;
+    const recognition = this.recognition;
+    this.publishStatus("stopping", "Deteniendo el dictado…");
+    try {
+      recognition.stop();
+    } catch {
+      this.detachRecognition(recognition);
+      this.publishStatus("error", "No se pudo detener el dictado correctamente. Puedes seguir escribiendo.");
+      return false;
+    }
+    return true;
+  }
+  cancel() {
+    const recognition = this.recognition;
+    if (recognition) {
+      this.detachRecognition(recognition);
+      try {
+        recognition.abort();
+      } catch {
+      }
+    }
+    if (!this.destroyed && this.currentStatus.state !== "unsupported") this.publishStatus("idle", "");
+  }
+  destroy() {
+    if (this.destroyed) return;
+    this.destroyed = true;
+    const recognition = this.recognition;
+    if (recognition) {
+      this.detachRecognition(recognition);
+      try {
+        recognition.abort();
+      } catch {
+      }
+    }
+    this.statusListeners.clear();
+    this.resultListeners.clear();
+  }
+  detachRecognition(recognition) {
+    if (this.recognition === recognition) this.recognition = null;
+    recognition.onstart = null;
+    recognition.onend = null;
+    recognition.onerror = null;
+    recognition.onresult = null;
+  }
+  publishStatus(state, message) {
+    this.currentStatus = { state, message };
+    this.statusListeners.forEach((listener) => listener(this.currentStatus));
+  }
+}
+function detectSpeechRecognitionFactory(scope = typeof window === "undefined" ? null : window) {
+  if (!scope || !scope.isSecureContext) return null;
+  const speechWindow = scope;
+  const Recognition = speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
+  return Recognition ? () => new Recognition() : null;
+}
+function unsupportedMessage() {
+  return "El dictado por voz no está disponible en este navegador o contexto. Puedes escribir el mensaje.";
+}
+function messageForSpeechError(error) {
+  switch (error) {
+    case "not-allowed":
+    case "service-not-allowed":
+      return "No se concedió permiso para usar el micrófono. Puedes escribir el mensaje.";
+    case "audio-capture":
+      return "No se encontró un micrófono disponible. Puedes escribir el mensaje.";
+    case "no-speech":
+      return "No se detectó voz. Puedes intentarlo de nuevo o escribir el mensaje.";
+    case "network":
+      return "El servicio de voz del navegador no pudo conectarse. Verifica tu conexión o inténtalo de nuevo; también puedes escribir el mensaje.";
+    default:
+      return "Ocurrió un error durante el dictado. Puedes intentarlo de nuevo o escribir el mensaje.";
+  }
+}
+function messageForStartError(error) {
+  if (typeof DOMException !== "undefined" && error instanceof DOMException && error.name === "NotAllowedError") {
+    return messageForSpeechError("not-allowed");
+  }
+  return "No se pudo iniciar el dictado. Comprueba el permiso del micrófono o escribe el mensaje.";
+}
 class VirtualTextDisplay {
   constructor(inputLabel, placeholder, callbacks) {
     this.placeholder = placeholder;
@@ -9735,8 +9909,10 @@ class ChatComposer {
     this.display.setVisible(true);
     this.actions = document.createElement("div");
     this.actions.className = "kroma-chat__composer-actions";
+    this.speechInput = new SpeechInputController();
+    this.speechButton = this.createSpeechButton();
     this.sendButton = this.createSendButton(options.sendLabel);
-    this.actions.append(this.sendButton);
+    this.actions.append(this.speechButton, this.sendButton);
     this.composerField.append(this.display.element);
     this.form.append(this.composerField, this.actions);
     this.createKeyboard();
@@ -9754,12 +9930,24 @@ class ChatComposer {
     this.errorMessage.setAttribute("role", "alert");
     this.errorMessage.hidden = true;
     this.element.append(this.errorMessage);
+    this.speechStatus = document.createElement("p");
+    this.speechStatus.className = "kroma-chat__speech-status";
+    this.speechStatus.setAttribute("role", "status");
+    this.speechStatus.setAttribute("aria-live", "polite");
+    this.speechStatus.setAttribute("aria-atomic", "true");
+    this.element.append(this.speechStatus);
+    this.speechPrivacyNote = document.createElement("span");
+    this.speechPrivacyNote.className = "kroma-chat__sr-only";
+    this.speechPrivacyNote.id = `${options.id}-speech-privacy`;
+    this.speechPrivacyNote.textContent = "El navegador puede procesar el audio mediante servicios de su proveedor. Kroma no guarda grabaciones.";
+    this.actions.append(this.speechPrivacyNote);
     const signal = this.listeners.signal;
     document.addEventListener("pointerdown", (event) => {
       const target = event.target;
       if (!(target instanceof Node)) return;
       if (this.keyboard?.element.contains(target) || this.keyboardShowcase?.contains(target)) return;
       if (this.keyboardTarget?.contains(target)) return;
+      if (this.speechButton.contains(target)) return;
       if (this.sendButton.contains(target)) return;
       if (this.keyboardTarget) {
         this.setKeyboardTarget(null);
@@ -9782,6 +9970,8 @@ class ChatComposer {
       this.updateShowcaseControls();
       this.updatePresentation();
     });
+    this.speechUnsubscribers.push(this.speechInput.subscribeStatus((status) => this.updateSpeechStatus(status)));
+    this.speechUnsubscribers.push(this.speechInput.subscribeResults((result) => this.applySpeechTranscript(result)));
     this.updatePresentation();
     this.updateSendButton();
   }
@@ -9790,6 +9980,9 @@ class ChatComposer {
   form;
   display;
   sendButton;
+  speechButton;
+  speechStatus;
+  speechPrivacyNote;
   errorMessage;
   controller;
   keyboardDock;
@@ -9800,6 +9993,8 @@ class ChatComposer {
   keyboardShowcase;
   showcaseLayouts = /* @__PURE__ */ new Map();
   unsubscribeController;
+  speechInput;
+  speechUnsubscribers = [];
   keyboard = null;
   keyboardTarget = null;
   inputsWithPhysicalKeyHandlers = /* @__PURE__ */ new WeakSet();
@@ -9809,11 +10004,16 @@ class ChatComposer {
   draftValue = "";
   caretStart = 0;
   caretEnd = 0;
+  speechInsertion = null;
+  speechHidKeyboard = false;
   setDisabled(disabled) {
     this.disabled = disabled;
     this.display.setDisabled(disabled);
     this.keyboard?.setDisabled(disabled);
-    if (disabled) this.setKeyboardTarget(null);
+    if (disabled) {
+      this.setKeyboardTarget(null);
+      this.speechInput.cancel();
+    }
     this.updateSendButton();
     this.updatePresentation();
   }
@@ -9906,6 +10106,8 @@ class ChatComposer {
   destroy() {
     this.listeners.abort();
     this.unsubscribeController();
+    this.speechUnsubscribers.forEach((unsubscribe) => unsubscribe());
+    this.speechInput.destroy();
     this.display.destroy();
     this.keyboard?.destroy();
     this.disposers.forEach((dispose) => dispose());
@@ -9947,12 +10149,14 @@ class ChatComposer {
     this.display.setVisible(!externalInput);
     this.display.setEditing(!guided && !externalInput);
     this.form.hidden = externalInput;
+    this.speechButton.hidden = Boolean(this.keyboardShowcase) || externalInput;
     this.sendButton.hidden = Boolean(this.keyboardShowcase) || externalInput;
     if (this.keyboardDock) this.keyboardDock.hidden = !this.controller.state.open;
     if (!virtualInput && !this.keyboardShowcase) this.controller.setOpen(false);
   }
   updateSendButton() {
     this.sendButton.disabled = this.disabled || !this.currentValue().trim();
+    this.speechButton.disabled = this.disabled || !this.speechInput.supported || this.speechInput.status.state === "stopping";
   }
   createSendButton(sendLabel) {
     const button = document.createElement("button");
@@ -9972,6 +10176,95 @@ class ChatComposer {
     icon.append(outerPath);
     button.append(label, icon);
     return button;
+  }
+  createSpeechButton() {
+    const button = document.createElement("button");
+    button.className = "kroma-chat__speech-button";
+    button.type = "button";
+    button.dataset.speechState = this.speechInput.status.state;
+    button.setAttribute("aria-label", this.speechInput.supported ? "Iniciar dictado por voz" : this.speechInput.status.message);
+    button.setAttribute("aria-pressed", "false");
+    button.setAttribute("aria-describedby", `${this.options.id}-speech-privacy`);
+    button.title = this.speechInput.status.message || "Dictar mensaje por voz";
+    const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("aria-hidden", "true");
+    icon.setAttribute("focusable", "false");
+    icon.setAttribute("fill", "none");
+    icon.setAttribute("stroke", "currentColor");
+    icon.setAttribute("stroke-width", "1.8");
+    icon.setAttribute("stroke-linecap", "round");
+    icon.setAttribute("stroke-linejoin", "round");
+    const microphone = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    microphone.setAttribute("d", "M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z");
+    const stand = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    stand.setAttribute("d", "M19 11a7 7 0 0 1-14 0m7 7v4m-4 0h8");
+    icon.append(microphone, stand);
+    button.append(icon);
+    button.addEventListener("click", () => this.toggleSpeechInput(), { signal: this.listeners.signal });
+    return button;
+  }
+  toggleSpeechInput() {
+    const state = this.speechInput.status.state;
+    if (state === "starting" || state === "listening") {
+      this.speechInput.stop();
+      return;
+    }
+    if (state === "stopping" || !this.speechInput.supported || this.disabled) return;
+    if (this.interactionMode !== "free-text") this.setInteractionMode("free-text");
+    const caret = this.keyboard?.getCaretRange() ?? { start: this.caretStart, end: this.caretEnd };
+    this.speechInsertion = {
+      value: this.draftValue,
+      start: Math.max(0, Math.min(caret.start, this.draftValue.length)),
+      end: Math.max(0, Math.min(caret.end, this.draftValue.length))
+    };
+    this.speechHidKeyboard = this.controller.state.open;
+    if (this.speechInput.start()) this.keyboard?.setOpen(false);
+    else this.speechInsertion = null;
+  }
+  updateSpeechStatus(status) {
+    const active = status.state === "starting" || status.state === "listening" || status.state === "stopping";
+    const isError = status.state === "error";
+    this.speechButton.dataset.speechState = status.state;
+    this.speechButton.setAttribute("aria-pressed", String(active));
+    this.speechButton.setAttribute("aria-label", active ? status.state === "stopping" ? "Deteniendo dictado por voz" : "Detener dictado por voz" : this.speechInput.supported ? "Iniciar dictado por voz" : status.message);
+    this.speechButton.title = status.message || "Dictar mensaje por voz";
+    this.speechButton.disabled = this.disabled || !this.speechInput.supported || status.state === "stopping";
+    this.speechStatus.textContent = status.message;
+    this.speechStatus.dataset.state = status.state;
+    this.speechStatus.hidden = !status.message;
+    if (status.state === "idle" || isError || status.state === "unsupported") {
+      const returnFocusToComposer = status.state === "idle" && this.speechInsertion !== null;
+      this.speechInsertion = null;
+      if (isError && this.speechHidKeyboard && this.interactionMode === "free-text") this.keyboard?.setOpen(true);
+      this.speechHidKeyboard = false;
+      if (returnFocusToComposer && !this.disabled) this.display.element.focus({ preventScroll: true });
+    }
+  }
+  applySpeechTranscript(result) {
+    const insertion = this.speechInsertion;
+    if (!insertion) return;
+    const start2 = Math.min(insertion.start, insertion.end);
+    const end2 = Math.max(insertion.start, insertion.end);
+    const before = insertion.value.slice(0, start2);
+    const after = insertion.value.slice(end2);
+    const transcript = result.transcript.trim();
+    if (!transcript) {
+      this.keyboard?.setInput(insertion.value, insertion.start, insertion.end);
+      return;
+    }
+    const leadingSpace = before && !/\s$/.test(before) ? " " : "";
+    const trailingSpace = after && !/^\s/.test(after) ? " " : "";
+    const roomForTranscript = Math.max(0, COMPOSER_MAX_LENGTH - before.length - after.length - leadingSpace.length - trailingSpace.length);
+    if (!roomForTranscript) {
+      this.keyboard?.setInput(insertion.value, insertion.start, insertion.end);
+      return;
+    }
+    const spoken = transcript.slice(0, roomForTranscript);
+    const inserted = `${leadingSpace}${spoken}${trailingSpace}`;
+    const nextValue = `${before}${inserted}${after}`;
+    const nextCaret = before.length + leadingSpace.length + spoken.length;
+    this.keyboard?.setInput(nextValue, nextCaret, nextCaret);
   }
   createKeyboardShowcase() {
     const showcase = document.createElement("section");
@@ -11598,7 +11891,7 @@ class KromaChat extends HTMLElement {
   loadKitchenConversation() {
     const revision = ++this.modeRevision;
     void __vitePreload(async () => {
-      const { createKitchenMessages } = await import("./kitchen.messages-DQbpkP4p.js");
+      const { createKitchenMessages } = await import("./kitchen.messages-k7-GNLJH.js");
       return { createKitchenMessages };
     }, true ? [] : void 0, import.meta.url).then(({ createKitchenMessages }) => {
       if (!this.isConnected || this.mode !== "kitchen" || revision !== this.modeRevision) return;
@@ -12244,4 +12537,4 @@ export {
   poloImage as p,
   sneakerImage as s
 };
-//# sourceMappingURL=app-f_YB5j5E.js.map
+//# sourceMappingURL=app-BoUupood.js.map

@@ -1,5 +1,6 @@
 import { VirtualKeyboard } from "../input/virtual-keyboard";
 import { VirtualKeyboardController, type VirtualKeyboardLayoutName } from "../input/virtual-keyboard-controller";
+import { SpeechInputController, type SpeechInputStatus, type SpeechInputTranscript } from "../input/speech-input-controller";
 import { VirtualTextDisplay, type VirtualTextDisplayCallbacks } from "../input/virtual-text-display";
 
 export type ChatInteractionMode = "guided" | "free-text";
@@ -23,6 +24,9 @@ export class ChatComposer {
   readonly form: HTMLFormElement;
   readonly display: VirtualTextDisplay;
   readonly sendButton: HTMLButtonElement;
+  readonly speechButton: HTMLButtonElement;
+  readonly speechStatus: HTMLParagraphElement;
+  readonly speechPrivacyNote: HTMLSpanElement;
   readonly errorMessage: HTMLParagraphElement;
   readonly controller: VirtualKeyboardController;
   readonly keyboardDock: HTMLDivElement | null;
@@ -33,6 +37,8 @@ export class ChatComposer {
   private readonly keyboardShowcase: HTMLElement | null;
   private readonly showcaseLayouts = new Map<VirtualKeyboardLayoutName, HTMLButtonElement>();
   private readonly unsubscribeController: () => void;
+  private readonly speechInput: SpeechInputController;
+  private readonly speechUnsubscribers: Array<() => void> = [];
   private keyboard: VirtualKeyboard | null = null;
   private keyboardTarget: HTMLInputElement | null = null;
   private readonly inputsWithPhysicalKeyHandlers = new WeakSet<HTMLInputElement>();
@@ -42,6 +48,8 @@ export class ChatComposer {
   private draftValue = "";
   private caretStart = 0;
   private caretEnd = 0;
+  private speechInsertion: { value: string; start: number; end: number } | null = null;
+  private speechHidKeyboard = false;
 
   constructor(private readonly options: ChatComposerOptions) {
     this.disabled = Boolean(options.disabled);
@@ -72,8 +80,10 @@ export class ChatComposer {
 
     this.actions = document.createElement("div");
     this.actions.className = "kroma-chat__composer-actions";
+    this.speechInput = new SpeechInputController();
+    this.speechButton = this.createSpeechButton();
     this.sendButton = this.createSendButton(options.sendLabel);
-    this.actions.append(this.sendButton);
+    this.actions.append(this.speechButton, this.sendButton);
     this.composerField.append(this.display.element);
     this.form.append(this.composerField, this.actions);
 
@@ -94,12 +104,25 @@ export class ChatComposer {
     this.errorMessage.hidden = true;
     this.element.append(this.errorMessage);
 
+    this.speechStatus = document.createElement("p");
+    this.speechStatus.className = "kroma-chat__speech-status";
+    this.speechStatus.setAttribute("role", "status");
+    this.speechStatus.setAttribute("aria-live", "polite");
+    this.speechStatus.setAttribute("aria-atomic", "true");
+    this.element.append(this.speechStatus);
+    this.speechPrivacyNote = document.createElement("span");
+    this.speechPrivacyNote.className = "kroma-chat__sr-only";
+    this.speechPrivacyNote.id = `${options.id}-speech-privacy`;
+    this.speechPrivacyNote.textContent = "El navegador puede procesar el audio mediante servicios de su proveedor. Kroma no guarda grabaciones.";
+    this.actions.append(this.speechPrivacyNote);
+
     const signal = this.listeners.signal;
     document.addEventListener("pointerdown", (event) => {
       const target = event.target;
       if (!(target instanceof Node)) return;
       if (this.keyboard?.element.contains(target) || this.keyboardShowcase?.contains(target)) return;
       if (this.keyboardTarget?.contains(target)) return;
+      if (this.speechButton.contains(target)) return;
       // Keep the submit target stable until its click is dispatched. Closing
       // the dock on pointerdown can reflow the composer before pointerup.
       if (this.sendButton.contains(target)) return;
@@ -124,6 +147,8 @@ export class ChatComposer {
       this.updateShowcaseControls();
       this.updatePresentation();
     });
+    this.speechUnsubscribers.push(this.speechInput.subscribeStatus((status) => this.updateSpeechStatus(status)));
+    this.speechUnsubscribers.push(this.speechInput.subscribeResults((result) => this.applySpeechTranscript(result)));
     this.updatePresentation();
     this.updateSendButton();
   }
@@ -132,7 +157,10 @@ export class ChatComposer {
     this.disabled = disabled;
     this.display.setDisabled(disabled);
     this.keyboard?.setDisabled(disabled);
-    if (disabled) this.setKeyboardTarget(null);
+    if (disabled) {
+      this.setKeyboardTarget(null);
+      this.speechInput.cancel();
+    }
     this.updateSendButton();
     this.updatePresentation();
   }
@@ -235,6 +263,8 @@ export class ChatComposer {
   destroy() {
     this.listeners.abort();
     this.unsubscribeController();
+    this.speechUnsubscribers.forEach((unsubscribe) => unsubscribe());
+    this.speechInput.destroy();
     this.display.destroy();
     this.keyboard?.destroy();
     this.disposers.forEach((dispose) => dispose());
@@ -279,6 +309,7 @@ export class ChatComposer {
     this.display.setVisible(!externalInput);
     this.display.setEditing(!guided && !externalInput);
     this.form.hidden = externalInput;
+    this.speechButton.hidden = Boolean(this.keyboardShowcase) || externalInput;
     this.sendButton.hidden = Boolean(this.keyboardShowcase) || externalInput;
     if (this.keyboardDock) this.keyboardDock.hidden = !this.controller.state.open;
     if (!virtualInput && !this.keyboardShowcase) this.controller.setOpen(false);
@@ -286,6 +317,7 @@ export class ChatComposer {
 
   private updateSendButton() {
     this.sendButton.disabled = this.disabled || !this.currentValue().trim();
+    this.speechButton.disabled = this.disabled || !this.speechInput.supported || this.speechInput.status.state === "stopping";
   }
 
   private createSendButton(sendLabel: string) {
@@ -306,6 +338,104 @@ export class ChatComposer {
     icon.append(outerPath);
     button.append(label, icon);
     return button;
+  }
+
+  private createSpeechButton() {
+    const button = document.createElement("button");
+    button.className = "kroma-chat__speech-button";
+    button.type = "button";
+    button.dataset.speechState = this.speechInput.status.state;
+    button.setAttribute("aria-label", this.speechInput.supported
+      ? "Iniciar dictado por voz"
+      : this.speechInput.status.message);
+    button.setAttribute("aria-pressed", "false");
+    button.setAttribute("aria-describedby", `${this.options.id}-speech-privacy`);
+    button.title = this.speechInput.status.message || "Dictar mensaje por voz";
+    const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("aria-hidden", "true");
+    icon.setAttribute("focusable", "false");
+    icon.setAttribute("fill", "none");
+    icon.setAttribute("stroke", "currentColor");
+    icon.setAttribute("stroke-width", "1.8");
+    icon.setAttribute("stroke-linecap", "round");
+    icon.setAttribute("stroke-linejoin", "round");
+    const microphone = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    microphone.setAttribute("d", "M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z");
+    const stand = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    stand.setAttribute("d", "M19 11a7 7 0 0 1-14 0m7 7v4m-4 0h8");
+    icon.append(microphone, stand);
+    button.append(icon);
+    button.addEventListener("click", () => this.toggleSpeechInput(), { signal: this.listeners.signal });
+    return button;
+  }
+
+  private toggleSpeechInput() {
+    const state = this.speechInput.status.state;
+    if (state === "starting" || state === "listening") {
+      this.speechInput.stop();
+      return;
+    }
+    if (state === "stopping" || !this.speechInput.supported || this.disabled) return;
+
+    if (this.interactionMode !== "free-text") this.setInteractionMode("free-text");
+    const caret = this.keyboard?.getCaretRange() ?? { start: this.caretStart, end: this.caretEnd };
+    this.speechInsertion = {
+      value: this.draftValue,
+      start: Math.max(0, Math.min(caret.start, this.draftValue.length)),
+      end: Math.max(0, Math.min(caret.end, this.draftValue.length)),
+    };
+    this.speechHidKeyboard = this.controller.state.open;
+    if (this.speechInput.start()) this.keyboard?.setOpen(false);
+    else this.speechInsertion = null;
+  }
+
+  private updateSpeechStatus(status: SpeechInputStatus) {
+    const active = status.state === "starting" || status.state === "listening" || status.state === "stopping";
+    const isError = status.state === "error";
+    this.speechButton.dataset.speechState = status.state;
+    this.speechButton.setAttribute("aria-pressed", String(active));
+    this.speechButton.setAttribute("aria-label", active
+      ? status.state === "stopping" ? "Deteniendo dictado por voz" : "Detener dictado por voz"
+      : this.speechInput.supported ? "Iniciar dictado por voz" : status.message);
+    this.speechButton.title = status.message || "Dictar mensaje por voz";
+    this.speechButton.disabled = this.disabled || !this.speechInput.supported || status.state === "stopping";
+    this.speechStatus.textContent = status.message;
+    this.speechStatus.dataset.state = status.state;
+    this.speechStatus.hidden = !status.message;
+    if (status.state === "idle" || isError || status.state === "unsupported") {
+      const returnFocusToComposer = status.state === "idle" && this.speechInsertion !== null;
+      this.speechInsertion = null;
+      if (isError && this.speechHidKeyboard && this.interactionMode === "free-text") this.keyboard?.setOpen(true);
+      this.speechHidKeyboard = false;
+      if (returnFocusToComposer && !this.disabled) this.display.element.focus({ preventScroll: true });
+    }
+  }
+
+  private applySpeechTranscript(result: SpeechInputTranscript) {
+    const insertion = this.speechInsertion;
+    if (!insertion) return;
+    const start = Math.min(insertion.start, insertion.end);
+    const end = Math.max(insertion.start, insertion.end);
+    const before = insertion.value.slice(0, start);
+    const after = insertion.value.slice(end);
+    const transcript = result.transcript.trim();
+    if (!transcript) {
+      this.keyboard?.setInput(insertion.value, insertion.start, insertion.end);
+      return;
+    }
+    const leadingSpace = before && !/\s$/.test(before) ? " " : "";
+    const trailingSpace = after && !/^\s/.test(after) ? " " : "";
+    const roomForTranscript = Math.max(0, COMPOSER_MAX_LENGTH - before.length - after.length - leadingSpace.length - trailingSpace.length);
+    if (!roomForTranscript) {
+      this.keyboard?.setInput(insertion.value, insertion.start, insertion.end);
+      return;
+    }
+    const spoken = transcript.slice(0, roomForTranscript);
+    const inserted = `${leadingSpace}${spoken}${trailingSpace}`;
+    const nextValue = `${before}${inserted}${after}`;
+    const nextCaret = before.length + leadingSpace.length + spoken.length;
+    this.keyboard?.setInput(nextValue, nextCaret, nextCaret);
   }
 
   private createKeyboardShowcase() {
