@@ -11,6 +11,10 @@ function routeChatPage(server) {
     if (!request.url) return next();
     const url = new URL(request.url, "http://localhost");
     const pathname = url.pathname.replace(/\/$/, "");
+    if (pathname === "/chat" || pathname.endsWith("/chat") || pathname.includes("/chat/")) {
+      response.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+      response.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+    }
     if (pathname === "/chat" || pathname.endsWith("/chat")) {
       if (!url.pathname.endsWith("/")) {
         response.statusCode = 308;

@@ -1,6 +1,7 @@
 import { ChatComposer, type ChatInteractionMode } from "./layout/chat-composer";
 import { ChatHeader, type ChatHeaderAction } from "./layout/chat-header";
 import { ChatMessageList } from "./layout/chat-message-list";
+import { scheduleWhisperPreparation } from "./input/whisper-transcription-adapter";
 import { CHAT_EVENTS, emitKromaChatEvent } from "./core/chat.events";
 import type {
   ChatAction,
@@ -125,6 +126,7 @@ export class KromaChat extends HTMLElement {
 
   connectedCallback() {
     if (this.initialized) return;
+    if (this.mode !== "kitchen") scheduleWhisperPreparation();
     if (this.mode === "kitchen") {
       this.history = [];
       this.selectedOptions.clear();

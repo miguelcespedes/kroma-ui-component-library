@@ -12,6 +12,7 @@
   &__quantity-button:focus-visible,
   &__cart-remove:focus-visible,
   &__speech-button:focus-visible,
+  &__speak-button:focus-visible,
   &__send:focus-visible { outline: 2px solid var(--kroma-chat-state-focus); outline-offset: 2px; }
 
   .kroma-chat__virtual-display:focus-visible { outline: none; outline-offset: 0; box-shadow: none; }
