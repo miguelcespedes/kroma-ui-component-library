@@ -8,6 +8,7 @@
     "test:theme-layers": "node scripts/check-theme-layers.mjs",
     "test:theme-browser": "node scripts/test-theme-browser.mjs",
     "test:theme-browser:all": "node scripts/test-theme-browser.mjs --all",
+    "test:chat-keyboard": "node scripts/test-chat-keyboard.mjs",
     "test:negative": "node scripts/test-negative.mjs",
     "metrics:architecture": "node scripts/report-architecture-metrics.mjs",
     "build:min": "node scripts/clean-dist.mjs && vite build --config vite.config.js --mode min",

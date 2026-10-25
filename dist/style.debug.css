@@ -12278,6 +12278,13 @@ textarea.form-control-lg {
     max-width: calc(100vw - 1rem);
   }
 }
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("./inter-variable.woff2") format("woff2");
+}
 .kroma-chat {
   --kroma-chat-canvas: var(--kroma-color-surface-canvas, var(--bs-body-bg, #fff));
   --kroma-chat-surface: var(--kroma-color-surface-raised, var(--bs-secondary-bg, #fff));
@@ -12340,31 +12347,43 @@ textarea.form-control-lg {
   --kroma-chat-spacing-icon-label: var(--kroma-chat-spacing-3);
   --kroma-chat-spacing-copy: var(--kroma-chat-spacing-tight);
   --kroma-chat-control-height: 2.75rem;
-  --kroma-chat-menu-row-height: 3.75rem;
+  --kroma-chat-menu-row-height: 4.125rem;
   --kroma-chat-icon-action-size: 1.125rem;
   --kroma-chat-icon-secondary-size: 1rem;
   --kroma-chat-chevron-size: 1rem;
   --kroma-chat-bubble-padding: .75rem 1rem;
-  --kroma-chat-font-family: var(--kroma-font-family-base, var(--bs-body-font-family, system-ui, -apple-system, "Segoe UI", sans-serif));
-  --kroma-chat-typography-display: 1rem;
+  --kroma-chat-font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --kroma-chat-letter-spacing-body: 0;
+  --kroma-chat-typography-display: .9375rem;
   --kroma-chat-typography-title: .875rem;
   --kroma-chat-typography-body: .875rem;
   --kroma-chat-typography-body-small: .75rem;
-  --kroma-chat-typography-secondary: var(--kroma-chat-typography-body-small);
-  --kroma-chat-typography-label: .875rem;
+  --kroma-chat-typography-secondary: var(--kroma-chat-typography-action);
+  --kroma-chat-typography-label: .8125rem;
   --kroma-chat-typography-caption: .6875rem;
   --kroma-chat-typography-meta: var(--kroma-chat-typography-caption);
   --kroma-chat-typography-product: .875rem;
-  --kroma-chat-typography-price: 1rem;
-  --kroma-chat-leading-display: 1.5;
+  --kroma-chat-typography-price: .9375rem;
+  --kroma-chat-typography-status: .75rem;
+  --kroma-chat-typography-option-title: .875rem;
+  --kroma-chat-typography-description: .75rem;
+  --kroma-chat-typography-action: .8125rem;
+  --kroma-chat-typography-composer: 1rem;
+  --kroma-chat-typography-key: 1.25rem;
+  --kroma-chat-leading-display: 1.33;
   --kroma-chat-leading-heading: 1.43;
-  --kroma-chat-leading-body: 1.43;
-  --kroma-chat-leading-small: 1.33;
+  --kroma-chat-leading-body: 1.5;
+  --kroma-chat-leading-small: 1.42;
+  --kroma-chat-leading-status: 1.333;
+  --kroma-chat-leading-action: 1.385;
+  --kroma-chat-leading-price: 1.4;
   --kroma-chat-leading-caption: 1.27;
-  --kroma-chat-weight-regular: var(--kroma-font-weight-normal, 400);
+  --kroma-chat-leading-composer: 1.375;
+  --kroma-chat-weight-regular: 400;
   --kroma-chat-weight-medium: 500;
-  --kroma-chat-weight-semibold: var(--kroma-font-weight-semibold, 600);
-  --kroma-chat-weight-bold: var(--kroma-font-weight-bold, 700);
+  --kroma-chat-weight-semibold: 600;
+  --kroma-chat-weight-strong: 650;
+  --kroma-chat-weight-bold: 700;
   --kroma-chat-motion-fast: var(--kroma-motion-duration-fast, .15s);
   --kroma-chat-motion-standard: var(--kroma-motion-easing-standard, ease);
   --chat-surface: var(--kroma-chat-surface);
@@ -12445,6 +12464,12 @@ textarea.form-control-lg {
   font-size: var(--kroma-chat-typography-body);
   font-weight: var(--kroma-chat-weight-regular);
   line-height: var(--kroma-chat-leading-body);
+  letter-spacing: var(--kroma-chat-letter-spacing-body);
+  font-synthesis: none;
+  font-optical-sizing: auto;
+  font-kerning: normal;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
   box-shadow: var(--kroma-chat-elevation-shell);
   container-name: kroma-chat;
   container-type: size;
@@ -12452,6 +12477,11 @@ textarea.form-control-lg {
 
 .kroma-chat *, .kroma-chat *::before, .kroma-chat *::after {
   box-sizing: border-box;
+}
+
+.kroma-chat :where(button, input, textarea, select) {
+  font-family: inherit;
+  font-synthesis: none;
 }
 
 .kroma-chat [hidden] {
@@ -12480,7 +12510,7 @@ textarea.form-control-lg {
   background: var(--kroma-chat-accent);
   color: var(--kroma-chat-on-accent);
   font-size: var(--kroma-chat-typography-label);
-  font-weight: var(--kroma-font-weight-bold, 700);
+  font-weight: var(--kroma-chat-weight-bold);
 }
 
 .kroma-chat__heading {
@@ -12493,7 +12523,7 @@ textarea.form-control-lg {
 .kroma-chat__title {
   margin: 0;
   font-size: var(--kroma-chat-typography-display);
-  font-weight: var(--kroma-font-weight-bold, 700);
+  font-weight: var(--kroma-chat-weight-strong);
   line-height: var(--kroma-chat-leading-display);
   overflow-wrap: anywhere;
 }
@@ -12501,8 +12531,8 @@ textarea.form-control-lg {
 .kroma-chat__subtitle {
   margin: 0;
   color: var(--kroma-chat-text-secondary);
-  font-size: var(--kroma-chat-typography-secondary);
-  line-height: var(--kroma-chat-leading-small);
+  font-size: var(--kroma-chat-typography-status);
+  line-height: var(--kroma-chat-leading-status);
 }
 
 .kroma-chat__status {
@@ -12511,8 +12541,8 @@ textarea.form-control-lg {
   gap: var(--kroma-chat-spacing-tight);
   margin: 0;
   color: var(--kroma-chat-text-secondary);
-  font-size: var(--kroma-chat-typography-secondary);
-  line-height: var(--kroma-chat-leading-small);
+  font-size: var(--kroma-chat-typography-status);
+  line-height: var(--kroma-chat-leading-status);
 }
 
 .kroma-chat__status:not([hidden])::before {
@@ -12622,38 +12652,6 @@ textarea.form-control-lg {
   outline-offset: 2px;
 }
 
-.kroma-chat__composer:has(.kroma-chat__input[aria-invalid=true]) {
-  border-color: var(--kroma-chat-state-error);
-}
-
-.kroma-chat__input {
-  width: 100%;
-  min-width: 0;
-  min-height: var(--kroma-chat-control-height);
-  max-height: 7.5rem;
-  resize: none;
-  overflow-y: auto;
-  border: 0;
-  outline: 0;
-  box-shadow: none;
-  background: transparent;
-  color: var(--kroma-chat-text-primary);
-  font: inherit;
-  font-size: var(--kroma-chat-typography-body);
-  line-height: var(--kroma-chat-leading-body);
-  padding-block: var(--kroma-chat-spacing-control);
-}
-
-.kroma-chat__input::placeholder {
-  color: var(--kroma-chat-text-secondary);
-  opacity: 1;
-}
-
-.kroma-chat__input:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
 .kroma-chat__virtual-display {
   display: block;
   width: 100%;
@@ -12665,6 +12663,8 @@ textarea.form-control-lg {
   padding: var(--kroma-chat-spacing-control) 0;
   color: var(--kroma-chat-text-primary);
   font: inherit;
+  font-size: var(--kroma-chat-typography-composer);
+  line-height: var(--kroma-chat-leading-composer);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   cursor: text;
@@ -12689,14 +12689,20 @@ textarea.form-control-lg {
   animation: kroma-chat-virtual-caret 1s steps(2, start) infinite;
 }
 
+.kroma-chat__virtual-display:not([data-editing=true]) .kroma-chat__virtual-display-caret {
+  opacity: 0;
+  animation: none;
+}
+
 .kroma-chat__composer-actions {
   display: flex;
+  min-width: 0;
   flex: 0 0 auto;
   align-items: center;
   gap: var(--kroma-chat-spacing-tight);
 }
 
-.kroma-chat__composer-area, .kroma-chat__composer, .kroma-chat__input, .kroma-chat__virtual-display {
+.kroma-chat__composer-area, .kroma-chat__composer, .kroma-chat__virtual-display {
   max-width: 100%;
 }
 
@@ -12737,9 +12743,104 @@ textarea.form-control-lg {
 
 .kroma-chat .hg-theme-default {
   width: 100%;
-  max-block-size: 16rem;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  max-block-size: none;
+  overflow: visible;
+  padding: 0.375rem 0 0;
+  border-radius: 0;
+  background: var(--kroma-chat-canvas);
+  color: var(--kroma-chat-text-primary);
+  font-family: var(--kroma-chat-font-family);
+  font-size: var(--kroma-chat-typography-key);
+  font-weight: var(--kroma-chat-weight-medium);
+  line-height: 1;
+}
+
+.kroma-chat .hg-theme-default .hg-row {
+  display: flex;
+  gap: 0.25rem;
+  margin: 0;
+}
+
+.kroma-chat .hg-theme-default .hg-row + .hg-row {
+  margin-block-start: 0.25rem;
+}
+
+.kroma-chat .hg-theme-default button.hg-button {
+  min-width: 0;
+  min-height: 2.625rem;
+  height: 2.625rem;
+  flex: 1 1 0;
+  justify-content: center;
+  margin: 0;
+  padding: 0 0.125rem;
+  border: 1px solid var(--kroma-chat-border-subtle);
+  border-bottom-color: var(--kroma-chat-border-interactive);
+  border-radius: 0.40625rem;
+  background: var(--kroma-chat-surface-control);
+  box-shadow: var(--kroma-chat-key-elevation, 0 1px 1px rgba(0, 0, 0, 0.1));
+  color: var(--kroma-chat-text-primary);
+  font: inherit;
+  font-size: var(--kroma-chat-typography-key);
+  font-weight: var(--kroma-chat-weight-medium);
+  line-height: 1;
+  touch-action: manipulation;
+  transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), border-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), box-shadow var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+}
+
+.kroma-chat .hg-theme-default button.hg-button:hover:not(:disabled),
+.kroma-chat .hg-theme-default button.hg-button.hg-activeButton {
+  background: var(--kroma-chat-surface-hover);
+}
+
+.kroma-chat .hg-theme-default button.hg-button:focus-visible {
+  z-index: 1;
+  outline: 2px solid var(--kroma-chat-state-focus);
+  outline-offset: 1px;
+}
+
+.kroma-chat .hg-theme-default button.hg-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.kroma-chat .hg-theme-default button[data-skbtn="{shift}"],
+.kroma-chat .hg-theme-default button[data-skbtn="{bksp}"],
+.kroma-chat .hg-theme-default button[data-skbtn="{numbers}"],
+.kroma-chat .hg-theme-default button[data-skbtn="{symbols}"],
+.kroma-chat .hg-theme-default button[data-skbtn="{abc}"],
+.kroma-chat .hg-theme-default button[data-skbtn="{enter}"] {
+  border-color: var(--kroma-chat-border-interactive);
+  background: var(--kroma-chat-action-secondary-surface);
+  color: var(--kroma-chat-action-secondary-content);
+}
+
+.kroma-chat .hg-theme-default button[data-skbtn="{shift}"][aria-pressed=true] {
+  border-color: var(--kroma-chat-border-selected);
+  background: var(--kroma-chat-surface-selected);
+}
+
+.kroma-chat .hg-theme-default .hg-row:nth-child(3) button[data-skbtn="{shift}"],
+.kroma-chat .hg-theme-default .hg-row:nth-child(3) button[data-skbtn="{symbols}"],
+.kroma-chat .hg-theme-default .hg-row:nth-child(3) button[data-skbtn="{bksp}"] {
+  flex-grow: 1.35;
+}
+
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn="{numbers}"],
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn="{symbols}"],
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn="{abc}"],
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn="{enter}"] {
+  flex-grow: 1.35;
+}
+
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn=","],
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn="."] {
+  flex-grow: 0.72;
+}
+
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn="{space}"] {
+  flex-grow: 4.2;
+  font-size: var(--kroma-chat-typography-body-small);
+  font-weight: var(--kroma-chat-weight-medium);
 }
 
 .kroma-chat__keyboard-showcase {
@@ -12813,9 +12914,21 @@ textarea.form-control-lg {
   font-size: var(--kroma-chat-typography-body-small);
 }
 
-@supports (height: 1cqb) {
+@container kroma-chat (max-width: 24rem) {
   .kroma-chat .hg-theme-default {
-    max-block-size: min(16rem, 38cqb);
+    padding-block-start: 0.3125rem;
+  }
+  .kroma-chat .hg-theme-default button.hg-button {
+    min-height: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+  }
+}
+@media (min-width: 26.875rem) {
+  .kroma-chat .hg-theme-default button.hg-button {
+    min-height: 2.75rem;
+    height: 2.75rem;
   }
 }
 .kroma-chat__message {
@@ -12871,7 +12984,7 @@ textarea.form-control-lg {
   background: var(--kroma-chat-surface-selected);
   color: var(--kroma-chat-text-accent);
   font-size: var(--kroma-chat-typography-caption);
-  font-weight: var(--kroma-font-weight-bold, 700);
+  font-weight: var(--kroma-chat-weight-bold);
 }
 
 .kroma-chat__message--assistant.kroma-chat__message--group-continuation .kroma-chat__message-avatar {
@@ -12949,10 +13062,12 @@ textarea.form-control-lg {
 }
 
 .kroma-chat__quick-replies .kroma-chat__option {
-  min-height: 2rem;
+  min-height: 2.125rem;
   padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
   border-radius: var(--kroma-chat-radius-pill);
-  font-size: var(--kroma-chat-typography-body-small);
+  font-size: var(--kroma-chat-typography-action);
+  font-weight: var(--kroma-chat-weight-medium);
+  line-height: var(--kroma-chat-leading-action);
 }
 
 .kroma-chat__choice-list {
@@ -12977,8 +13092,9 @@ textarea.form-control-lg {
   background: var(--kroma-chat-surface-selected);
   color: var(--kroma-chat-text-primary);
   font: inherit;
-  font-size: var(--kroma-chat-typography-secondary);
-  line-height: var(--kroma-chat-leading-small);
+  font-size: var(--kroma-chat-typography-action);
+  font-weight: var(--kroma-chat-weight-medium);
+  line-height: var(--kroma-chat-leading-action);
   text-align: center;
   overflow-wrap: anywhere;
   cursor: pointer;
@@ -13001,7 +13117,7 @@ textarea.form-control-lg {
 .kroma-chat__option[aria-pressed=true] {
   background: var(--kroma-chat-surface-selected);
   color: var(--kroma-chat-text-primary);
-  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-weight: var(--kroma-chat-weight-semibold);
 }
 
 .kroma-chat__option[aria-pressed=true]::before {
@@ -13011,6 +13127,15 @@ textarea.form-control-lg {
 
 .kroma-chat__options--inactive .kroma-chat__option {
   cursor: default;
+}
+
+.kroma-chat__options--selected .kroma-chat__option:disabled {
+  color: var(--kroma-chat-text-secondary);
+  opacity: 0.9;
+}
+
+.kroma-chat__message[data-controls-disabled=true] :where(button, input, select, textarea):disabled {
+  opacity: 0.86;
 }
 
 .kroma-chat__choice {
@@ -13027,12 +13152,15 @@ textarea.form-control-lg {
 }
 
 .kroma-chat__choice-title {
-  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-size: var(--kroma-chat-typography-option-title);
+  font-weight: var(--kroma-chat-weight-semibold);
+  line-height: var(--kroma-chat-leading-heading);
 }
 
 .kroma-chat__choice-description {
   color: var(--kroma-chat-text-secondary);
-  font-size: var(--kroma-chat-typography-secondary);
+  font-size: var(--kroma-chat-typography-description);
+  font-weight: var(--kroma-chat-weight-regular);
   line-height: var(--kroma-chat-leading-small);
 }
 
@@ -13053,8 +13181,9 @@ textarea.form-control-lg {
   background: transparent;
   color: var(--kroma-chat-text-accent);
   font: inherit;
-  font-size: var(--kroma-chat-typography-secondary);
-  line-height: var(--kroma-chat-leading-small);
+  font-size: var(--kroma-chat-typography-action);
+  font-weight: var(--kroma-chat-weight-medium);
+  line-height: var(--kroma-chat-leading-action);
   text-decoration: underline;
   text-underline-offset: 0.15em;
   cursor: pointer;
@@ -13081,8 +13210,9 @@ textarea.form-control-lg {
   padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
   border-radius: var(--kroma-chat-radius-control);
   color: var(--kroma-chat-text-secondary);
-  font-size: var(--kroma-chat-typography-secondary);
-  line-height: var(--kroma-chat-leading-small);
+  font-size: var(--kroma-chat-typography-status);
+  font-weight: var(--kroma-chat-weight-regular);
+  line-height: var(--kroma-chat-leading-status);
   text-align: center;
 }
 
@@ -13169,7 +13299,7 @@ textarea.form-control-lg {
   color: var(--kroma-chat-action-primary-content);
   font: inherit;
   font-size: var(--kroma-chat-typography-body);
-  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-weight: var(--kroma-chat-weight-semibold);
   line-height: var(--kroma-chat-leading-body);
   text-align: center;
   overflow-wrap: anywhere;
@@ -13229,9 +13359,9 @@ textarea.form-control-lg {
   background: transparent;
   color: var(--kroma-chat-text-primary);
   font: inherit;
-  font-size: var(--kroma-chat-typography-body);
-  font-weight: var(--kroma-chat-weight-medium);
-  line-height: var(--kroma-chat-leading-body);
+  font-size: var(--kroma-chat-typography-option-title);
+  font-weight: var(--kroma-chat-weight-semibold);
+  line-height: var(--kroma-chat-leading-heading);
   text-align: start;
   overflow-wrap: anywhere;
   cursor: pointer;
@@ -13242,8 +13372,8 @@ textarea.form-control-lg {
   position: absolute;
   top: 50%;
   inset-inline-end: var(--kroma-chat-spacing-menu-inline);
-  width: 0.375rem;
-  height: 0.375rem;
+  width: 0.5rem;
+  height: 0.5rem;
   border-top: 1.25px solid currentColor;
   border-right: 1.25px solid currentColor;
   content: "";
@@ -13253,6 +13383,7 @@ textarea.form-control-lg {
 
 .kroma-chat__journey-item:hover:not(:disabled), .kroma-chat__category:hover:not(:disabled) {
   background: var(--kroma-chat-surface-hover);
+  color: var(--kroma-chat-text-primary);
 }
 
 .kroma-chat__journey-item:active:not(:disabled), .kroma-chat__category:active:not(:disabled) {
@@ -13312,12 +13443,13 @@ textarea.form-control-lg {
 
 .kroma-chat__journey-item-description, .kroma-chat__category-description {
   color: var(--kroma-chat-text-secondary);
-  font-size: var(--kroma-chat-typography-body-small);
+  font-size: var(--kroma-chat-typography-description);
   line-height: var(--kroma-chat-leading-small);
+  font-weight: var(--kroma-chat-weight-regular);
 }
 
 .kroma-chat__category {
-  min-height: 6.5rem;
+  min-height: 5rem;
   justify-content: center;
   padding: var(--kroma-chat-spacing-card) 2rem var(--kroma-chat-spacing-card) var(--kroma-chat-spacing-card);
   border: 0;
@@ -13341,6 +13473,8 @@ textarea.form-control-lg {
 
 .kroma-chat__journey-item[data-consumed=true], .kroma-chat__category[data-consumed=true] {
   background: var(--kroma-chat-surface-selected);
+  color: var(--kroma-chat-text-primary);
+  opacity: 1;
 }
 
 .kroma-chat__journey-item[data-consumed=true]::after, .kroma-chat__category[data-consumed=true]::after {
@@ -13350,7 +13484,7 @@ textarea.form-control-lg {
   color: var(--kroma-chat-text-accent);
   content: "✓";
   font-size: var(--kroma-chat-typography-body);
-  font-weight: var(--kroma-font-weight-bold, 700);
+  font-weight: var(--kroma-chat-weight-bold);
   transform: translateY(-50%);
 }
 
@@ -13460,7 +13594,7 @@ textarea.form-control-lg {
 .kroma-chat__product-name {
   min-width: 0;
   font-size: var(--kroma-chat-typography-product);
-  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-weight: var(--kroma-chat-weight-semibold);
   line-height: var(--kroma-chat-leading-heading);
   overflow-wrap: anywhere;
 }
@@ -13468,7 +13602,8 @@ textarea.form-control-lg {
 .kroma-chat__product-description {
   min-width: 0;
   color: var(--kroma-chat-text-secondary);
-  font-size: var(--kroma-chat-typography-body-small);
+  font-size: var(--kroma-chat-typography-description);
+  font-weight: var(--kroma-chat-weight-regular);
   line-height: var(--kroma-chat-leading-small);
   overflow-wrap: anywhere;
   word-break: normal;
@@ -13477,7 +13612,8 @@ textarea.form-control-lg {
 .kroma-chat__product-price {
   color: var(--kroma-chat-text-primary);
   font-size: var(--kroma-chat-typography-price);
-  font-weight: var(--kroma-font-weight-bold, 700);
+  font-weight: var(--kroma-chat-weight-bold);
+  line-height: var(--kroma-chat-leading-price);
   font-variant-numeric: tabular-nums;
 }
 
@@ -13486,8 +13622,9 @@ textarea.form-control-lg {
   align-items: center;
   gap: var(--kroma-chat-spacing-tight);
   color: var(--kroma-chat-text-accent);
-  font-size: var(--kroma-chat-typography-body-small);
-  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-size: var(--kroma-chat-typography-action);
+  font-weight: var(--kroma-chat-weight-medium);
+  line-height: var(--kroma-chat-leading-action);
   white-space: nowrap;
 }
 
@@ -13615,7 +13752,7 @@ textarea.form-control-lg {
 
 .kroma-chat__product-detail-title {
   margin: 0;
-  font-size: var(--kroma-chat-typography-title);
+  font-size: var(--kroma-chat-typography-product);
   font-weight: var(--kroma-chat-weight-semibold);
   line-height: var(--kroma-chat-leading-heading);
   overflow-wrap: anywhere;
@@ -13625,8 +13762,8 @@ textarea.form-control-lg {
   width: 100%;
   margin: 0;
   color: var(--kroma-chat-text-secondary);
-  font-size: var(--kroma-chat-typography-body);
-  line-height: var(--kroma-chat-leading-body);
+  font-size: var(--kroma-chat-typography-description);
+  line-height: var(--kroma-chat-leading-small);
   overflow-wrap: anywhere;
   word-break: normal;
 }
@@ -13638,7 +13775,8 @@ textarea.form-control-lg {
   padding: 0;
   color: var(--kroma-chat-text-primary);
   font-size: var(--kroma-chat-typography-price);
-  font-weight: var(--kroma-font-weight-bold, 700);
+  font-weight: var(--kroma-chat-weight-bold);
+  line-height: var(--kroma-chat-leading-price);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
@@ -13650,7 +13788,7 @@ textarea.form-control-lg {
   margin: 0;
   padding: 0;
   color: var(--kroma-chat-text-primary);
-  font-size: var(--kroma-chat-typography-body-small);
+  font-size: var(--kroma-chat-typography-description);
   line-height: var(--kroma-chat-leading-small);
   list-style: none;
 }
@@ -13707,7 +13845,7 @@ textarea.form-control-lg {
 .kroma-chat__variant:has(input:checked) {
   background: var(--kroma-chat-surface-selected);
   color: var(--kroma-chat-text-primary);
-  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-weight: var(--kroma-chat-weight-semibold);
 }
 
 .kroma-chat__variant:has(input:disabled) {
@@ -13825,9 +13963,9 @@ textarea.form-control-lg {
 
 .kroma-chat__cart-name {
   min-width: 0;
-  font-size: var(--kroma-chat-typography-body);
-  font-weight: var(--kroma-font-weight-semibold, 600);
-  line-height: var(--kroma-chat-leading-body);
+  font-size: var(--kroma-chat-typography-product);
+  font-weight: var(--kroma-chat-weight-semibold);
+  line-height: var(--kroma-chat-leading-heading);
   overflow-wrap: anywhere;
 }
 
@@ -13849,8 +13987,9 @@ textarea.form-control-lg {
 }
 
 .kroma-chat__cart-total {
-  font-size: var(--kroma-chat-typography-body);
-  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-size: var(--kroma-chat-typography-price);
+  font-weight: var(--kroma-chat-weight-bold);
+  line-height: var(--kroma-chat-leading-price);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -13863,7 +14002,9 @@ textarea.form-control-lg {
   background: transparent;
   color: var(--kroma-chat-text-accent);
   font: inherit;
-  font-size: var(--kroma-chat-typography-body-small);
+  font-size: var(--kroma-chat-typography-action);
+  font-weight: var(--kroma-chat-weight-medium);
+  line-height: var(--kroma-chat-leading-action);
   text-decoration: underline;
   text-underline-offset: 0.15em;
   cursor: pointer;
@@ -13894,8 +14035,9 @@ textarea.form-control-lg {
 
 .kroma-chat__cart-subtotal strong {
   color: var(--kroma-chat-text-primary);
-  font-size: var(--kroma-chat-typography-body);
-  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-size: var(--kroma-chat-typography-price);
+  font-weight: var(--kroma-chat-weight-bold);
+  line-height: var(--kroma-chat-leading-price);
   font-variant-numeric: tabular-nums;
   text-align: end;
 }
@@ -13904,12 +14046,13 @@ textarea.form-control-lg {
   margin-top: var(--kroma-chat-spacing-control);
   padding-top: var(--kroma-chat-spacing-control);
   color: var(--kroma-chat-text-primary);
-  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-weight: var(--kroma-chat-weight-semibold);
 }
 
 .kroma-chat__price-entry--strong strong {
-  font-size: var(--kroma-chat-typography-display);
-  font-weight: var(--kroma-font-weight-bold, 700);
+  font-size: var(--kroma-chat-typography-price);
+  font-weight: var(--kroma-chat-weight-bold);
+  line-height: var(--kroma-chat-leading-price);
 }
 
 .kroma-chat__cart-empty {
@@ -13945,7 +14088,7 @@ textarea.form-control-lg {
 
 .kroma-chat__customer-row dt {
   color: var(--kroma-chat-text-secondary);
-  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-weight: var(--kroma-chat-weight-semibold);
 }
 
 .kroma-chat__customer-row dd {
@@ -13980,7 +14123,7 @@ textarea.form-control-lg {
 .kroma-chat__form-title {
   margin: 0;
   font-size: var(--kroma-chat-typography-title);
-  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-weight: var(--kroma-chat-weight-semibold);
   line-height: var(--kroma-chat-leading-heading);
 }
 
@@ -13998,8 +14141,9 @@ textarea.form-control-lg {
 
 .kroma-chat__form-field label {
   color: var(--kroma-chat-text-primary);
-  font-size: var(--kroma-chat-typography-body-small);
-  font-weight: var(--kroma-font-weight-semibold, 600);
+  font-size: var(--kroma-chat-typography-description);
+  font-weight: var(--kroma-chat-weight-semibold);
+  line-height: var(--kroma-chat-leading-small);
 }
 
 .kroma-chat__form-input {
@@ -14098,7 +14242,7 @@ textarea.form-control-lg {
 .kroma-chat__confirmation-title {
   margin: 0;
   font-size: var(--kroma-chat-typography-display);
-  font-weight: var(--kroma-font-weight-bold, 700);
+  font-weight: var(--kroma-chat-weight-strong);
   line-height: var(--kroma-chat-leading-display);
 }
 
@@ -14106,7 +14250,7 @@ textarea.form-control-lg {
   max-width: 30rem;
   margin: 0;
   color: var(--kroma-chat-text-secondary);
-  font-size: var(--kroma-chat-typography-body-small);
+  font-size: var(--kroma-chat-typography-description);
   line-height: var(--kroma-chat-leading-small);
 }
 
@@ -14124,7 +14268,8 @@ textarea.form-control-lg {
   padding-inline-start: 1.2rem;
   color: var(--kroma-chat-text-primary);
   text-align: start;
-  font-size: var(--kroma-chat-typography-body-small);
+  font-size: var(--kroma-chat-typography-description);
+  line-height: var(--kroma-chat-leading-small);
 }
 
 .kroma-chat__header-action:focus-visible, .kroma-chat__option:focus-visible, .kroma-chat__rich-link:focus-visible, .kroma-chat__rich-action:focus-visible, .kroma-chat__journey-action:focus-visible, .kroma-chat__journey-item:focus-visible, .kroma-chat__category:focus-visible, .kroma-chat__product-card:focus-visible, .kroma-chat__carousel-arrow:focus-visible, .kroma-chat__variant:focus-within, .kroma-chat__quantity-button:focus-visible, .kroma-chat__cart-remove:focus-visible, .kroma-chat__send:focus-visible {
@@ -14132,9 +14277,14 @@ textarea.form-control-lg {
   outline-offset: 2px;
 }
 
-.kroma-chat__composer textarea:focus-visible:not(:disabled), .kroma-chat__virtual-display:focus-visible {
+.kroma-chat__virtual-display:focus-visible {
   outline: none;
   box-shadow: none;
+}
+
+.kroma-chat__message[data-controls-disabled=true] :where(.kroma-chat__journey-item, .kroma-chat__category, .kroma-chat__cart-remove, .kroma-chat__rich-action):disabled {
+  color: var(--kroma-chat-text-secondary);
+  opacity: 0.9;
 }
 
 .kroma-chat__sr-only {
@@ -14251,9 +14401,8 @@ textarea.form-control-lg {
   }
 }
 @media (max-width: 30rem) {
-  .kroma-chat__input,
   .kroma-chat__form-input {
-    font-size: 16px;
+    font-size: var(--kroma-chat-typography-composer);
   }
 }
 @keyframes kroma-chat-typing {

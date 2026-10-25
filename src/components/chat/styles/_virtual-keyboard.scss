@@ -1,13 +1,107 @@
-// Keep simple-keyboard's distributed visual theme intact; these rules only bound it to the chat flex region.
+// Keep simple-keyboard's engine and generated rows; this layer only styles its chat surface.
 .kroma-chat .hg-theme-default {
   width: 100%;
-  max-block-size: 16rem;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  max-block-size: none;
+  overflow: visible;
+  padding: .375rem 0 0;
+  border-radius: 0;
+  background: var(--kroma-chat-canvas);
+  color: var(--kroma-chat-text-primary);
   font-family: var(--kroma-chat-font-family);
   font-size: var(--kroma-chat-typography-key);
   font-weight: var(--kroma-chat-weight-medium);
   line-height: 1;
+}
+
+.kroma-chat .hg-theme-default .hg-row {
+  display: flex;
+  gap: .25rem;
+  margin: 0;
+}
+
+.kroma-chat .hg-theme-default .hg-row + .hg-row { margin-block-start: .25rem; }
+
+.kroma-chat .hg-theme-default button.hg-button {
+  min-width: 0;
+  min-height: 2.625rem;
+  height: 2.625rem;
+  flex: 1 1 0;
+  justify-content: center;
+  margin: 0;
+  padding: 0 .125rem;
+  border: 1px solid var(--kroma-chat-border-subtle);
+  border-bottom-color: var(--kroma-chat-border-interactive);
+  border-radius: .40625rem;
+  background: var(--kroma-chat-surface-control);
+  box-shadow: var(--kroma-chat-key-elevation, 0 1px 1px rgb(0 0 0 / 10%));
+  color: var(--kroma-chat-text-primary);
+  font: inherit;
+  font-size: var(--kroma-chat-typography-key);
+  font-weight: var(--kroma-chat-weight-medium);
+  line-height: 1;
+  touch-action: manipulation;
+  transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard),
+    border-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard),
+    box-shadow var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+}
+
+.kroma-chat .hg-theme-default button.hg-button:hover:not(:disabled),
+.kroma-chat .hg-theme-default button.hg-button.hg-activeButton {
+  background: var(--kroma-chat-surface-hover);
+}
+
+.kroma-chat .hg-theme-default button.hg-button:focus-visible {
+  z-index: 1;
+  outline: 2px solid var(--kroma-chat-state-focus);
+  outline-offset: 1px;
+}
+
+.kroma-chat .hg-theme-default button.hg-button:disabled {
+  cursor: not-allowed;
+  opacity: .58;
+}
+
+// Utility keys use a quieter Kroma surface; alphabetic and punctuation keys remain primary.
+.kroma-chat .hg-theme-default button[data-skbtn="{shift}"],
+.kroma-chat .hg-theme-default button[data-skbtn="{bksp}"],
+.kroma-chat .hg-theme-default button[data-skbtn="{numbers}"],
+.kroma-chat .hg-theme-default button[data-skbtn="{symbols}"],
+.kroma-chat .hg-theme-default button[data-skbtn="{abc}"],
+.kroma-chat .hg-theme-default button[data-skbtn="{enter}"] {
+  border-color: var(--kroma-chat-border-interactive);
+  background: var(--kroma-chat-action-secondary-surface);
+  color: var(--kroma-chat-action-secondary-content);
+}
+
+.kroma-chat .hg-theme-default button[data-skbtn="{shift}"][aria-pressed="true"] {
+  border-color: var(--kroma-chat-border-selected);
+  background: var(--kroma-chat-surface-selected);
+}
+
+// Shift/backspace flank the seven letters in row three without squeezing their hit areas.
+.kroma-chat .hg-theme-default .hg-row:nth-child(3) button[data-skbtn="{shift}"],
+.kroma-chat .hg-theme-default .hg-row:nth-child(3) button[data-skbtn="{symbols}"],
+.kroma-chat .hg-theme-default .hg-row:nth-child(3) button[data-skbtn="{bksp}"] {
+  flex-grow: 1.35;
+}
+
+// On the bottom row space is the dominant target, with compact punctuation and wider actions.
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn="{numbers}"],
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn="{symbols}"],
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn="{abc}"],
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn="{enter}"] {
+  flex-grow: 1.35;
+}
+
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn=","] ,
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn="."] {
+  flex-grow: .72;
+}
+
+.kroma-chat .hg-theme-default .hg-row:last-child button[data-skbtn="{space}"] {
+  flex-grow: 4.2;
+  font-size: var(--kroma-chat-typography-body-small);
+  font-weight: var(--kroma-chat-weight-medium);
 }
 
 .kroma-chat__keyboard-showcase {
@@ -32,6 +126,17 @@
 .kroma-chat__keyboard-showcase-layout[aria-pressed="true"] { border-color: var(--kroma-chat-border-selected); background: var(--kroma-chat-surface-selected); }
 .kroma-chat__virtual-display--sample { min-height: 2.5rem; max-height: 3rem; padding-inline: var(--kroma-chat-spacing-control); border: 1px solid var(--kroma-chat-border-subtle); border-radius: var(--kroma-chat-radius-input); background: var(--kroma-chat-surface); font-size: var(--kroma-chat-typography-body-small); }
 
-@supports (height: 1cqb) {
-  .kroma-chat .hg-theme-default { max-block-size: min(16rem, 38cqb); }
+@container kroma-chat (max-width: 24rem) {
+  .kroma-chat .hg-theme-default { padding-block-start: .3125rem; }
+
+  .kroma-chat .hg-theme-default button.hg-button {
+    min-height: 2.5rem;
+    height: 2.5rem;
+    border-radius: .375rem;
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 26.875rem) {
+  .kroma-chat .hg-theme-default button.hg-button { min-height: 2.75rem; height: 2.75rem; }
 }

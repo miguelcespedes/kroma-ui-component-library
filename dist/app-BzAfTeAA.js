@@ -9255,6 +9255,10 @@ class VirtualKeyboard {
     this.disabled = disabled;
     this.updateButtonStates();
   }
+  setMaxLength(maxLength) {
+    this.keyboard?.setOptions({ maxLength: Math.max(1, maxLength) });
+    this.updateButtonStates();
+  }
   setOpen(open) {
     this.options.controller.setOpen(open);
   }
@@ -9521,6 +9525,9 @@ class VirtualTextDisplay {
     this.element.hidden = !visible;
     if (visible) this.render();
   }
+  setEditing(editing) {
+    this.element.dataset.editing = String(editing);
+  }
   setDisabled(disabled) {
     this.disabled = disabled;
     this.element.setAttribute("aria-disabled", String(disabled));
@@ -9593,47 +9600,40 @@ class VirtualTextDisplay {
     else if (rect.top < viewport2.top) this.element.scrollTop -= viewport2.top - rect.top;
   }
 }
+const COMPOSER_MAX_LENGTH = 2e3;
 class ChatComposer {
   constructor(options) {
     this.options = options;
     this.disabled = Boolean(options.disabled);
+    this.interactionMode = options.interactionMode || "guided";
     const showKeyboardShowcase = Boolean(options.showKeyboardShowcase);
     this.element = document.createElement("div");
     this.element.className = "kroma-chat__composer-area";
     this.form = document.createElement("form");
     this.form.className = "kroma-chat__composer";
-    const label = document.createElement("label");
-    label.className = "kroma-chat__sr-only";
-    label.htmlFor = options.id;
-    label.textContent = options.inputLabel;
-    this.input = document.createElement("textarea");
-    this.input.className = "kroma-chat__input";
-    this.input.id = options.id;
-    this.input.name = "message";
-    this.input.rows = 1;
-    this.input.maxLength = 2e3;
-    this.input.placeholder = options.placeholder;
-    this.input.disabled = this.disabled;
     this.controller = new VirtualKeyboardController(false);
     const displayCallbacks = {
       onCaretChange: (start2, end2) => {
+        if (this.keyboardTarget) return;
+        if (this.interactionMode !== "free-text") this.setInteractionMode("free-text");
         this.keyboard?.setCaretPosition(start2, end2);
         this.keyboard?.setOpen(true);
       },
       onPhysicalKey: (event) => this.keyboard?.handlePhysicalKey(event, () => this.form.requestSubmit()),
       onPhysicalKeyRelease: () => this.keyboard?.restoreCaretAfterPhysicalKey()
     };
-    this.display = new VirtualTextDisplay(options.inputLabel, options.placeholder, displayCallbacks);
+    this.display = new VirtualTextDisplay(options.inputLabel, "", displayCallbacks);
     this.display.setDisabled(this.disabled);
+    this.display.update(this.draftValue);
     this.display.setVisible(true);
-    this.input.hidden = true;
     this.actions = document.createElement("div");
     this.actions.className = "kroma-chat__composer-actions";
     this.sendButton = this.createSendButton(options.sendLabel);
     this.actions.append(this.sendButton);
-    this.form.append(label, this.input, this.display.element, this.actions);
+    this.form.append(this.display.element, this.actions);
     this.createKeyboard();
     this.keyboardShowcase = showKeyboardShowcase ? this.createKeyboardShowcase() : null;
+    if (this.interactionMode === "free-text" && !this.keyboardShowcase) this.keyboard?.setOpen(true);
     this.element.append(this.form);
     if (this.keyboardShowcase) this.element.append(this.keyboardShowcase);
     else if (this.keyboard) this.element.append(this.keyboard.element);
@@ -9646,8 +9646,15 @@ class ChatComposer {
     document.addEventListener("pointerdown", (event) => {
       const target = event.target;
       if (!(target instanceof Node)) return;
-      if (this.display.element.contains(target) || this.keyboard?.element.contains(target)) return;
+      if (this.keyboard?.element.contains(target) || this.keyboardShowcase?.contains(target)) return;
+      if (this.keyboardTarget?.contains(target)) return;
+      if (this.keyboardTarget) {
+        this.setKeyboardTarget(null);
+        return;
+      }
+      if (this.display.element.contains(target)) return;
       this.controller.setOpen(false);
+      if (this.interactionMode === "free-text") this.setInteractionMode("guided");
     }, { capture: true, signal });
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -9655,18 +9662,19 @@ class ChatComposer {
       if (!message || this.disabled) return;
       options.onSend(message);
       this.clear();
-      if (!this.disabled) this.display.element.focus();
+      this.setInteractionMode("guided");
     }, { signal });
     this.unsubscribeController = this.controller.subscribe(() => {
       this.updateSendButton();
       this.updateShowcaseControls();
+      this.updatePresentation();
     });
+    this.updatePresentation();
     this.updateSendButton();
   }
   options;
   element;
   form;
-  input;
   display;
   sendButton;
   errorMessage;
@@ -9678,39 +9686,105 @@ class ChatComposer {
   showcaseLayouts = /* @__PURE__ */ new Map();
   unsubscribeController;
   keyboard = null;
+  keyboardTarget = null;
+  inputsWithPhysicalKeyHandlers = /* @__PURE__ */ new WeakSet();
   showcaseToggle = null;
   disabled;
+  interactionMode;
+  draftValue = "";
+  caretStart = 0;
+  caretEnd = 0;
   setDisabled(disabled) {
     this.disabled = disabled;
-    this.input.disabled = disabled;
     this.display.setDisabled(disabled);
     this.keyboard?.setDisabled(disabled);
+    if (disabled) this.setKeyboardTarget(null);
     this.updateSendButton();
+    this.updatePresentation();
+  }
+  get mode() {
+    return this.interactionMode;
+  }
+  setInteractionMode(mode) {
+    if (this.interactionMode === mode) return;
+    if (this.keyboardTarget) this.setKeyboardTarget(null);
+    this.interactionMode = mode;
+    if (mode === "free-text") {
+      this.keyboard?.setInput(this.draftValue, this.caretStart, this.caretEnd);
+      this.keyboard?.setOpen(true);
+    } else {
+      this.controller.setOpen(false);
+    }
+    this.updatePresentation();
+    this.updateSendButton();
+    this.options.onInteractionModeChange?.(mode);
+    if (mode === "free-text" && !this.disabled) this.display.element.focus();
+  }
+  setKeyboardTarget(target) {
+    if (target === this.keyboardTarget) {
+      if (target) this.controller.setOpen(true);
+      return;
+    }
+    this.keyboardTarget = target;
+    if (target) {
+      this.bindPhysicalKeyboard(target);
+      const numericLayout = ["number", "tel", "date"].includes(target.type);
+      this.controller.setLayout(numericLayout ? "numbers" : "default");
+      this.keyboard?.setMaxLength(target.maxLength > 0 ? target.maxLength : COMPOSER_MAX_LENGTH);
+      const caretStart = target.selectionStart ?? target.value.length;
+      const caretEnd = target.selectionEnd ?? caretStart;
+      this.keyboard?.setInput(target.value, caretStart, caretEnd);
+      this.controller.setOpen(true);
+    } else {
+      this.controller.setLayout("default");
+      this.keyboard?.setMaxLength(COMPOSER_MAX_LENGTH);
+      this.keyboard?.setInput(this.draftValue, this.caretStart, this.caretEnd);
+      this.controller.setOpen(false);
+    }
+    this.updatePresentation();
+    this.updateSendButton();
+  }
+  bindPhysicalKeyboard(target) {
+    if (this.inputsWithPhysicalKeyHandlers.has(target)) return;
+    this.inputsWithPhysicalKeyHandlers.add(target);
+    target.addEventListener("keydown", (event) => {
+      if (this.keyboardTarget !== target) return;
+      this.keyboard?.handlePhysicalKey(event, () => target.form?.requestSubmit());
+    }, { signal: this.listeners.signal });
+    target.addEventListener("keyup", () => this.keyboard?.restoreCaretAfterPhysicalKey(), { signal: this.listeners.signal });
+  }
+  setTargetSelection(target, start2, end2) {
+    if (!["text", "search", "tel", "url", "password"].includes(target.type)) return;
+    try {
+      target.setSelectionRange(start2, end2);
+    } catch {
+    }
   }
   setError(message) {
     this.errorMessage.textContent = message || "";
     this.errorMessage.hidden = !message;
     if (message) {
-      this.input.setAttribute("aria-invalid", "true");
       this.display.element.setAttribute("aria-invalid", "true");
-      this.errorMessage.id = `${this.input.id}-error`;
-      this.input.setAttribute("aria-describedby", this.errorMessage.id);
+      this.errorMessage.id = `${this.options.id}-error`;
       this.display.setError(this.errorMessage.id);
     } else {
-      this.input.removeAttribute("aria-invalid");
       this.display.element.removeAttribute("aria-invalid");
-      this.input.removeAttribute("aria-describedby");
       this.display.setError(null);
       this.errorMessage.removeAttribute("id");
     }
   }
   focus() {
-    this.display.element.focus();
+    if (this.interactionMode !== "guided") return;
+    if (this.keyboardTarget) this.setKeyboardTarget(null);
+    this.display.element.focus({ preventScroll: true });
   }
   clear() {
-    this.input.value = "";
-    this.input.rows = 1;
+    if (this.keyboardTarget) this.setKeyboardTarget(null);
+    this.draftValue = "";
+    this.caretStart = 0;
+    this.caretEnd = 0;
     this.keyboard?.clear();
+    this.display.update("");
     this.setError(null);
     this.updateSendButton();
   }
@@ -9726,17 +9800,39 @@ class ChatComposer {
     this.keyboard = new VirtualKeyboard({
       inputName: this.options.id,
       controller: this.controller,
-      maxLength: this.input.maxLength,
+      maxLength: COMPOSER_MAX_LENGTH,
       disabled: this.disabled,
       onChange: (value, start2, end2) => {
+        if (this.keyboardTarget) {
+          this.keyboardTarget.value = value;
+          this.setTargetSelection(this.keyboardTarget, start2, end2);
+          this.keyboardTarget.dispatchEvent(new Event("input", { bubbles: true }));
+          return;
+        }
+        this.draftValue = value;
+        this.caretStart = start2;
+        this.caretEnd = end2;
         this.display.update(value, start2, end2);
         this.updateSendButton();
       },
-      onEnter: () => this.form.requestSubmit()
+      onEnter: () => {
+        if (this.keyboardTarget) this.keyboardTarget.form?.requestSubmit();
+        else this.form.requestSubmit();
+      }
     });
   }
   currentValue() {
-    return this.keyboard?.value || "";
+    return this.draftValue;
+  }
+  updatePresentation() {
+    const guided = this.interactionMode === "guided";
+    const externalInput = this.keyboardTarget !== null;
+    const virtualInput = !guided || externalInput;
+    this.element.dataset.interactionMode = this.interactionMode;
+    this.display.setVisible(!externalInput);
+    this.display.setEditing(!guided && !externalInput);
+    this.sendButton.hidden = Boolean(this.keyboardShowcase) || externalInput;
+    if (!virtualInput && !this.keyboardShowcase) this.controller.setOpen(false);
   }
   updateSendButton() {
     this.sendButton.disabled = this.disabled || !this.currentValue().trim();
@@ -10156,7 +10252,7 @@ function createStatusMessage(message) {
   status.append(icon, text);
   return status;
 }
-function createFormField(messageId, field) {
+function createFormField(messageId, field, onInputFocus) {
   const inputId = `${messageId}-field-${field.id}`;
   const group = document.createElement("div");
   group.className = "kroma-chat__form-field";
@@ -10169,6 +10265,8 @@ function createFormField(messageId, field) {
   input.type = field.type;
   input.required = Boolean(field.required);
   input.disabled = Boolean(field.disabled);
+  input.readOnly = true;
+  input.inputMode = "none";
   input.value = field.value || "";
   input.placeholder = field.placeholder || "";
   if (field.autocomplete) input.setAttribute("autocomplete", field.autocomplete);
@@ -10176,6 +10274,7 @@ function createFormField(messageId, field) {
   if (field.max !== void 0) input.max = String(field.max);
   if (field.pattern) input.pattern = field.pattern;
   input.className = "kroma-chat__form-input";
+  input.addEventListener("focus", () => onInputFocus(input));
   if (field.errorMessage) {
     input.setCustomValidity(field.errorMessage);
     input.addEventListener("input", () => input.setCustomValidity(""));
@@ -10183,7 +10282,35 @@ function createFormField(messageId, field) {
   group.append(label, input);
   return { group, input };
 }
-function createConversationalForm(messageId, message, onSubmit) {
+function getFieldError(field, input) {
+  const value = input.value.trim();
+  if (field.required && !value) return field.errorMessage || `${field.label} es obligatorio.`;
+  if (!value) return null;
+  if (field.pattern) {
+    try {
+      if (!new RegExp(`^(?:${field.pattern})$`, "u").test(value)) return field.errorMessage || `Revisa ${field.label.toLocaleLowerCase("es")}.`;
+    } catch {
+      return "La validación de este campo no está configurada correctamente.";
+    }
+  }
+  if (field.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return field.errorMessage || "Introduce un correo electrónico válido.";
+  if (field.type === "url") {
+    try {
+      new URL(value);
+    } catch {
+      return field.errorMessage || "Introduce una URL válida.";
+    }
+  }
+  if (field.type === "number") {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return field.errorMessage || `Introduce un número válido para ${field.label.toLocaleLowerCase("es")}.`;
+    if (field.min !== void 0 && number < Number(field.min)) return field.errorMessage || `El valor mínimo es ${field.min}.`;
+    if (field.max !== void 0 && number > Number(field.max)) return field.errorMessage || `El valor máximo es ${field.max}.`;
+  }
+  if (field.type === "date" && Number.isNaN(Date.parse(`${value}T00:00:00`))) return field.errorMessage || "Introduce una fecha válida.";
+  return null;
+}
+function createConversationalForm(messageId, message, onInputFocus, onSubmit) {
   const wrapper = document.createElement("section");
   wrapper.className = "kroma-chat__conversational-form";
   if (message.title) {
@@ -10200,7 +10327,7 @@ function createConversationalForm(messageId, message, onSubmit) {
   message.fields.forEach((field) => {
     if (fieldNames.has(field.name)) hasDuplicateNames = true;
     fieldNames.add(field.name);
-    const control = createFormField(messageId, field);
+    const control = createFormField(messageId, field, onInputFocus);
     if (!controls.has(field.name)) controls.set(field.name, control.input);
     form.append(control.group);
   });
@@ -10218,10 +10345,37 @@ function createConversationalForm(messageId, message, onSubmit) {
   submit.textContent = message.submitLabel;
   submit.disabled = hasDuplicateNames;
   form.append(submit);
+  const validationError = document.createElement("p");
+  validationError.id = `${messageId}-form-validation-error`;
+  validationError.className = "kroma-chat__error";
+  validationError.setAttribute("role", "alert");
+  validationError.hidden = true;
+  form.insertBefore(validationError, submit);
   let dispatchingSubmit = false;
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (hasDuplicateNames || dispatchingSubmit || !form.reportValidity()) return;
+    if (hasDuplicateNames || dispatchingSubmit) return;
+    const invalidField = message.fields.find((field) => {
+      const input = controls.get(field.name);
+      return input && Boolean(getFieldError(field, input));
+    });
+    if (invalidField) {
+      const input = controls.get(invalidField.name);
+      const error = input ? getFieldError(invalidField, input) : null;
+      if (input) {
+        input.setAttribute("aria-invalid", "true");
+        input.setAttribute("aria-describedby", validationError.id);
+        input.focus();
+      }
+      validationError.textContent = error || "Revisa los datos del formulario.";
+      validationError.hidden = false;
+      return;
+    }
+    form.querySelectorAll("input[aria-invalid='true']").forEach((input) => {
+      input.removeAttribute("aria-invalid");
+      input.removeAttribute("aria-describedby");
+    });
+    validationError.hidden = true;
     const values = {};
     controls.forEach((input, name) => {
       values[name] = input.value.trim();
@@ -10412,6 +10566,22 @@ const iconPaths = {
   accessories: "M5 8h14l-1 12H6L5 8z M9 8V6a3 3 0 0 1 6 0v2",
   cart: "M3 4h2l2.2 10.5h10.4L20 7H6 M8 18.5h.01 M17 18.5h.01"
 };
+function createIcon(icon, className) {
+  const iconElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  if (className) iconElement.setAttribute("class", className);
+  iconElement.setAttribute("aria-hidden", "true");
+  iconElement.setAttribute("focusable", "false");
+  iconElement.setAttribute("viewBox", "0 0 24 24");
+  iconElement.setAttribute("fill", "none");
+  iconElement.setAttribute("stroke", "currentColor");
+  iconElement.setAttribute("stroke-width", "1.75");
+  iconElement.setAttribute("stroke-linecap", "round");
+  iconElement.setAttribute("stroke-linejoin", "round");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", iconPaths[icon] || "M12 4v16 M4 12h16");
+  iconElement.append(path);
+  return iconElement;
+}
 function createChevronIcon(direction) {
   const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   icon.setAttribute("viewBox", "0 0 24 24");
@@ -10430,19 +10600,7 @@ function createIconLabel(icon, label, className) {
   const wrapper = document.createElement("span");
   wrapper.className = className;
   if (icon) {
-    const iconElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    iconElement.setAttribute("class", `${className}-icon`);
-    iconElement.setAttribute("aria-hidden", "true");
-    iconElement.setAttribute("viewBox", "0 0 24 24");
-    iconElement.setAttribute("fill", "none");
-    iconElement.setAttribute("stroke", "currentColor");
-    iconElement.setAttribute("stroke-width", "1.75");
-    iconElement.setAttribute("stroke-linecap", "round");
-    iconElement.setAttribute("stroke-linejoin", "round");
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", iconPaths[icon] || "M12 4v16 M4 12h16");
-    iconElement.append(path);
-    wrapper.append(iconElement);
+    wrapper.append(createIcon(icon, `${className}-icon`));
   }
   const text = document.createElement("span");
   text.className = `${className}-text`;
@@ -10807,7 +10965,7 @@ function renderCartSummary(item, message, handlers) {
 }
 function renderForm(item, message, handlers) {
   appendPrompt(item, message);
-  item.append(createConversationalForm(item.id, message, handlers.onFormSubmit), createChatMessageTime(message));
+  item.append(createConversationalForm(item.id, message, handlers.onFormInputFocus, handlers.onFormSubmit), createChatMessageTime(message));
 }
 function renderOrderReview(item, message, handlers) {
   appendPrompt(item, message);
@@ -10930,6 +11088,9 @@ class ChatMessageList {
       onRichAction: (id, action, userMessage) => this.emitRichAction(id, action, userMessage),
       onOptionSelect: (selection, group, button) => this.selectOption(selection, group, button),
       onQuantityChange: this.callbacks.onQuantityChange,
+      onFormInputFocus: (input) => {
+        if (this.callbacks.interactive) this.callbacks.onFormInputFocus(input);
+      },
       onFormSubmit: this.callbacks.onFormSubmit
     };
     renderChatMessage(item, message, handlers);
@@ -10966,6 +11127,21 @@ class ChatMessageList {
     group.classList.toggle("kroma-chat__options--inactive", disabled);
     group.querySelectorAll("button").forEach((button) => {
       button.disabled = disabled || button.dataset.optionDisabled === "true";
+    });
+  }
+  disableHistoryControls() {
+    this.element.querySelectorAll("li[data-message-id]").forEach((message) => {
+      const controls = message.querySelectorAll("button, input, select, textarea");
+      if (!controls.length) return;
+      message.dataset.controlsDisabled = "true";
+      message.setAttribute("aria-disabled", "true");
+      controls.forEach((control) => {
+        control.disabled = true;
+      });
+      message.querySelectorAll(".kroma-chat__options").forEach((group) => {
+        group.dataset.hostDisabled = "true";
+        group.classList.add("kroma-chat__options--inactive");
+      });
     });
   }
   restoreOptionSelection(messageId, optionId) {
@@ -11046,7 +11222,7 @@ class ChatMessageList {
     this.callbacks.onAction(detail, userMessage);
   }
   consumeAction(detail) {
-    const policy = detail.control === "cart-summary" && detail.actionId === "remove-item" ? "line-once" : actionReusePolicies[detail.control];
+    const policy = detail.control === "cart-summary" && (detail.actionId === "remove-item" || detail.actionId === "edit-quantity") ? "line-once" : actionReusePolicies[detail.control];
     if (policy === "repeatable") return true;
     const sourceMessage = this.findMessage(detail.messageId);
     const buttons = [...sourceMessage?.querySelectorAll("button[data-action-id]") || []];
@@ -11108,6 +11284,7 @@ class KromaChat extends HTMLElement {
   status = null;
   error = null;
   composerDisabled = false;
+  interactionModeValue = "guided";
   headerActions = [];
   header = null;
   messageList = null;
@@ -11122,6 +11299,14 @@ class KromaChat extends HTMLElement {
   set mode(mode) {
     if (this.mode === mode) return;
     this.setAttribute("mode", mode);
+  }
+  get interactionMode() {
+    return this.composer?.mode || this.interactionModeValue;
+  }
+  set interactionMode(mode) {
+    if (this.interactionModeValue === mode && this.composer?.mode === mode) return;
+    this.interactionModeValue = mode;
+    this.composer?.setInteractionMode(mode);
   }
   attributeChangedCallback(name, previous, current) {
     if (name === "mode" && previous !== current && this.initialized) this.reinitializeForMode();
@@ -11158,6 +11343,7 @@ class KromaChat extends HTMLElement {
       onRichAction: (detail, action, userMessage) => this.emitRichAction(detail, action, userMessage),
       onOptionSelect: (detail) => this.emitOptionSelect(detail),
       onQuantityChange: (detail) => this.emitQuantityChange(detail),
+      onFormInputFocus: (input) => this.composer?.setKeyboardTarget(input),
       onFormSubmit: (detail) => this.emitFormSubmit(detail)
     }, this.getAttribute("empty-state") || "Start a conversation", this.getAttribute("messages-label") || "Messages");
     const composer = new ChatComposer({
@@ -11167,6 +11353,10 @@ class KromaChat extends HTMLElement {
       sendLabel: this.getAttribute("send-label") || "Send message",
       disabled: this.composerDisabled || this.mode === "kitchen",
       showKeyboardShowcase: this.mode === "kitchen",
+      interactionMode: this.mode === "kitchen" ? "guided" : this.interactionModeValue,
+      onInteractionModeChange: (mode) => {
+        this.interactionModeValue = mode;
+      },
       onSend: (message) => this.sendMessage(message)
     });
     this.header = header;
@@ -11228,6 +11418,10 @@ class KromaChat extends HTMLElement {
     this.disabledOptions.set(messageId, disabled);
     this.messageList?.setOptionsDisabled(messageId, disabled);
   }
+  disableHistoryControls() {
+    this.composer?.setKeyboardTarget(null);
+    this.messageList?.disableHistoryControls();
+  }
   setError(message) {
     this.error = message;
     this.composer?.setError(message);
@@ -11282,7 +11476,7 @@ class KromaChat extends HTMLElement {
   loadKitchenConversation() {
     const revision = ++this.modeRevision;
     void __vitePreload(async () => {
-      const { createKitchenMessages } = await import("./kitchen.messages-BbUSHLv7.js");
+      const { createKitchenMessages } = await import("./kitchen.messages-CPP1SI2J.js");
       return { createKitchenMessages };
     }, true ? [] : void 0, import.meta.url).then(({ createKitchenMessages }) => {
       if (!this.isConnected || this.mode !== "kitchen" || revision !== this.modeRevision) return;
@@ -11446,31 +11640,112 @@ function categoriesMessage() {
 function quickReplies(text, replies) {
   return { author: "assistant", type: "quick-replies", text, replies };
 }
-function renderJourney(chat, state) {
+function renderJourney(chat, state, onProductDetail) {
   switch (state.step) {
     case "welcome":
       chat.addMessage(welcomeMessage());
       return;
-    case "unavailable":
-      chat.addMessage({ author: "system", type: "status", status: "neutral", text: `${state.service} no está conectado en esta demostración.` });
-      chat.addMessage(quickReplies("Puedes explorar el catálogo ficticio o volver al menú.", [
-        { id: "browse", label: "Explorar productos", value: "explore-products" },
-        { id: "home", label: "Volver al inicio", value: "home" }
+    case "search-options":
+      chat.addMessage(quickReplies("¿Cómo prefieres buscar?", [
+        { id: "search-categories", label: "Explorar categorías", value: "explore-products" },
+        { id: "search-all", label: "Ver productos disponibles", value: "browse-all" },
+        { id: "search-name", label: "Escribir el nombre", value: "write-product-name" }
+      ]));
+      return;
+    case "search-query":
+      chat.addMessage({ author: "assistant", text: "Escribe un nombre del catálogo ficticio de esta demostración." });
+      chat.addMessage(quickReplies("También puedes explorar por categoría.", [{ id: "search-back", label: "Explorar categorías", value: "explore-products" }]));
+      return;
+    case "search-results": {
+      const products = state.productIds.map(getDemoProduct).filter((product) => Boolean(product));
+      if (products.length) {
+        const prompt = state.query ? `Coincidencias de ejemplo para “${state.query}”.` : "Estos son los productos ficticios disponibles en la demostración.";
+        chat.addMessage({ author: "assistant", type: "product-list", text: prompt, products, productActionLabel: "Ver producto" });
+        const replies = [
+          { id: "search-again", label: "Cambiar búsqueda", value: "search-again" },
+          { id: "search-categories", label: "Explorar categorías", value: "explore-products" }
+        ];
+        if (state.cart.length) replies.push({ id: "cart", label: `Ver mi selección (${state.cart.length})`, value: "view-cart" });
+        chat.addMessage(quickReplies("El catálogo de la demostración es ficticio y limitado.", replies));
+      } else {
+        chat.addMessage({ author: "system", type: "status", status: "neutral", text: `No hay coincidencias de ejemplo para “${state.query}”.` });
+        chat.addMessage(quickReplies("Puedes probar otra búsqueda o explorar las categorías.", [
+          { id: "search-again", label: "Cambiar búsqueda", value: "search-again" },
+          { id: "search-categories", label: "Explorar categorías", value: "explore-products" }
+        ]));
+      }
+      return;
+    }
+    case "order-help":
+      chat.addMessage({ author: "system", type: "status", status: "neutral", text: "La consulta de pedidos no está conectada en esta demostración. No se consultan ni se inventan estados de pedidos." });
+      chat.addMessage(quickReplies("Puedes continuar con el catálogo de ejemplo.", [
+        { id: "order-browse", label: "Explorar productos", value: "explore-products" },
+        { id: "order-home", label: "Volver al inicio", value: "home" }
+      ]));
+      return;
+    case "advisor-reason":
+      chat.addMessage({ author: "assistant", type: "choice-list", text: "¿Sobre qué necesitas orientación?", choices: [
+        { id: "advisor-product", title: "Un producto", description: "Características o variantes", value: "product" },
+        { id: "advisor-selection", title: "Mi selección", description: "Cantidades o productos guardados", value: "selection" },
+        { id: "advisor-order", title: "Un pedido", description: "La consulta real no está disponible en la demo", value: "order" }
+      ] });
+      return;
+    case "advisor-topic":
+      chat.addMessage(quickReplies("Elige el tema que mejor describe tu consulta.", state.reason === "product" ? [
+        { id: "advisor-features", label: "Características", value: "features" },
+        { id: "advisor-variants", label: "Tallas y variantes", value: "variants" }
+      ] : state.reason === "selection" ? [
+        { id: "advisor-quantities", label: "Modificar cantidades", value: "quantities" },
+        { id: "advisor-review", label: "Revisar mi selección", value: "review" }
+      ] : [
+        { id: "advisor-order-status", label: "Estado de un pedido", value: "order-status" },
+        { id: "advisor-other", label: "Otro motivo", value: "other" }
+      ]));
+      return;
+    case "advisor-follow-up":
+      chat.addMessage({ author: "system", type: "status", status: "neutral", text: "La atención humana no está conectada en esta demostración. No se ha contactado a ningún asesor." });
+      chat.addMessage(quickReplies("Si quieres, puedes añadir contexto localmente o volver a las opciones.", [
+        { id: "advisor-note", label: "Añadir información", value: "advisor-note" },
+        { id: "advisor-home", label: "Volver al inicio", value: "home" }
+      ]));
+      return;
+    case "advisor-note":
+      chat.addMessage({ author: "assistant", text: "Escribe información adicional. Permanecerá en esta demostración y no se enviará a un asesor." });
+      return;
+    case "advisor-note-received":
+      chat.addMessage({ author: "system", type: "status", status: "neutral", text: "La información solo quedó en el historial local. No se envió a un asesor ni a un servidor." });
+      chat.addMessage(quickReplies("Puedes continuar con el catálogo de ejemplo.", [
+        { id: "advisor-browse", label: "Explorar productos", value: "explore-products" },
+        { id: "advisor-home", label: "Volver al inicio", value: "home" }
+      ]));
+      return;
+    case "cart-edit":
+      chat.addMessage({ author: "assistant", text: "Ajusta las cantidades. Los cambios se aplicarán al guardar." });
+      state.draftCart.forEach((line) => {
+        const product = getDemoProduct(line.productId);
+        if (!product) return;
+        const variant = product.variants?.find((item) => item.id === line.variantId);
+        chat.addMessage({ author: "assistant", type: "quantity-selector", controlId: `cart-edit:${state.revision}:${line.id}`, productId: line.id, label: [product.name, variant?.label].filter(Boolean).join(" · "), value: line.quantity, minimum: 1, maximum: 99, decreaseLabel: "Reducir cantidad", increaseLabel: "Aumentar cantidad" });
+      });
+      chat.addMessage(quickReplies("¿Listo?", [
+        { id: "save-cart-edits", label: "Guardar cambios", value: `save-cart:${state.revision}` },
+        { id: "cancel-cart-edits", label: "Cancelar", value: `cancel-cart:${state.revision}` }
       ]));
       return;
     case "categories":
       chat.addMessage(categoriesMessage());
-      chat.addMessage(quickReplies("En cualquier momento puedes volver al menú inicial.", [{ id: "home", label: "Volver al inicio", value: "home" }]));
       return;
     case "products": {
       const products = productsByCategory[state.categoryId].map(getDemoProduct).filter((product) => Boolean(product));
       const prompt = state.categoryId === "clothing" ? "Estos son los productos de ropa. Selecciona uno para conocer sus características." : state.categoryId === "accessories" ? "Este es un accesorio de ejemplo. Selecciónalo para ver sus características." : "Explora los productos ficticios disponibles en esta demostración.";
       chat.addMessage({ author: "assistant", type: "product-list", text: prompt, products, productActionLabel: "Ver producto" });
-      const replies = [
+      const replies = state.cart.length ? [
+        { id: "categories", label: "Cambiar categoría", value: "back-categories" },
+        { id: "cart", label: `Ver mi selección (${state.cart.length})`, value: "view-cart" }
+      ] : [
         { id: "categories", label: "Cambiar categoría", value: "back-categories" },
         { id: "home", label: "Volver al inicio", value: "home" }
       ];
-      if (state.cart.length) replies.unshift({ id: "cart", label: `Ver mi selección (${state.cart.length})`, value: "view-cart" });
       chat.addMessage(quickReplies("También puedes navegar por las opciones anteriores.", replies));
       return;
     }
@@ -11480,7 +11755,7 @@ function renderJourney(chat, state) {
         chat.addMessage({ author: "system", type: "status", status: "error", text: "No encontramos ese producto en el catálogo de ejemplo." });
         return;
       }
-      chat.addMessage({
+      const messageId = chat.addMessage({
         author: "assistant",
         type: "product-detail",
         product,
@@ -11497,7 +11772,10 @@ function renderJourney(chat, state) {
         backActionLabel: "Ver otros productos",
         actionMessage: "Agregar producto a mi selección"
       });
-      if (state.cart.length) chat.addMessage(quickReplies("También puedes revisar lo que ya elegiste.", [{ id: "cart", label: `Revisar selección (${state.cart.length})`, value: "view-cart" }]));
+      onProductDetail?.(messageId);
+      const detailActions = [{ id: "change-category", label: "Cambiar categoría", value: "back-categories" }];
+      if (state.cart.length) detailActions.unshift({ id: "cart", label: `Revisar selección (${state.cart.length})`, value: "view-cart" });
+      chat.addMessage(quickReplies(state.cart.length ? "También puedes cambiar de categoría o revisar lo que llevas." : "Puedes cambiar de categoría o volver a la lista.", detailActions));
       return;
     }
     case "after-add":
@@ -11512,16 +11790,22 @@ function renderJourney(chat, state) {
         author: "assistant",
         type: "cart-summary",
         text: "Este es el resumen de los productos seleccionados.",
-        items: toCartItems(state.cart),
+        items: toCartItems(state.cart).map((item) => ({
+          ...item,
+          actions: [
+            { id: "edit-quantity", label: "Editar cantidad", value: item.id, messageText: "Editar cantidades" },
+            { id: "remove-item", label: "Quitar", value: item.id, messageText: `Quitar ${item.product.name}` }
+          ]
+        })),
         subtotal: state.cart.length ? calculateSubtotal(state.cart) : void 0,
         subtotalTitle: "Subtotal de ejemplo",
         continueLabel: state.cart.length ? "Continuar con mis datos" : void 0,
         removeItemLabel: "Quitar",
         emptyLabel: "Tu selección está vacía. Puedes seguir explorando productos."
       });
-      chat.addMessage(quickReplies("Puedes agregar más productos antes de continuar.", [
-        { id: "browse", label: "Agregar más productos", value: "continue-shopping" },
-        { id: "home", label: "Volver al inicio", value: "home" }
+      chat.addMessage(quickReplies("Puedes seguir explorando o solicitar orientación.", [
+        { id: "browse", label: "Seguir explorando", value: "continue-shopping" },
+        { id: "advisor", label: "Solicitar atención", value: "start-advisor" }
       ]));
       return;
     case "customer-information":
@@ -11568,22 +11852,31 @@ function renderJourney(chat, state) {
 function initializeCommerceJourneyDemo(chat) {
   const listeners = new AbortController();
   let state = freshJourney();
-  renderJourney(chat, state);
   let pendingReply = 0;
+  let productDetailMessageId = null;
+  let cartEditRevision = 0;
+  const render = () => renderJourney(chat, state, (messageId) => {
+    productDetailMessageId = messageId;
+  });
+  render();
   const transition = (event, delayed = true, renderResult = true) => {
     const next = reduceJourney(state, event);
     if (next === state) return;
+    const keepProductDetailMessage = state.step === "product-detail" && next.step === "product-detail";
     state = next;
+    if (!keepProductDetailMessage) productDetailMessageId = null;
+    chat.interactionMode = "guided";
     const revision = ++pendingReply;
+    if (renderResult) chat.disableHistoryControls();
     if (!delayed) {
-      if (renderResult) renderJourney(chat, state);
+      if (renderResult) render();
       return;
     }
     chat.setTyping(true, "El asistente está escribiendo");
     window.setTimeout(() => {
       if (revision !== pendingReply) return;
       chat.setTyping(false);
-      renderJourney(chat, state);
+      render();
     }, 420);
   };
   chat.addEventListener("kroma-chat-action", (event) => {
@@ -11591,7 +11884,9 @@ function initializeCommerceJourneyDemo(chat) {
     switch (detail.control) {
       case "journey-menu":
         if (detail.value === "browse-products") transition({ type: "explore-products" });
-        else transition({ type: "unavailable", service: detail.value === "search-product" ? "La búsqueda de productos" : detail.value === "order-status" ? "La consulta de pedidos" : "La atención con asesor" });
+        else if (detail.value === "search-product") transition({ type: "search-products" });
+        else if (detail.value === "order-status") transition({ type: "show-order-help" });
+        else if (detail.value === "advisor") transition({ type: "start-advisor" });
         break;
       case "category-picker":
         if (detail.value === "all" || detail.value === "clothing" || detail.value === "accessories") transition({ type: "choose-category", categoryId: detail.value });
@@ -11602,14 +11897,16 @@ function initializeCommerceJourneyDemo(chat) {
         if (detail.data?.productId) transition({ type: "choose-product", productId: detail.data.productId });
         break;
       case "product-detail":
+        if (detail.messageId !== productDetailMessageId) break;
         if (detail.actionId === "back-to-products") transition({ type: "back-to-products" });
         else if (detail.actionId === "add-to-cart") transition({ type: "add-product", productId: detail.data?.productId, variantId: detail.data?.variantId, quantity: detail.data?.quantity });
         break;
       case "product-variant-selector":
-        transition({ type: "choose-variant", productId: detail.data?.productId, variantId: detail.data?.variantId }, false, false);
+        if (detail.messageId === productDetailMessageId) transition({ type: "choose-variant", productId: detail.data?.productId, variantId: detail.data?.variantId }, false, false);
         break;
       case "cart-summary":
         if (detail.actionId === "remove-item") transition({ type: "remove-item", lineId: detail.data?.lineId || detail.value });
+        else if (detail.actionId === "edit-quantity") transition({ type: "edit-cart-quantities", revision: ++cartEditRevision });
         else if (detail.actionId === "continue") transition({ type: "checkout" });
         break;
       case "order-review":
@@ -11623,7 +11920,14 @@ function initializeCommerceJourneyDemo(chat) {
   }, { signal: listeners.signal });
   chat.addEventListener("kroma-chat-quantity-change", (event) => {
     const detail = event.detail;
-    transition({ type: "change-quantity", productId: detail.productId, quantity: detail.quantity }, false, false);
+    if (state.step === "product-detail" && detail.messageId === productDetailMessageId) {
+      transition({ type: "change-quantity", productId: detail.productId, quantity: detail.quantity }, false, false);
+      return;
+    }
+    if (state.step === "cart-edit") {
+      const match = /^cart-edit:(\d+):(.+)$/.exec(detail.controlId);
+      if (match) transition({ type: "change-cart-quantity", revision: Number(match[1]), lineId: match[2], quantity: detail.quantity }, false, false);
+    }
   }, { signal: listeners.signal });
   chat.addEventListener("kroma-chat-form-submit", (event) => {
     const detail = event.detail;
@@ -11634,6 +11938,16 @@ function initializeCommerceJourneyDemo(chat) {
   }, { signal: listeners.signal });
   chat.addEventListener("kroma-chat-option-select", (event) => {
     const detail = event.detail;
+    const saveRevision = /^save-cart:(\d+)$/.exec(detail.value);
+    if (saveRevision) {
+      transition({ type: "save-cart-quantities", revision: Number(saveRevision[1]) });
+      return;
+    }
+    const cancelRevision = /^cancel-cart:(\d+)$/.exec(detail.value);
+    if (cancelRevision) {
+      transition({ type: "cancel-cart-quantities", revision: Number(cancelRevision[1]) });
+      return;
+    }
     switch (detail.value) {
       case "continue-shopping":
         transition({ type: "continue-shopping" });
@@ -11641,8 +11955,20 @@ function initializeCommerceJourneyDemo(chat) {
       case "view-cart":
         transition({ type: "view-cart" });
         break;
-      case "browse-more":
-        transition({ type: "continue-shopping" });
+      case "browse-all":
+        transition({ type: "search-results", query: "", productIds: demoProducts.map((product) => product.id) });
+        break;
+      case "write-product-name":
+      case "search-again":
+        transition({ type: "search-query" });
+        chat.interactionMode = "free-text";
+        break;
+      case "start-advisor":
+        transition({ type: "start-advisor" });
+        break;
+      case "advisor-note":
+        transition({ type: "advisor-note" });
+        chat.interactionMode = "free-text";
         break;
       case "back-to-cart":
         transition({ type: "back-to-cart" });
@@ -11651,24 +11977,43 @@ function initializeCommerceJourneyDemo(chat) {
         transition({ type: "back-to-categories" });
         break;
       case "back-home":
+      case "home":
         transition({ type: "home" });
         break;
       case "explore-products":
         transition({ type: "explore-products" });
         break;
+      default:
+        if (state.step === "advisor-reason" && ["product", "selection", "order"].includes(detail.value)) {
+          transition({ type: "advisor-reason", reason: detail.value });
+        } else if (state.step === "advisor-topic") {
+          transition({ type: "advisor-topic", reason: state.reason, topic: detail.value });
+        }
+        break;
     }
   }, { signal: listeners.signal });
-  chat.addEventListener("kroma-chat-send", () => {
+  chat.addEventListener("kroma-chat-send", (event) => {
+    const detail = event.detail;
+    if (state.step === "search-query") {
+      const query = detail.message.trim();
+      const normalizedQuery = normalizeSearchText(query);
+      const productIds = demoProducts.filter((product) => [product.name, product.summary, product.description, ...product.features || []].some((text) => normalizeSearchText(text || "").includes(normalizedQuery))).map((product) => product.id);
+      transition({ type: "search-results", query, productIds });
+      return;
+    }
+    if (state.step === "advisor-note") {
+      transition({ type: "advisor-note-received" });
+      return;
+    }
     const revision = ++pendingReply;
     chat.setTyping(true, "El asistente está escribiendo");
     window.setTimeout(() => {
       if (revision !== pendingReply) return;
       chat.setTyping(false);
-      chat.addMessage({ author: "assistant", text: "Gracias por tu mensaje. Puedo ayudarte a explorar productos o revisar tu selección." });
-      chat.addMessage(quickReplies("¿Qué te gustaría hacer?", [
-        { id: "browse", label: "Explorar productos", value: "explore-products" },
-        { id: "cart", label: "Ver mi selección", value: "view-cart" }
-      ]));
+      chat.addMessage({ author: "system", type: "status", status: "neutral", text: "La escritura libre no está conectada a un asistente en esta demostración. Usa las opciones guiadas para explorar el catálogo de ejemplo." });
+      const replies = [{ id: "browse", label: "Explorar categorías", value: "explore-products" }];
+      if (state.cart.length) replies.push({ id: "cart", label: `Ver mi selección (${state.cart.length})`, value: "view-cart" });
+      chat.addMessage(quickReplies("¿Qué prefieres hacer?", replies));
     }, 420);
   }, { signal: listeners.signal });
   return () => {
@@ -11679,73 +12024,102 @@ function initializeCommerceJourneyDemo(chat) {
 function reduceJourney(state, event) {
   switch (event.type) {
     case "explore-products":
-      return { step: "categories", cart: state.cart };
-    case "unavailable":
-      return { step: "unavailable", cart: state.cart, service: event.service };
+      return ["welcome", "search-options", "search-query", "search-results", "order-help", "after-add", "cart", "customer-information", "advisor-reason", "advisor-topic", "advisor-follow-up", "advisor-note-received"].includes(state.step) ? { step: "categories", cart: state.cart } : state;
+    case "search-products":
+      return ["welcome", "search-options", "search-query", "search-results"].includes(state.step) ? { step: "search-options", cart: state.cart } : state;
+    case "search-query":
+      return ["search-options", "search-results"].includes(state.step) ? { step: "search-query", cart: state.cart } : state;
+    case "search-results":
+      return ["search-options", "search-query"].includes(state.step) ? { step: "search-results", cart: state.cart, query: event.query, productIds: event.productIds } : state;
+    case "show-order-help":
+      return state.step === "welcome" ? { step: "order-help", cart: state.cart } : state;
+    case "start-advisor":
+      return ["welcome", "cart", "after-add"].includes(state.step) ? { step: "advisor-reason", cart: state.cart } : state;
+    case "advisor-reason":
+      return state.step === "advisor-reason" ? { step: "advisor-topic", cart: state.cart, reason: event.reason } : state;
+    case "advisor-topic":
+      return state.step === "advisor-topic" && state.reason === event.reason ? { step: "advisor-follow-up", cart: state.cart, reason: event.reason, topic: event.topic } : state;
+    case "advisor-note":
+      return state.step === "advisor-follow-up" ? { step: "advisor-note", cart: state.cart } : state;
+    case "advisor-note-received":
+      return state.step === "advisor-note" ? { step: "advisor-note-received", cart: state.cart } : state;
     case "home":
       return { step: "welcome", cart: state.cart };
     case "choose-category":
-      return { step: "products", cart: state.cart, categoryId: event.categoryId };
+      return state.step === "categories" && demoCategories.some((category) => category.id === event.categoryId) ? { step: "products", cart: state.cart, categoryId: event.categoryId } : state;
     case "choose-product": {
-      if (state.step !== "products") return state;
+      if (state.step !== "products" && state.step !== "search-results") return state;
+      const allowedProducts = state.step === "products" ? productsByCategory[state.categoryId] : state.productIds;
+      if (!allowedProducts.includes(event.productId)) return state;
       const product = getDemoProduct(event.productId);
       if (!product) return state;
-      return { step: "product-detail", cart: state.cart, categoryId: state.categoryId, productId: product.id, variantId: product.variants?.[0]?.id, quantity: 1 };
+      const categoryId = state.step === "products" ? state.categoryId : productsByCategory.clothing.includes(product.id) ? "clothing" : productsByCategory.accessories.includes(product.id) ? "accessories" : "all";
+      return { step: "product-detail", cart: state.cart, categoryId, productId: product.id, quantity: 1 };
     }
-    case "choose-variant":
+    case "choose-variant": {
       if (state.step !== "product-detail" || event.productId && event.productId !== state.productId) return state;
-      return { ...state, variantId: event.variantId };
+      const variants = getDemoProduct(state.productId)?.variants || [];
+      return event.variantId && variants.some((variant) => variant.id === event.variantId) ? { ...state, variantId: event.variantId } : state;
+    }
     case "change-quantity":
       if (state.step !== "product-detail" || event.productId && event.productId !== state.productId) return state;
       return { ...state, quantity: Math.max(1, Math.min(10, Math.floor(event.quantity))) };
     case "add-product": {
       if (state.step !== "product-detail" || event.productId && event.productId !== state.productId) return state;
       const productId = state.productId;
+      const product = getDemoProduct(productId);
       const variantId = event.variantId || state.variantId;
+      if (!product || product.variants?.length && !product.variants.some((variant) => variant.id === variantId)) return state;
       const lineId = `${productId}:${variantId || "default"}`;
       const quantity = Math.max(1, Math.min(10, Math.floor(event.quantity || state.quantity)));
       const existing = state.cart.find((line) => line.id === lineId);
-      const cart = existing ? state.cart.map((line) => line.id === lineId ? { ...line, quantity: line.quantity + quantity } : line) : [...state.cart, { id: lineId, productId, variantId, quantity }];
+      const cart = existing ? state.cart.map((line) => line.id === lineId ? { ...line, quantity: Math.min(99, line.quantity + quantity) } : line) : [...state.cart, { id: lineId, productId, variantId, quantity }];
       return { step: "after-add", cart, categoryId: state.categoryId, productId };
     }
     case "back-to-products":
-      if (state.step !== "product-detail") return state;
-      return { step: "products", cart: state.cart, categoryId: state.categoryId };
+      return state.step === "product-detail" ? { step: "products", cart: state.cart, categoryId: state.categoryId } : state;
     case "back-to-categories":
-      if (state.step !== "products") return state;
-      return { step: "categories", cart: state.cart };
+      return state.step === "products" || state.step === "product-detail" ? { step: "categories", cart: state.cart } : state;
     case "continue-shopping":
       if (state.step === "after-add") return { step: "products", cart: state.cart, categoryId: state.categoryId };
       if (state.step === "cart" || state.step === "customer-information") return { step: "categories", cart: state.cart };
       return state;
     case "view-cart":
-      return state.cart.length ? { step: "cart", cart: state.cart } : state;
+      return state.cart.length && ["welcome", "search-results", "products", "product-detail", "after-add", "advisor-topic", "advisor-follow-up", "advisor-note-received"].includes(state.step) ? { step: "cart", cart: state.cart } : state;
+    case "edit-cart-quantities":
+      return state.step === "cart" && state.cart.length ? { step: "cart-edit", cart: state.cart, draftCart: state.cart.map((line) => ({ ...line })), revision: event.revision } : state;
+    case "change-cart-quantity":
+      if (state.step !== "cart-edit" || state.revision !== event.revision || !state.draftCart.some((line) => line.id === event.lineId)) return state;
+      return { ...state, draftCart: state.draftCart.map((line) => line.id === event.lineId ? { ...line, quantity: Math.max(1, Math.min(99, Math.floor(event.quantity))) } : line) };
+    case "save-cart-quantities":
+      return state.step === "cart-edit" && state.revision === event.revision ? { step: "cart", cart: state.draftCart } : state;
+    case "cancel-cart-quantities":
+      return state.step === "cart-edit" && state.revision === event.revision ? { step: "cart", cart: state.cart } : state;
     case "remove-item":
-      if (state.step !== "cart" || !event.lineId) return state;
+      if (state.step !== "cart" || !event.lineId || !state.cart.some((line) => line.id === event.lineId)) return state;
       return { step: "cart", cart: state.cart.filter((line) => line.id !== event.lineId) };
     case "checkout":
       return state.step === "cart" && state.cart.length ? { step: "customer-information", cart: state.cart } : state;
     case "back-to-cart":
-      if (state.step === "customer-information" || state.step === "order-review") return { step: "cart", cart: state.cart };
-      return state;
+      return state.step === "customer-information" || state.step === "order-review" ? { step: "cart", cart: state.cart } : state;
     case "submit-customer":
-      if (state.step !== "customer-information") return state;
-      return { step: "order-review", cart: state.cart, customer: event.customer };
+      return state.step === "customer-information" ? { step: "order-review", cart: state.cart, customer: event.customer } : state;
     case "edit-customer":
-      if (state.step !== "order-review") return state;
-      return { step: "customer-information", cart: state.cart, customer: state.customer };
+      return state.step === "order-review" ? { step: "customer-information", cart: state.cart, customer: state.customer } : state;
     case "confirm-order":
-      if (state.step !== "order-review") return state;
-      return { step: "completed", cart: state.cart, customer: state.customer, reference: "SIM-001" };
+      return state.step === "order-review" ? { step: "completed", cart: state.cart, customer: state.customer, reference: "SIM-001" } : state;
     case "restart":
       return { step: "welcome", cart: [] };
     default:
       return state;
   }
 }
+function normalizeSearchText(value) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es").trim();
+}
 export {
   capImage as c,
   poloImage as p,
   sneakerImage as s
 };
-//# sourceMappingURL=app-BWAIfpnQ.js.map
+//# sourceMappingURL=app-BzAfTeAA.js.map
