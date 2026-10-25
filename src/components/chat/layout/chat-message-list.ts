@@ -10,6 +10,7 @@ import type { ChatAction, ChatMessage, ChatOption } from "../core/chat.types";
 import { renderChatMessage } from "../core/chat.renderers";
 import type { ChatRendererHandlers } from "../core/chat.renderers";
 import { createTypingIndicator } from "../messages/typing-indicator";
+import { SpeechOutputController, type SpeechOutputStatus } from "../messages/speech-output-controller";
 
 export type ChatMessageListCallbacks = {
   createMessageId: () => string;
@@ -53,6 +54,8 @@ export class ChatMessageList {
   private typingIndicator: HTMLLIElement | null = null;
   private shouldStickToBottom = true;
   private readonly listeners = new AbortController();
+  private readonly speechOutput: SpeechOutputController;
+  private readonly unsubscribeSpeechOutput: () => void;
 
   constructor(private readonly callbacks: ChatMessageListCallbacks, emptyLabel: string, messagesLabel: string) {
     this.element = document.createElement("ol");
@@ -65,6 +68,8 @@ export class ChatMessageList {
     this.emptyState.className = "kroma-chat__empty";
     this.emptyState.textContent = emptyLabel;
     this.emptyState.hidden = false;
+    this.speechOutput = new SpeechOutputController();
+    this.unsubscribeSpeechOutput = this.speechOutput.subscribe((status) => this.updateSpeechButtons(status));
     this.element.addEventListener("scroll", () => { this.shouldStickToBottom = this.isAtBottom(); }, { passive: true, signal: this.listeners.signal });
   }
 
@@ -98,6 +103,9 @@ export class ChatMessageList {
     const handlers: ChatRendererHandlers = {
       onAction: (detail, userMessage) => this.emitAction(detail, userMessage),
       onRichAction: (id, action, userMessage) => this.emitRichAction(id, action, userMessage),
+      onSpeak: this.speechOutput.supported
+        ? (id, text) => this.speechOutput.toggle(id, text)
+        : undefined,
       onOptionSelect: (selection, group, button) => this.selectOption(selection, group, button),
       onQuantityChange: this.callbacks.onQuantityChange,
       onFormInputFocus: (input) => { if (this.callbacks.interactive) this.callbacks.onFormInputFocus(input); },
@@ -190,6 +198,22 @@ export class ChatMessageList {
 
   destroy() {
     this.listeners.abort();
+    this.unsubscribeSpeechOutput();
+    this.speechOutput.destroy();
+  }
+
+  private updateSpeechButtons(status: SpeechOutputStatus) {
+    this.element.querySelectorAll<HTMLButtonElement>(".kroma-chat__speak-button").forEach((button) => {
+      const isCurrentMessage = button.dataset.speechMessageId === status.messageId;
+      const isSpeaking = isCurrentMessage && status.state === "speaking";
+      const hasError = isCurrentMessage && status.state === "error";
+      button.dataset.speechState = isSpeaking ? "speaking" : hasError ? "error" : "idle";
+      button.setAttribute("aria-pressed", String(isSpeaking));
+      button.setAttribute("aria-label", isSpeaking
+        ? "Detener lectura del mensaje"
+        : hasError ? "Reintentar lectura del mensaje" : "Escuchar mensaje del asistente");
+      button.title = hasError ? status.message : isSpeaking ? "Detener lectura" : "Escuchar mensaje";
+    });
   }
 
   private selectOption(selection: ChatControlSelection, group: HTMLDivElement, selectedButton: HTMLButtonElement) {

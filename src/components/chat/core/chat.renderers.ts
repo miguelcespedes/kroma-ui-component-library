@@ -53,6 +53,7 @@ import { createStandaloneQuantitySelector } from "../catalog/quantity-selector";
 export type ChatRendererHandlers = {
   onAction: ChatActionHandler;
   onRichAction: (messageId: string, action: ChatAction, userMessage?: string) => void;
+  onSpeak?: (messageId: string, text: string) => void;
   onOptionSelect: (selection: ChatControlSelection, group: HTMLDivElement, button: HTMLButtonElement) => void;
   onQuantityChange: ChatQuantityHandler;
   onFormInputFocus: (input: HTMLInputElement) => void;
@@ -84,8 +85,8 @@ type ChatRendererMap = {
   typing: ChatRenderer<ChatTypingMessage>;
 };
 
-function appendPrompt(item: HTMLLIElement, message: ChatMessageBase & { text: string }) {
-  item.append(createChatBubble(message, item.id));
+function appendPrompt(item: HTMLLIElement, message: ChatMessageBase & { text: string }, handlers: ChatRendererHandlers) {
+  item.append(createChatBubble(message, item.id, handlers.onSpeak));
 }
 
 function renderStatus(item: HTMLLIElement, message: ChatStatusMessage) {
@@ -99,12 +100,12 @@ function renderRich(item: HTMLLIElement, message: ChatInfoMessage | ChatRichMess
 }
 
 function renderJourneyMenu(item: HTMLLIElement, message: JourneyMenuMessage, handlers: ChatRendererHandlers) {
-  appendPrompt(item, message);
+  appendPrompt(item, message, handlers);
   item.append(createJourneyMenu(item.id, message, handlers.onAction), createChatMessageTime(message));
 }
 
 function renderCategoryPicker(item: HTMLLIElement, message: CategoryPickerMessage, handlers: ChatRendererHandlers) {
-  appendPrompt(item, message);
+  appendPrompt(item, message, handlers);
   item.append(createCategoryPicker(item.id, message, handlers.onAction), createChatMessageTime(message));
 }
 
@@ -113,12 +114,12 @@ function renderProductCard(item: HTMLLIElement, message: ProductCardMessage, han
 }
 
 function renderProductList(item: HTMLLIElement, message: ProductListMessage, handlers: ChatRendererHandlers) {
-  appendPrompt(item, message);
+  appendPrompt(item, message, handlers);
   item.append(createProductList(item.id, message, handlers.onAction), createChatMessageTime(message));
 }
 
 function renderProductCarousel(item: HTMLLIElement, message: ProductCarouselMessage, handlers: ChatRendererHandlers) {
-  appendPrompt(item, message);
+  appendPrompt(item, message, handlers);
   item.append(createProductCarousel(item.id, message, handlers.onAction), createChatMessageTime(message));
 }
 
@@ -135,17 +136,17 @@ function renderQuantitySelector(item: HTMLLIElement, message: QuantitySelectorMe
 }
 
 function renderCartSummary(item: HTMLLIElement, message: CartSummaryMessage, handlers: ChatRendererHandlers) {
-  appendPrompt(item, message);
+  appendPrompt(item, message, handlers);
   item.append(createCartSummary(item.id, message, handlers.onAction), createChatMessageTime(message));
 }
 
 function renderForm(item: HTMLLIElement, message: ConversationalFormMessage, handlers: ChatRendererHandlers) {
-  appendPrompt(item, message);
+  appendPrompt(item, message, handlers);
   item.append(createConversationalForm(item.id, message, handlers.onFormInputFocus, handlers.onFormSubmit), createChatMessageTime(message));
 }
 
 function renderOrderReview(item: HTMLLIElement, message: OrderReviewMessage, handlers: ChatRendererHandlers) {
-  appendPrompt(item, message);
+  appendPrompt(item, message, handlers);
   item.append(createOrderReview(item.id, message, handlers.onAction), createChatMessageTime(message));
 }
 
@@ -154,18 +155,18 @@ function renderConfirmation(item: HTMLLIElement, message: ConfirmationMessage, h
 }
 
 function renderQuickReplies(item: HTMLLIElement, message: ChatQuickRepliesMessage | ChatOptionsMessage, handlers: ChatRendererHandlers) {
-  appendPrompt(item, message);
+  appendPrompt(item, message, handlers);
   const options = message.type === "options" ? message.options : message.replies;
   item.append(createQuickReplies(item.id, options, handlers.onOptionSelect));
 }
 
 function renderChoiceList(item: HTMLLIElement, message: ChatChoiceListMessage, handlers: ChatRendererHandlers) {
-  appendPrompt(item, message);
+  appendPrompt(item, message, handlers);
   item.append(createChoiceList(item.id, message.choices, handlers.onOptionSelect));
 }
 
-function renderText(item: HTMLLIElement, message: ChatTextMessage) {
-  item.append(createChatBubble(message, item.id));
+function renderText(item: HTMLLIElement, message: ChatTextMessage, handlers: ChatRendererHandlers) {
+  item.append(createChatBubble(message, item.id, handlers.onSpeak));
 }
 
 function renderTyping(item: HTMLLIElement, message: ChatTypingMessage) {
@@ -194,7 +195,7 @@ const renderers = {
   "quick-replies": (item, message, handlers) => renderQuickReplies(item, message, handlers),
   options: (item, message, handlers) => renderQuickReplies(item, message, handlers),
   "choice-list": (item, message, handlers) => renderChoiceList(item, message, handlers),
-  text: (item, message) => renderText(item, message),
+  text: (item, message, handlers) => renderText(item, message, handlers),
   typing: (item, message) => renderTyping(item, message),
 } satisfies ChatRendererMap;
 

@@ -45,6 +45,50 @@
     word-break: normal;
   }
 
+  &__bubble-row {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    align-items: flex-end;
+    gap: var(--kroma-chat-spacing-tight);
+  }
+
+  &__bubble-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--kroma-chat-spacing-tight);
+  }
+
+  &__bubble-footer &__time { align-self: center; }
+
+  &__speak-button {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: 0 0 auto;
+    place-items: center;
+    margin-block-end: .25rem;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--kroma-chat-text-secondary);
+    cursor: pointer;
+    transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard),
+      border-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard),
+      color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
+
+    svg { width: var(--kroma-chat-icon-action-size); height: var(--kroma-chat-icon-action-size); }
+    &:hover { background: var(--kroma-chat-surface-hover); color: var(--kroma-chat-text-primary); }
+    &[data-speech-state="speaking"] {
+      border-color: var(--kroma-chat-state-focus);
+      background: var(--kroma-chat-state-focus);
+      color: var(--kroma-chat-on-accent);
+    }
+    &[data-speech-state="error"] { color: var(--kroma-chat-state-error); }
+  }
+
   &__message--user &__bubble {
     border-radius: var(--kroma-chat-radius-message) var(--kroma-chat-radius-message) .25rem var(--kroma-chat-radius-message);
     background: var(--kroma-chat-accent);
