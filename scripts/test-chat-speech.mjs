@@ -26,6 +26,7 @@ try {
   await page.addInitScript(() => {
     class FakeSpeechRecognition {
       static lastInstance;
+      static holdStop = false;
       lang = "";
       continuous = true;
       interimResults = false;
@@ -36,8 +37,9 @@ try {
       onresult = null;
       constructor() { FakeSpeechRecognition.lastInstance = this; }
       start() { queueMicrotask(() => this.onstart?.()); }
-      stop() { queueMicrotask(() => this.onend?.()); }
+      stop() { if (!FakeSpeechRecognition.holdStop) queueMicrotask(() => this.onend?.()); }
       abort() { this.onend?.(); }
+      emitEnd() { this.onend?.(); }
       emitError(error) { this.onerror?.({ error }); }
       emitResults(parts) {
         const results = parts.map(({ transcript, isFinal }) => ({ 0: { transcript }, isFinal, length: 1 }));
@@ -100,7 +102,26 @@ try {
   sends = await chat.evaluate((element) => Number(element.dataset.speechTestSent || 0));
   assert.equal(sends, 0, "dictation never submits automatically");
 
+  await page.waitForTimeout(300);
+  const listeningStyle = await speechButton.evaluate((button) => ({
+    background: getComputedStyle(button).backgroundColor,
+    color: getComputedStyle(button).color,
+  }));
+  await page.evaluate(() => { window.SpeechRecognition.holdStop = true; });
   await speechButton.click();
+  await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "stopping");
+  assert.equal(await speechButton.getAttribute("aria-pressed"), "true", "stopping remains announced as active until recognition ends");
+  await page.waitForTimeout(300);
+  const stoppingStyle = await speechButton.evaluate((button) => ({
+    background: getComputedStyle(button).backgroundColor,
+    color: getComputedStyle(button).color,
+    iconStroke: getComputedStyle(button.querySelector("svg")).strokeWidth,
+  }));
+  assert.deepEqual(stoppingStyle, { ...listeningStyle, iconStroke: "2.2px" }, "stopping keeps the intense active button and icon treatment");
+  await page.evaluate(() => {
+    window.SpeechRecognition.lastInstance.emitEnd();
+    window.SpeechRecognition.holdStop = false;
+  });
   await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "idle");
   const displayBounds = await display.boundingBox();
   assert.ok(displayBounds, "composer is visible after dictation");

@@ -12757,13 +12757,18 @@ textarea.form-control-lg {
   opacity: 0.7;
 }
 
-.kroma-chat__speech-button[data-speech-state=listening] {
+.kroma-chat__speech-button[data-speech-state=listening], .kroma-chat__speech-button[data-speech-state=stopping] {
   border-color: var(--kroma-chat-state-focus);
   background: var(--kroma-chat-state-focus);
   color: var(--kroma-chat-on-accent);
+  opacity: 1;
 }
 
-.kroma-chat__speech-button[data-speech-state=starting], .kroma-chat__speech-button[data-speech-state=stopping] {
+.kroma-chat__speech-button[data-speech-state=listening] svg, .kroma-chat__speech-button[data-speech-state=stopping] svg {
+  stroke-width: 2.2;
+}
+
+.kroma-chat__speech-button[data-speech-state=starting] {
   border-color: var(--kroma-chat-state-focus);
   color: var(--kroma-chat-state-focus);
 }
@@ -12773,7 +12778,7 @@ textarea.form-control-lg {
   color: var(--kroma-chat-state-error);
 }
 
-.kroma-chat__speech-button[data-speech-state=listening]::after {
+.kroma-chat__speech-button[data-speech-state=listening]::after, .kroma-chat__speech-button[data-speech-state=stopping]::after {
   position: absolute;
   inset-block-start: 0.3rem;
   inset-inline-end: 0.3rem;
