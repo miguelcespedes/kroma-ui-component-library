@@ -15,12 +15,19 @@
   font-size: var(--kroma-chat-typography-body);
   font-weight: var(--kroma-chat-weight-regular);
   line-height: var(--kroma-chat-leading-body);
+  letter-spacing: var(--kroma-chat-letter-spacing-body);
+  font-synthesis: none;
+  font-optical-sizing: auto;
+  font-kerning: normal;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
   box-shadow: var(--kroma-chat-elevation-shell);
   container-name: kroma-chat;
   // Both axes are explicit, so components can adapt to narrow and short chat containers.
   container-type: size;
 
   *, *::before, *::after { box-sizing: border-box; }
+  :where(button, input, textarea, select) { font-family: inherit; font-synthesis: none; }
   [hidden] { display: none !important; }
 
   &__header {
@@ -45,13 +52,13 @@
     background: var(--kroma-chat-accent);
     color: var(--kroma-chat-on-accent);
     font-size: var(--kroma-chat-typography-label);
-    font-weight: var(--kroma-font-weight-bold, 700);
+    font-weight: var(--kroma-chat-weight-bold);
   }
 
   &__heading { display: grid; min-width: 0; flex: 1; gap: var(--kroma-chat-spacing-tight); }
-  &__title { margin: 0; font-size: var(--kroma-chat-typography-display); font-weight: var(--kroma-font-weight-bold, 700); line-height: var(--kroma-chat-leading-display); overflow-wrap: anywhere; }
-  &__subtitle { margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-secondary); line-height: var(--kroma-chat-leading-small); }
-  &__status { display: flex; align-items: center; gap: var(--kroma-chat-spacing-tight); margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-secondary); line-height: var(--kroma-chat-leading-small); }
+  &__title { margin: 0; font-size: var(--kroma-chat-typography-display); font-weight: var(--kroma-chat-weight-strong); line-height: var(--kroma-chat-leading-display); overflow-wrap: anywhere; }
+  &__subtitle { margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-status); line-height: var(--kroma-chat-leading-status); }
+  &__status { display: flex; align-items: center; gap: var(--kroma-chat-spacing-tight); margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-status); line-height: var(--kroma-chat-leading-status); }
   &__status:not([hidden])::before { width: .4rem; height: .4rem; flex: 0 0 auto; border-radius: 50%; background: var(--kroma-chat-state-success-mark); content: ""; }
   &__actions:empty { display: none; }
   &__actions { display: flex; align-items: center; gap: var(--kroma-chat-spacing-tight); }
@@ -126,8 +133,8 @@
     background: transparent;
     color: var(--kroma-chat-text-primary);
     font: inherit;
-    font-size: var(--kroma-chat-typography-body);
-    line-height: var(--kroma-chat-leading-body);
+    font-size: var(--kroma-chat-typography-composer);
+    line-height: var(--kroma-chat-leading-composer);
     padding-block: var(--kroma-chat-spacing-control);
 
     &::placeholder { color: var(--kroma-chat-text-secondary); opacity: 1; }
@@ -145,6 +152,8 @@
     padding: var(--kroma-chat-spacing-control) 0;
     color: var(--kroma-chat-text-primary);
     font: inherit;
+    font-size: var(--kroma-chat-typography-composer);
+    line-height: var(--kroma-chat-leading-composer);
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     cursor: text;
@@ -170,8 +179,8 @@
     background: transparent;
     color: var(--kroma-chat-text-accent);
     font: inherit;
-    font-size: var(--kroma-chat-typography-body-small);
-    line-height: var(--kroma-chat-leading-small);
+    font-size: var(--kroma-chat-typography-action);
+    line-height: var(--kroma-chat-leading-action);
     cursor: pointer;
 
     &:hover:not(:disabled) { background: var(--kroma-chat-surface-hover); }

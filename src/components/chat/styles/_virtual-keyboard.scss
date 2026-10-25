@@ -4,6 +4,10 @@
   max-block-size: 16rem;
   overflow-y: auto;
   overscroll-behavior: contain;
+  font-family: var(--kroma-chat-font-family);
+  font-size: var(--kroma-chat-typography-key);
+  font-weight: var(--kroma-chat-weight-medium);
+  line-height: 1;
 }
 
 .kroma-chat__keyboard-showcase {

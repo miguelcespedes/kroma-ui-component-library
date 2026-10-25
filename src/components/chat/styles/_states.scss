@@ -59,7 +59,7 @@
 
 @media (max-width: 30rem) {
   .kroma-chat__input,
-  .kroma-chat__form-input { font-size: 16px; }
+  .kroma-chat__form-input { font-size: var(--kroma-chat-typography-composer); }
 }
 
 @keyframes kroma-chat-typing {
