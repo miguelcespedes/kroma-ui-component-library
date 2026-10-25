@@ -1,30 +1,40 @@
+
 {
   "$schema": "https://opencode.ai/config.json",
   "share": "disabled",
   "autoupdate": false,
   "mcp": {
     "chrome-devtools": {
-      "enabled": false
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--isolated"
+      ],
+      "enabled": true
     }
   },
   "permission": {
-    "read": "allow",
+    "read": {
+      "*": "allow",
+      "*.env": "ask",
+      "*.env.*": "ask",
+      "*.env.example": "allow"
+    },
     "edit": {
       "*": "allow",
-      "**/opencode.json": "ask"
+      "*opencode.json": "deny",
+      "*opencode.jsonc": "deny"
     },
     "glob": "allow",
     "grep": "allow",
     "list": "allow",
-    "external_directory": {
-      "*": "deny",
-      "C:\\data\\Projects-GitHub\\kroma-ui-component-library": "allow",
-      "C:\\data\\Projects-GitHub\\kroma-ui-component-library\\**": "allow"
-    },
+    "external_directory": "deny",
     "bash": "ask",
-    "task": "deny",
-    "skill": "deny",
-    "webfetch": "deny",
-    "websearch": "deny"
+    "task": "ask",
+    "skill": "ask",
+    "webfetch": "ask",
+    "websearch": "ask"
   }
 }
