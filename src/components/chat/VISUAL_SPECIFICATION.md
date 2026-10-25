@@ -42,11 +42,11 @@ Font family: `--kroma-chat-font-family` is the locally bundled Inter Variable fa
 | Action | 13 / 18 px | 500 | Quick replies and secondary interactive actions |
 | Status | 12 / 16 px | 400 | Connection and status messages |
 | Price | 15 / 21 px | 700 | Product and order totals; tabular numerals |
-| Composer | 16 / 22 px | 400 | Native textarea and virtual text projection |
+| Composer | 16 / 22 px | 400 | Virtual text projection and read-only form entry targets |
 | Metadata | 11 / 14 px | 400 | Timestamps and compact captions |
 | Virtual key | 20 px / 1 line | 500 | simple-keyboard labels |
 
-The exact CSS custom properties are `--kroma-chat-typography-*`, `--kroma-chat-leading-*`, `--kroma-chat-weight-*`, and `--kroma-chat-letter-spacing-*` in `styles/_tokens.scss`. At 320–480 px of available width, copy wraps before type is reduced. The chat root explicitly restores this family on native controls, and the `.hg-theme-default` adapter overrides simple-keyboard's built-in Helvetica face without changing its visual theme.
+The exact CSS custom properties are `--kroma-chat-typography-*`, `--kroma-chat-leading-*`, `--kroma-chat-weight-*`, and `--kroma-chat-letter-spacing-*` in `styles/_tokens.scss`. At 320–480 px of available width, copy wraps before type is reduced. The chat root explicitly restores this family on form controls, and the `.hg-theme-default` adapter overrides simple-keyboard's built-in Helvetica face without changing its visual theme.
 
 ## 4. Iconography contract
 
@@ -82,7 +82,7 @@ Values marked **proposal** are implementation references where source imagery do
 |---|---|---|---|---|
 | Chat shell / header | Shell, avatar, title, optional subtitle/status/actions. Default and compact density; idle, focus and disabled actions. | Shell width 26 rem proposal, max height 82dvh; header min-height 60 px proposal. Title 15/20 650; status 12/16 400. Avatar 32×32. | 8 px shell border; 16 px shell radius; header separator subtle. Avatar uses accent. | Container is inline-size query root. Accessible region/title; action focus. `.kroma-chat`, `__header`, `__avatar`, `__title`, `__subtitle`, `__status`, `__header-action` in `_layout.scss` / `_states.scss` |
 | Message list | Scrollable ordered message sequence, empty state and grouped messages. | Body 14/21; avatar 24×24. | 8 px message rhythm, 16 px default inset, 8 px compact; canvas surface. | Scroll contained; scrollbars unobtrusive. `__messages`, `__empty`, `_layout.scss` |
-| Composer | Guided entry action, optional free-text surface, native alternative, simple-keyboard, error and send button. | Virtual/native entry 16/22; guided action 13/18; key label 20 px; send target 40×40 with 18 px line icon. | 8 px radius, 1 px border, 4–8 px inner gap; one focus ring. | Text area grows to 120 px; safe-area bottom padding. Guided state remains compact; `__composer`, `__input`, `__virtual-display`, `__send`, `__error`, `_layout.scss`, `_forms.scss`, `_states.scss` |
+| Composer | Guided entry action, free-text surface, simple-keyboard, error and send button. | Virtual entry 16/22; guided action 13/18; key label 20 px; send target 40×40 with 18 px line icon. | 8 px radius, 1 px border, 4–8 px inner gap; one focus ring. | Text surface grows to 120 px; safe-area bottom padding. Guided state remains compact. No path invokes the OS keyboard; form fields use the same virtual keyboard. `__composer`, `__virtual-display`, `__send`, `__error`, `_layout.scss`, `_forms.scss`, `_states.scss` |
 
 ### Messages
 

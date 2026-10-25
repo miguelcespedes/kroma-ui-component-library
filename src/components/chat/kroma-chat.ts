@@ -156,6 +156,7 @@ export class KromaChat extends HTMLElement {
       onRichAction: (detail, action, userMessage) => this.emitRichAction(detail, action, userMessage),
       onOptionSelect: (detail) => this.emitOptionSelect(detail),
       onQuantityChange: (detail) => this.emitQuantityChange(detail),
+      onFormInputFocus: (input) => this.composer?.setKeyboardTarget(input),
       onFormSubmit: (detail) => this.emitFormSubmit(detail),
     }, this.getAttribute("empty-state") || "Start a conversation", this.getAttribute("messages-label") || "Messages");
     const composer = new ChatComposer({
@@ -237,6 +238,7 @@ export class KromaChat extends HTMLElement {
   }
 
   disableHistoryControls() {
+    this.composer?.setKeyboardTarget(null);
     this.messageList?.disableHistoryControls();
   }
 

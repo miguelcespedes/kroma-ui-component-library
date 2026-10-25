@@ -7,7 +7,28 @@ const iconPaths: Record<string, string> = {
   clothing: "M8 4 5 6 2.5 9l3 3L8 9.5V20h8V9.5l2.5 2.5 3-3L19 6l-3-2a4 4 0 0 1-8 0z",
   accessories: "M5 8h14l-1 12H6L5 8z M9 8V6a3 3 0 0 1 6 0v2",
   cart: "M3 4h2l2.2 10.5h10.4L20 7H6 M8 18.5h.01 M17 18.5h.01",
+  keyboard: "M3 6h18v12H3z M6 9h.01 M9 9h.01 M12 9h.01 M15 9h.01 M18 9h.01 M6 12h.01 M9 12h.01 M12 12h.01 M15 12h.01 M18 12h.01 M8 15h8",
+  options: "M4 6h16 M4 12h16 M4 18h16",
+  "keyboard-up": "m6 14 6-6 6 6",
+  "keyboard-down": "m6 10 6 6 6-6",
 };
+
+export function createIcon(icon: string, className?: string) {
+  const iconElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  if (className) iconElement.setAttribute("class", className);
+  iconElement.setAttribute("aria-hidden", "true");
+  iconElement.setAttribute("focusable", "false");
+  iconElement.setAttribute("viewBox", "0 0 24 24");
+  iconElement.setAttribute("fill", "none");
+  iconElement.setAttribute("stroke", "currentColor");
+  iconElement.setAttribute("stroke-width", "1.75");
+  iconElement.setAttribute("stroke-linecap", "round");
+  iconElement.setAttribute("stroke-linejoin", "round");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", iconPaths[icon] || "M12 4v16 M4 12h16");
+  iconElement.append(path);
+  return iconElement;
+}
 
 export function createChevronIcon(direction: "previous" | "next") {
   const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -28,19 +49,7 @@ export function createIconLabel(icon: string | undefined, label: string, classNa
   const wrapper = document.createElement("span");
   wrapper.className = className;
   if (icon) {
-    const iconElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    iconElement.setAttribute("class", `${className}-icon`);
-    iconElement.setAttribute("aria-hidden", "true");
-    iconElement.setAttribute("viewBox", "0 0 24 24");
-    iconElement.setAttribute("fill", "none");
-    iconElement.setAttribute("stroke", "currentColor");
-    iconElement.setAttribute("stroke-width", "1.75");
-    iconElement.setAttribute("stroke-linecap", "round");
-    iconElement.setAttribute("stroke-linejoin", "round");
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", iconPaths[icon] || "M12 4v16 M4 12h16");
-    iconElement.append(path);
-    wrapper.append(iconElement);
+    wrapper.append(createIcon(icon, `${className}-icon`));
   }
   const text = document.createElement("span");
   text.className = `${className}-text`;

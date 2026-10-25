@@ -116,6 +116,11 @@ export class VirtualKeyboard {
     this.updateButtonStates();
   }
 
+  setMaxLength(maxLength: number) {
+    this.keyboard?.setOptions({ maxLength: Math.max(1, maxLength) });
+    this.updateButtonStates();
+  }
+
   setOpen(open: boolean) {
     this.options.controller.setOpen(open);
   }

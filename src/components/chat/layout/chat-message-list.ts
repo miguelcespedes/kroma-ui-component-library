@@ -21,6 +21,7 @@ export type ChatMessageListCallbacks = {
   onRichAction: (detail: ChatRichActionDetail, action: ChatAction, userMessage?: string) => void;
   onOptionSelect: (detail: ChatOptionSelectEventDetail) => void;
   onQuantityChange: (detail: ChatQuantityChangeDetail) => void;
+  onFormInputFocus: (input: HTMLInputElement) => void;
   onFormSubmit: (detail: ChatFormSubmitDetail) => void;
 };
 
@@ -99,6 +100,7 @@ export class ChatMessageList {
       onRichAction: (id, action, userMessage) => this.emitRichAction(id, action, userMessage),
       onOptionSelect: (selection, group, button) => this.selectOption(selection, group, button),
       onQuantityChange: this.callbacks.onQuantityChange,
+      onFormInputFocus: (input) => { if (this.callbacks.interactive) this.callbacks.onFormInputFocus(input); },
       onFormSubmit: this.callbacks.onFormSubmit,
     };
     renderChatMessage(item, message, handlers);

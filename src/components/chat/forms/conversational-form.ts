@@ -2,8 +2,9 @@ import type { ChatFormSubmitDetail } from "../core/chat.events";
 import type { ChatFormField, ConversationalFormMessage } from "../core/chat.types";
 
 type FormHandler = (detail: ChatFormSubmitDetail) => void;
+type FormInputFocusHandler = (input: HTMLInputElement) => void;
 
-function createFormField(messageId: string, field: ChatFormField) {
+function createFormField(messageId: string, field: ChatFormField, onInputFocus: FormInputFocusHandler) {
   const inputId = `${messageId}-field-${field.id}`;
   const group = document.createElement("div");
   group.className = "kroma-chat__form-field";
@@ -16,6 +17,8 @@ function createFormField(messageId: string, field: ChatFormField) {
   input.type = field.type;
   input.required = Boolean(field.required);
   input.disabled = Boolean(field.disabled);
+  input.readOnly = true;
+  input.inputMode = "none";
   input.value = field.value || "";
   input.placeholder = field.placeholder || "";
   if (field.autocomplete) input.setAttribute("autocomplete", field.autocomplete);
@@ -23,6 +26,7 @@ function createFormField(messageId: string, field: ChatFormField) {
   if (field.max !== undefined) input.max = String(field.max);
   if (field.pattern) input.pattern = field.pattern;
   input.className = "kroma-chat__form-input";
+  input.addEventListener("focus", () => onInputFocus(input));
   if (field.errorMessage) {
     input.setCustomValidity(field.errorMessage);
     input.addEventListener("input", () => input.setCustomValidity(""));
@@ -31,7 +35,36 @@ function createFormField(messageId: string, field: ChatFormField) {
   return { group, input };
 }
 
-export function createConversationalForm(messageId: string, message: ConversationalFormMessage, onSubmit: FormHandler) {
+function getFieldError(field: ChatFormField, input: HTMLInputElement) {
+  const value = input.value.trim();
+  if (field.required && !value) return field.errorMessage || `${field.label} es obligatorio.`;
+  if (!value) return null;
+  if (field.pattern) {
+    try {
+      if (!new RegExp(`^(?:${field.pattern})$`, "u").test(value)) return field.errorMessage || `Revisa ${field.label.toLocaleLowerCase("es")}.`;
+    } catch {
+      return "La validación de este campo no está configurada correctamente.";
+    }
+  }
+  if (field.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return field.errorMessage || "Introduce un correo electrónico válido.";
+  if (field.type === "url") {
+    try {
+      new URL(value);
+    } catch {
+      return field.errorMessage || "Introduce una URL válida.";
+    }
+  }
+  if (field.type === "number") {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return field.errorMessage || `Introduce un número válido para ${field.label.toLocaleLowerCase("es")}.`;
+    if (field.min !== undefined && number < Number(field.min)) return field.errorMessage || `El valor mínimo es ${field.min}.`;
+    if (field.max !== undefined && number > Number(field.max)) return field.errorMessage || `El valor máximo es ${field.max}.`;
+  }
+  if (field.type === "date" && Number.isNaN(Date.parse(`${value}T00:00:00`))) return field.errorMessage || "Introduce una fecha válida.";
+  return null;
+}
+
+export function createConversationalForm(messageId: string, message: ConversationalFormMessage, onInputFocus: FormInputFocusHandler, onSubmit: FormHandler) {
   const wrapper = document.createElement("section");
   wrapper.className = "kroma-chat__conversational-form";
   if (message.title) {
@@ -48,7 +81,7 @@ export function createConversationalForm(messageId: string, message: Conversatio
   message.fields.forEach((field) => {
     if (fieldNames.has(field.name)) hasDuplicateNames = true;
     fieldNames.add(field.name);
-    const control = createFormField(messageId, field);
+    const control = createFormField(messageId, field, onInputFocus);
     if (!controls.has(field.name)) controls.set(field.name, control.input);
     form.append(control.group);
   });
@@ -66,10 +99,37 @@ export function createConversationalForm(messageId: string, message: Conversatio
   submit.textContent = message.submitLabel;
   submit.disabled = hasDuplicateNames;
   form.append(submit);
+  const validationError = document.createElement("p");
+  validationError.id = `${messageId}-form-validation-error`;
+  validationError.className = "kroma-chat__error";
+  validationError.setAttribute("role", "alert");
+  validationError.hidden = true;
+  form.insertBefore(validationError, submit);
   let dispatchingSubmit = false;
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (hasDuplicateNames || dispatchingSubmit || !form.reportValidity()) return;
+    if (hasDuplicateNames || dispatchingSubmit) return;
+    const invalidField = message.fields.find((field) => {
+      const input = controls.get(field.name);
+      return input && Boolean(getFieldError(field, input));
+    });
+    if (invalidField) {
+      const input = controls.get(invalidField.name);
+      const error = input ? getFieldError(invalidField, input) : null;
+      if (input) {
+        input.setAttribute("aria-invalid", "true");
+        input.setAttribute("aria-describedby", validationError.id);
+        input.focus();
+      }
+      validationError.textContent = error || "Revisa los datos del formulario.";
+      validationError.hidden = false;
+      return;
+    }
+    form.querySelectorAll<HTMLInputElement>("input[aria-invalid='true']").forEach((input) => {
+      input.removeAttribute("aria-invalid");
+      input.removeAttribute("aria-describedby");
+    });
+    validationError.hidden = true;
     const values: Record<string, string> = {};
     controls.forEach((input, name) => { values[name] = input.value.trim(); });
     // Guard only synchronous/reentrant submissions; async processing belongs to the host.

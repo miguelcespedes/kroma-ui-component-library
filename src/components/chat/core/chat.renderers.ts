@@ -55,6 +55,7 @@ export type ChatRendererHandlers = {
   onRichAction: (messageId: string, action: ChatAction, userMessage?: string) => void;
   onOptionSelect: (selection: ChatControlSelection, group: HTMLDivElement, button: HTMLButtonElement) => void;
   onQuantityChange: ChatQuantityHandler;
+  onFormInputFocus: (input: HTMLInputElement) => void;
   onFormSubmit: (detail: ChatFormSubmitDetail) => void;
 };
 
@@ -140,7 +141,7 @@ function renderCartSummary(item: HTMLLIElement, message: CartSummaryMessage, han
 
 function renderForm(item: HTMLLIElement, message: ConversationalFormMessage, handlers: ChatRendererHandlers) {
   appendPrompt(item, message);
-  item.append(createConversationalForm(item.id, message, handlers.onFormSubmit), createChatMessageTime(message));
+  item.append(createConversationalForm(item.id, message, handlers.onFormInputFocus, handlers.onFormSubmit), createChatMessageTime(message));
 }
 
 function renderOrderReview(item: HTMLLIElement, message: OrderReviewMessage, handlers: ChatRendererHandlers) {

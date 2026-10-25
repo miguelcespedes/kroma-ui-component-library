@@ -13,7 +13,6 @@
   &__cart-remove:focus-visible,
   &__send:focus-visible { outline: 2px solid var(--kroma-chat-state-focus); outline-offset: 2px; }
 
-  &__composer textarea:focus-visible:not(:disabled),
   &__virtual-display:focus-visible { outline: none; box-shadow: none; }
   &__message[data-controls-disabled="true"] :where(.kroma-chat__journey-item, .kroma-chat__category, .kroma-chat__cart-remove, .kroma-chat__rich-action):disabled { color: var(--kroma-chat-text-secondary); opacity: .9; }
   &__sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
@@ -58,7 +57,6 @@
 }
 
 @media (max-width: 30rem) {
-  .kroma-chat__input,
   .kroma-chat__form-input { font-size: var(--kroma-chat-typography-composer); }
 }
 
