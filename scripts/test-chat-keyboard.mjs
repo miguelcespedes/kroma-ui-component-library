@@ -29,6 +29,8 @@ try {
   await display.click();
   const keyboard = chat.locator(".hg-theme-default");
   await keyboard.waitFor({ state: "visible" });
+  const key = (value) => keyboard.locator(`button[data-skbtn="${value}"]`);
+  const popup = page.locator("body > .kroma-chat__key-preview");
 
   for (const theme of ["light", "dark"]) {
     await page.evaluate((mode) => document.documentElement.setAttribute("data-bs-theme", mode), theme);
@@ -66,7 +68,112 @@ try {
     }
   }
 
-  const key = (value) => keyboard.locator(`button[data-skbtn="${value}"]`);
+  const holdKey = async (value, character, duration = 420) => {
+    const keyBounds = await key(value).boundingBox();
+    assert.ok(keyBounds, `key ${value} is visible for preview test`);
+    await page.mouse.move(keyBounds.x + keyBounds.width / 2, keyBounds.y + keyBounds.height / 2);
+    await page.mouse.down();
+    await popup.waitFor({ state: "visible" });
+    assert.equal(await popup.getAttribute("data-visible"), "true", `${character} preview appears on pointerdown`);
+    assert.equal(await popup.innerText(), character, `${character} preview reflects the active layout`);
+    const popupBounds = await popup.boundingBox();
+    const keyboardBounds = await keyboard.boundingBox();
+    const viewport = page.viewportSize();
+    assert.ok(popupBounds && keyboardBounds, "preview and keyboard have visible bounds");
+    assert.ok(popupBounds.width > keyBounds.width && popupBounds.height > keyBounds.height, "preview is larger than its source key");
+    assert.ok(popupBounds.x >= Math.max(0, keyboardBounds.x) - 1
+      && popupBounds.x + popupBounds.width <= Math.min(viewport.width, keyboardBounds.x + keyboardBounds.width) + 1
+      && popupBounds.y >= Math.max(0, keyboardBounds.y) - 1
+      && popupBounds.y + popupBounds.height <= Math.min(viewport.height, keyboardBounds.y + keyboardBounds.height) + 1,
+    "preview stays inside the keyboard and viewport");
+    assert.equal(await popup.evaluate((element) => getComputedStyle(element).pointerEvents), "none", "preview cannot intercept pointer input");
+    const previewColors = await popup.evaluate((element) => ({
+      background: getComputedStyle(element).backgroundColor,
+      foreground: getComputedStyle(element).color,
+      surfaceToken: getComputedStyle(element).getPropertyValue("--kroma-chat-canvas").trim(),
+    }));
+    const keyColors = await key(value).evaluate((element) => ({
+      foreground: getComputedStyle(element).color,
+      surfaceToken: getComputedStyle(element).getPropertyValue("--kroma-chat-canvas").trim(),
+    }));
+    assert.equal(previewColors.foreground, keyColors.foreground, "popup character uses the active Kroma content color");
+    assert.equal(previewColors.surfaceToken, keyColors.surfaceToken, "popup surface follows the active Kroma surface token");
+    assert.notEqual(previewColors.background, "rgba(0, 0, 0, 0)", "popup surface is visible in both contrast modes");
+    if (await page.evaluate(() => document.documentElement.dataset.bsTheme) === "light") {
+      const channels = previewColors.background.match(/[\d.]+/g)?.slice(0, 3).map(Number) || [];
+      assert.equal(channels.length, 3, "light popup background resolves to RGB");
+      assert.ok(channels.every((channel) => channel >= 245), "light popup uses a white Kroma surface");
+    }
+    await page.waitForTimeout(duration);
+    assert.equal(await popup.getAttribute("data-visible"), "true", "long press keeps preview visible");
+    await page.mouse.up();
+    await expectPopupHidden(popup);
+  };
+  const expectPopupHidden = async (element) => {
+    await page.waitForFunction((node) => node.dataset.visible === "false", await element.elementHandle());
+    await page.waitForTimeout(130);
+    assert.equal(await element.isHidden(), true, "popup is removed from view after release or cancellation");
+  };
+
+  await page.setViewportSize({ width: 360, height: 900 });
+  await page.evaluate(() => document.documentElement.setAttribute("data-bs-theme", "light"));
+  await holdKey("ñ", "ñ");
+  assert.equal((await display.innerText()).split("ñ").length - 1, 1, "a long press inserts its character only once");
+  await key("{bksp}").click();
+
+  await page.setViewportSize({ width: 430, height: 900 });
+  await page.evaluate(() => document.documentElement.setAttribute("data-bs-theme", "dark"));
+  await holdKey("q", "q", 80);
+  await key("{bksp}").click();
+
+  await page.setViewportSize({ width: 390, height: 900 });
+  await key("{shift}").click();
+  await holdKey("A", "A", 80);
+  assert.equal((await display.innerText()).split("A").length - 1, 1, "shifted character inserts once");
+  await key("{bksp}").click();
+
+  await key("{numbers}").click();
+  await holdKey("á", "á", 80);
+  await key("{bksp}").click();
+  await key("{abc}").click();
+
+  await key("{shift}").dispatchEvent("pointerdown", { pointerId: 42, isPrimary: true, button: 0 });
+  assert.equal(await popup.getAttribute("data-visible"), "false", "Shift does not show a preview");
+  await page.evaluate(() => window.dispatchEvent(new PointerEvent("pointerup", { pointerId: 42, isPrimary: true })));
+
+  await key("m").dispatchEvent("pointerdown", { pointerId: 43, isPrimary: true, button: 0 });
+  assert.equal(await popup.getAttribute("data-visible"), "true", "letter preview appears before cancellation");
+  await page.evaluate(() => window.dispatchEvent(new PointerEvent("pointercancel", { pointerId: 43, isPrimary: true })));
+  await expectPopupHidden(popup);
+
+  let syntheticPointerId = 50;
+  const assertNoPreview = async (value) => {
+    const pointerId = syntheticPointerId++;
+    await key(value).dispatchEvent("pointerdown", { pointerId, isPrimary: true, button: 0 });
+    assert.equal(await popup.getAttribute("data-visible"), "false", `${value} does not show a character preview`);
+    await page.evaluate((id) => window.dispatchEvent(new PointerEvent("pointerup", { pointerId: id, isPrimary: true })), pointerId);
+  };
+  await assertNoPreview("{shift}");
+  await assertNoPreview("{bksp}");
+  await assertNoPreview("{space}");
+  await assertNoPreview("{enter}");
+  await assertNoPreview("{numbers}");
+  await key("{numbers}").click();
+  await assertNoPreview("{symbols}");
+  await assertNoPreview("{abc}");
+  await key("{abc}").click();
+
+  const qBounds = await key("q").boundingBox();
+  const xBounds = await key("x").boundingBox();
+  assert.ok(qBounds && xBounds, "keys are available for pointer-slide testing");
+  await key("q").dispatchEvent("pointerdown", { pointerId: 60, isPrimary: true, button: 0 });
+  await page.evaluate(({ pointerId, x, y }) => window.dispatchEvent(new PointerEvent("pointermove", {
+    pointerId, isPrimary: true, clientX: x, clientY: y,
+  })), { pointerId: 60, x: xBounds.x + xBounds.width / 2, y: xBounds.y + xBounds.height / 2 });
+  assert.equal(await popup.innerText(), "x", "sliding to another letter updates the preview");
+  await page.evaluate(() => window.dispatchEvent(new PointerEvent("pointercancel", { pointerId: 60, isPrimary: true })));
+  await expectPopupHidden(popup);
+
   await key("a").click();
   await key("{shift}").click();
   await key("B").click();
@@ -103,7 +210,7 @@ try {
   assert.equal(sends, 1, "Enter sends the composed message");
   assert.equal(await display.innerText(), "", "sending clears the composer");
   assert.deepEqual(errors, [], "keyboard interactions produce no browser errors");
-  console.log("Chat keyboard Playwright checks passed: 360/390/430px, light/dark, four-row fit, touch geometry, Shift/Caps Lock, Backspace, numbers, symbols, space and send.");
+  console.log("Chat keyboard Playwright checks passed: 360/390/430px, light/dark popup surfaces, short/long/edge presses, pointer slide/cancel, excluded keys and input behavior.");
 } finally {
   await browser?.close();
   server.kill();

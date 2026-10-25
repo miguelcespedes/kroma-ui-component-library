@@ -19,6 +19,7 @@ export type VirtualKeyboardOptions = {
 export class VirtualKeyboard {
   private static readonly instances = new Set<VirtualKeyboard>();
   readonly element: HTMLDivElement;
+  private readonly keyPreview: HTMLDivElement;
   private keyboard: SimpleKeyboard | null = null;
   private disabled: boolean;
   private readonly listeners = new AbortController();
@@ -32,6 +33,9 @@ export class VirtualKeyboard {
   private lastCaretStart = 0;
   private lastCaretEnd = 0;
   private lastPressedKey = "";
+  private previewPointerId: number | null = null;
+  private previewButton: HTMLButtonElement | null = null;
+  private previewHideTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private readonly options: VirtualKeyboardOptions) {
     this.disabled = Boolean(options.disabled);
@@ -39,6 +43,12 @@ export class VirtualKeyboard {
     this.element = document.createElement("div");
     this.element.className = `kroma-chat__simple-keyboard-instance-${instanceClass}`;
     this.element.hidden = !options.controller.state.open;
+    this.keyPreview = document.createElement("div");
+    this.keyPreview.className = "kroma-chat__key-preview";
+    this.keyPreview.setAttribute("aria-hidden", "true");
+    this.keyPreview.dataset.visible = "false";
+    this.keyPreview.hidden = true;
+    document.body.append(this.keyPreview);
     this.savedDocumentHandlers = {
       pointerup: document.onpointerup,
       touchend: document.ontouchend,
@@ -78,6 +88,14 @@ export class VirtualKeyboard {
     this.element.addEventListener("pointerdown", this.restoreLocalCaret, { capture: true, signal });
     this.element.addEventListener("mousedown", this.restoreLocalCaret, { capture: true, signal });
     this.element.addEventListener("touchstart", this.restoreLocalCaret, { capture: true, passive: true, signal });
+    this.element.addEventListener("pointerdown", this.beginKeyPreview, { capture: true, signal });
+    window.addEventListener("pointermove", this.moveKeyPreview, { signal });
+    window.addEventListener("pointerup", this.endKeyPreview, { signal });
+    window.addEventListener("pointercancel", this.endKeyPreview, { signal });
+    window.addEventListener("blur", this.cancelKeyPreview, { signal });
+    window.addEventListener("scroll", this.cancelKeyPreview, { capture: true, signal });
+    document.addEventListener("visibilitychange", this.cancelKeyPreview, { signal });
+    window.addEventListener("resize", this.repositionKeyPreview, { signal });
     this.unsubscribeController = options.controller.subscribe((state) => this.applyControllerState(state.layoutName, state.open));
     VirtualKeyboard.instances.add(this);
     this.updateButtonStates();
@@ -168,6 +186,10 @@ export class VirtualKeyboard {
   destroy() {
     this.unsubscribeController();
     this.listeners.abort();
+    this.cancelKeyPreview();
+    if (this.previewHideTimer !== null) clearTimeout(this.previewHideTimer);
+    this.previewHideTimer = null;
+    this.keyPreview.remove();
     if (this.keyboard) {
       const documentHandlers = {
         pointerup: document.onpointerup,
@@ -277,6 +299,93 @@ export class VirtualKeyboard {
 
   private restoreLocalCaret = () => {
     this.keyboard?.setCaretPosition(this.lastCaretStart, this.lastCaretEnd);
+  };
+
+  private beginKeyPreview = (event: PointerEvent) => {
+    if (!event.isPrimary || event.button !== 0 || !(event.target instanceof Element)) return;
+    const button = event.target.closest<HTMLButtonElement>("button.hg-button");
+    if (!button || !this.element.contains(button) || button.disabled) return;
+    const character = button.dataset.skbtn || "";
+    if (Array.from(character).length !== 1 || !/^\p{L}$/u.test(character)) return;
+    this.previewPointerId = event.pointerId;
+    this.showKeyPreview(button, character);
+  };
+
+  private moveKeyPreview = (event: PointerEvent) => {
+    if (event.pointerId !== this.previewPointerId) return;
+    const target = document.elementFromPoint(event.clientX, event.clientY);
+    const button = target instanceof Element ? target.closest<HTMLButtonElement>("button.hg-button") : null;
+    if (!button || !this.element.contains(button) || button.disabled) {
+      this.hideKeyPreview();
+      return;
+    }
+    const character = button.dataset.skbtn || "";
+    if (Array.from(character).length === 1 && /^\p{L}$/u.test(character)) this.showKeyPreview(button, character);
+    else this.hideKeyPreview();
+  };
+
+  private endKeyPreview = (event: PointerEvent) => {
+    if (event.pointerId !== this.previewPointerId) return;
+    this.previewPointerId = null;
+    this.previewButton = null;
+    this.hideKeyPreview();
+  };
+
+  private cancelKeyPreview = () => {
+    this.previewPointerId = null;
+    this.previewButton = null;
+    this.hideKeyPreview();
+  };
+
+  private showKeyPreview(button: HTMLButtonElement, character: string) {
+    if (this.previewHideTimer !== null) {
+      clearTimeout(this.previewHideTimer);
+      this.previewHideTimer = null;
+    }
+    const sourceStyles = getComputedStyle(this.element);
+    [
+      "--kroma-chat-border-subtle",
+      "--kroma-chat-canvas",
+      "--kroma-elevation-2",
+      "--kroma-chat-text-primary",
+      "--kroma-chat-font-family",
+      "--kroma-chat-weight-semibold",
+    ].forEach((token) => {
+      const value = sourceStyles.getPropertyValue(token).trim();
+      if (value) this.keyPreview.style.setProperty(token, value);
+    });
+    this.previewButton = button;
+    this.keyPreview.textContent = character;
+    this.keyPreview.hidden = false;
+    this.keyPreview.dataset.visible = "true";
+    this.repositionKeyPreview();
+  }
+
+  private hideKeyPreview = () => {
+    if (this.keyPreview.hidden || this.keyPreview.dataset.visible === "false") return;
+    this.keyPreview.dataset.visible = "false";
+    if (this.previewHideTimer !== null) clearTimeout(this.previewHideTimer);
+    this.previewHideTimer = setTimeout(() => {
+      this.keyPreview.hidden = true;
+      this.previewHideTimer = null;
+    }, 110);
+  };
+
+  private repositionKeyPreview = () => {
+    if (!this.previewButton || this.keyPreview.hidden) return;
+    const keyBounds = this.previewButton.getBoundingClientRect();
+    const keyboardBounds = this.element.getBoundingClientRect();
+    const popupBounds = this.keyPreview.getBoundingClientRect();
+    const popupWidth = popupBounds.width;
+    const popupHeight = popupBounds.height;
+    const minLeft = Math.min(Math.max(0, keyboardBounds.left), Math.max(0, window.innerWidth - popupWidth));
+    const maxLeft = Math.max(minLeft, Math.min(keyboardBounds.right - popupWidth, window.innerWidth - popupWidth));
+    const left = Math.min(maxLeft, Math.max(minLeft, keyBounds.left + keyBounds.width / 2 - popupWidth / 2));
+    const minTop = Math.min(Math.max(0, keyboardBounds.top), Math.max(0, window.innerHeight - popupHeight));
+    const maxTop = Math.max(minTop, Math.min(keyboardBounds.bottom - popupHeight, window.innerHeight - popupHeight));
+    const top = Math.min(maxTop, Math.max(minTop, keyBounds.top - popupHeight + 12));
+    this.keyPreview.style.left = `${left}px`;
+    this.keyPreview.style.top = `${top}px`;
   };
 
   private notifyChange() {

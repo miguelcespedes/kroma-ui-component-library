@@ -9175,6 +9175,12 @@ class VirtualKeyboard {
     this.element = document.createElement("div");
     this.element.className = `kroma-chat__simple-keyboard-instance-${instanceClass}`;
     this.element.hidden = !options.controller.state.open;
+    this.keyPreview = document.createElement("div");
+    this.keyPreview.className = "kroma-chat__key-preview";
+    this.keyPreview.setAttribute("aria-hidden", "true");
+    this.keyPreview.dataset.visible = "false";
+    this.keyPreview.hidden = true;
+    document.body.append(this.keyPreview);
     this.savedDocumentHandlers = {
       pointerup: document.onpointerup,
       touchend: document.ontouchend,
@@ -9212,6 +9218,14 @@ class VirtualKeyboard {
     this.element.addEventListener("pointerdown", this.restoreLocalCaret, { capture: true, signal });
     this.element.addEventListener("mousedown", this.restoreLocalCaret, { capture: true, signal });
     this.element.addEventListener("touchstart", this.restoreLocalCaret, { capture: true, passive: true, signal });
+    this.element.addEventListener("pointerdown", this.beginKeyPreview, { capture: true, signal });
+    window.addEventListener("pointermove", this.moveKeyPreview, { signal });
+    window.addEventListener("pointerup", this.endKeyPreview, { signal });
+    window.addEventListener("pointercancel", this.endKeyPreview, { signal });
+    window.addEventListener("blur", this.cancelKeyPreview, { signal });
+    window.addEventListener("scroll", this.cancelKeyPreview, { capture: true, signal });
+    document.addEventListener("visibilitychange", this.cancelKeyPreview, { signal });
+    window.addEventListener("resize", this.repositionKeyPreview, { signal });
     this.unsubscribeController = options.controller.subscribe((state) => this.applyControllerState(state.layoutName, state.open));
     VirtualKeyboard.instances.add(this);
     this.updateButtonStates();
@@ -9219,6 +9233,7 @@ class VirtualKeyboard {
   options;
   static instances = /* @__PURE__ */ new Set();
   element;
+  keyPreview;
   keyboard = null;
   disabled;
   listeners = new AbortController();
@@ -9227,6 +9242,9 @@ class VirtualKeyboard {
   lastCaretStart = 0;
   lastCaretEnd = 0;
   lastPressedKey = "";
+  previewPointerId = null;
+  previewButton = null;
+  previewHideTimer = null;
   get value() {
     return this.keyboard?.getInput(this.options.inputName) || "";
   }
@@ -9299,6 +9317,10 @@ class VirtualKeyboard {
   destroy() {
     this.unsubscribeController();
     this.listeners.abort();
+    this.cancelKeyPreview();
+    if (this.previewHideTimer !== null) clearTimeout(this.previewHideTimer);
+    this.previewHideTimer = null;
+    this.keyPreview.remove();
     if (this.keyboard) {
       const documentHandlers = {
         pointerup: document.onpointerup,
@@ -9405,6 +9427,86 @@ class VirtualKeyboard {
   }
   restoreLocalCaret = () => {
     this.keyboard?.setCaretPosition(this.lastCaretStart, this.lastCaretEnd);
+  };
+  beginKeyPreview = (event) => {
+    if (!event.isPrimary || event.button !== 0 || !(event.target instanceof Element)) return;
+    const button = event.target.closest("button.hg-button");
+    if (!button || !this.element.contains(button) || button.disabled) return;
+    const character = button.dataset.skbtn || "";
+    if (Array.from(character).length !== 1 || !new RegExp("^\\p{L}$", "u").test(character)) return;
+    this.previewPointerId = event.pointerId;
+    this.showKeyPreview(button, character);
+  };
+  moveKeyPreview = (event) => {
+    if (event.pointerId !== this.previewPointerId) return;
+    const target = document.elementFromPoint(event.clientX, event.clientY);
+    const button = target instanceof Element ? target.closest("button.hg-button") : null;
+    if (!button || !this.element.contains(button) || button.disabled) {
+      this.hideKeyPreview();
+      return;
+    }
+    const character = button.dataset.skbtn || "";
+    if (Array.from(character).length === 1 && new RegExp("^\\p{L}$", "u").test(character)) this.showKeyPreview(button, character);
+    else this.hideKeyPreview();
+  };
+  endKeyPreview = (event) => {
+    if (event.pointerId !== this.previewPointerId) return;
+    this.previewPointerId = null;
+    this.previewButton = null;
+    this.hideKeyPreview();
+  };
+  cancelKeyPreview = () => {
+    this.previewPointerId = null;
+    this.previewButton = null;
+    this.hideKeyPreview();
+  };
+  showKeyPreview(button, character) {
+    if (this.previewHideTimer !== null) {
+      clearTimeout(this.previewHideTimer);
+      this.previewHideTimer = null;
+    }
+    const sourceStyles = getComputedStyle(this.element);
+    [
+      "--kroma-chat-border-subtle",
+      "--kroma-chat-canvas",
+      "--kroma-elevation-2",
+      "--kroma-chat-text-primary",
+      "--kroma-chat-font-family",
+      "--kroma-chat-weight-semibold"
+    ].forEach((token) => {
+      const value = sourceStyles.getPropertyValue(token).trim();
+      if (value) this.keyPreview.style.setProperty(token, value);
+    });
+    this.previewButton = button;
+    this.keyPreview.textContent = character;
+    this.keyPreview.hidden = false;
+    this.keyPreview.dataset.visible = "true";
+    this.repositionKeyPreview();
+  }
+  hideKeyPreview = () => {
+    if (this.keyPreview.hidden || this.keyPreview.dataset.visible === "false") return;
+    this.keyPreview.dataset.visible = "false";
+    if (this.previewHideTimer !== null) clearTimeout(this.previewHideTimer);
+    this.previewHideTimer = setTimeout(() => {
+      this.keyPreview.hidden = true;
+      this.previewHideTimer = null;
+    }, 110);
+  };
+  repositionKeyPreview = () => {
+    if (!this.previewButton || this.keyPreview.hidden) return;
+    const keyBounds = this.previewButton.getBoundingClientRect();
+    const keyboardBounds = this.element.getBoundingClientRect();
+    const popupBounds = this.keyPreview.getBoundingClientRect();
+    const popupWidth = popupBounds.width;
+    const popupHeight = popupBounds.height;
+    const minLeft = Math.min(Math.max(0, keyboardBounds.left), Math.max(0, window.innerWidth - popupWidth));
+    const maxLeft = Math.max(minLeft, Math.min(keyboardBounds.right - popupWidth, window.innerWidth - popupWidth));
+    const left2 = Math.min(maxLeft, Math.max(minLeft, keyBounds.left + keyBounds.width / 2 - popupWidth / 2));
+    const minTop = Math.min(Math.max(0, keyboardBounds.top), Math.max(0, window.innerHeight - popupHeight));
+    const maxTop = Math.max(minTop, Math.min(keyboardBounds.bottom - popupHeight, window.innerHeight - popupHeight));
+    const top2 = Math.min(maxTop, Math.max(minTop, keyBounds.top - popupHeight + 12));
+    this.keyPreview.style.left = `${left2}px`;
+    this.keyPreview.style.top = `${top2}px`;
   };
   notifyChange() {
     this.options.onChange(this.value, this.lastCaretStart, this.lastCaretEnd);
@@ -11476,7 +11578,7 @@ class KromaChat extends HTMLElement {
   loadKitchenConversation() {
     const revision = ++this.modeRevision;
     void __vitePreload(async () => {
-      const { createKitchenMessages } = await import("./kitchen.messages-CPP1SI2J.js");
+      const { createKitchenMessages } = await import("./kitchen.messages-CC5ny4Xe.js");
       return { createKitchenMessages };
     }, true ? [] : void 0, import.meta.url).then(({ createKitchenMessages }) => {
       if (!this.isConnected || this.mode !== "kitchen" || revision !== this.modeRevision) return;
@@ -12122,4 +12224,4 @@ export {
   poloImage as p,
   sneakerImage as s
 };
-//# sourceMappingURL=app-BzAfTeAA.js.map
+//# sourceMappingURL=app-IuMFl7TV.js.map

@@ -12843,6 +12843,51 @@ textarea.form-control-lg {
   font-weight: var(--kroma-chat-weight-medium);
 }
 
+.kroma-chat__key-preview {
+  position: fixed;
+  z-index: 1100;
+  display: grid;
+  width: 3.75rem;
+  height: 4.25rem;
+  place-items: center;
+  overflow: visible;
+  border: 1px solid var(--kroma-chat-border-subtle);
+  border-radius: 0.875rem 0.875rem 0.375rem 0.375rem;
+  background: var(--kroma-chat-canvas);
+  box-shadow: var(--kroma-elevation-2, 0 0.1875rem 0.5rem rgba(0, 0, 0, 0.18));
+  color: var(--kroma-chat-text-primary);
+  font-family: var(--kroma-chat-font-family);
+  font-size: 2.375rem;
+  font-weight: var(--kroma-chat-weight-semibold);
+  line-height: 1;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 80ms ease-out, transform 80ms ease-out;
+  will-change: opacity, transform;
+}
+
+.kroma-chat__key-preview::after {
+  position: absolute;
+  inset-block-end: -0.625rem;
+  left: 50%;
+  width: 1.25rem;
+  height: 0.6875rem;
+  background: var(--kroma-chat-canvas);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  content: "";
+  transform: translateX(-50%);
+}
+
+.kroma-chat__key-preview[data-visible=true] {
+  opacity: 1;
+  transform: none;
+}
+
+.kroma-chat__key-preview[hidden] {
+  display: none;
+}
+
 .kroma-chat__keyboard-showcase {
   display: grid;
   max-height: 14rem;
