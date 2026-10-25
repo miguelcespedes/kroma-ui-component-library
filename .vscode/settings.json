@@ -5,5 +5,9 @@
   "search.exclude": {
     "**/node_modules": true
   },
-  "explorer.excludeGitIgnore": false
+  "explorer.excludeGitIgnore": false,
+  "json.schemaDownload.trustedDomains": {
+    "https://opencode.ai/config.json": true,
+    "https://models.dev/model-schema.json": true
+  }
 }

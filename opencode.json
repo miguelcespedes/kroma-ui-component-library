@@ -2,39 +2,95 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "share": "disabled",
-  "autoupdate": false,
   "mcp": {
-    "chrome-devtools": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "chrome-devtools-mcp@latest",
-        "--isolated"
-      ],
-      "enabled": true
+    "servers": {
+      "chrome-devtools": {
+        "type": "local",
+        "command": [
+          "npx",
+          "-y",
+          "chrome-devtools-mcp@latest",
+          "--isolated"
+        ],
+        "disabled": false
+      }
     }
   },
-  "permission": {
-    "read": {
-      "*": "allow",
-      "*.env": "ask",
-      "*.env.*": "ask",
-      "*.env.example": "allow"
+  "permissions": [
+    {
+      "action": "read",
+      "resource": "*",
+      "effect": "allow"
     },
-    "edit": {
-      "*": "allow",
-      "*opencode.json": "deny",
-      "*opencode.jsonc": "deny"
+    {
+      "action": "read",
+      "resource": "*.env",
+      "effect": "ask"
     },
-    "glob": "allow",
-    "grep": "allow",
-    "list": "allow",
-    "external_directory": "deny",
-    "bash": "ask",
-    "task": "ask",
-    "skill": "ask",
-    "webfetch": "ask",
-    "websearch": "ask"
-  }
+    {
+      "action": "read",
+      "resource": "*.env.*",
+      "effect": "ask"
+    },
+    {
+      "action": "read",
+      "resource": "*.env.example",
+      "effect": "allow"
+    },
+    {
+      "action": "edit",
+      "resource": "*",
+      "effect": "allow"
+    },
+    {
+      "action": "edit",
+      "resource": "*opencode.json",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "*opencode.jsonc",
+      "effect": "deny"
+    },
+    {
+      "action": "glob",
+      "resource": "*",
+      "effect": "allow"
+    },
+    {
+      "action": "grep",
+      "resource": "*",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "*",
+      "effect": "ask"
+    },
+    {
+      "action": "subagent",
+      "resource": "*",
+      "effect": "ask"
+    },
+    {
+      "action": "skill",
+      "resource": "*",
+      "effect": "ask"
+    },
+    {
+      "action": "webfetch",
+      "resource": "*",
+      "effect": "ask"
+    },
+    {
+      "action": "websearch",
+      "resource": "*",
+      "effect": "ask"
+    }
+  ]
 }
