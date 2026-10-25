@@ -12696,7 +12696,7 @@ textarea.form-control-lg {
   gap: var(--kroma-chat-spacing-tight);
 }
 
-.kroma-chat__input-mode, .kroma-chat__keyboard-toggle {
+.kroma-chat__keyboard-toggle {
   display: grid;
   width: 2.5rem;
   height: 2.5rem;
@@ -12712,12 +12712,12 @@ textarea.form-control-lg {
   cursor: pointer;
 }
 
-.kroma-chat__input-mode:hover:not(:disabled), .kroma-chat__keyboard-toggle:hover:not(:disabled) {
+.kroma-chat__keyboard-toggle:hover:not(:disabled) {
   background: var(--kroma-chat-surface-hover);
   color: var(--kroma-chat-text-primary);
 }
 
-.kroma-chat__input-mode:disabled, .kroma-chat__keyboard-toggle:disabled {
+.kroma-chat__keyboard-toggle:disabled {
   color: var(--kroma-chat-text-disabled);
   cursor: not-allowed;
 }

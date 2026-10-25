@@ -1,4 +1,4 @@
-import { p as poloImage, s as sneakerImage, c as capImage } from "./app-jZ_GYule.js";
+import { p as poloImage, s as sneakerImage, c as capImage } from "./app-MQxMtcWO.js";
 const kitchenProducts = [
   {
     id: "kitchen-cotton-polo",
@@ -277,4 +277,4 @@ function createKitchenMessages() {
 export {
   createKitchenMessages
 };
-//# sourceMappingURL=kitchen.messages-Eew5Aaxg.js.map
+//# sourceMappingURL=kitchen.messages-DOuT9TrU.js.map

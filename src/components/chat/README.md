@@ -21,11 +21,10 @@ chat?.addMessage({ author: "assistant", type: "text", text: "Hello." });
 | `setOptionsDisabled(messageId, disabled)` | Disable one message's QuickReplies or ChoiceList. |
 | `setError(message)` | Show or clear a composer error. |
 | `mode` | Typed `"default" | "kitchen"` property reflected by the `mode` attribute. Changing it rebuilds the transcript. |
-| `composerInputMode` | Typed `"native" | "virtual"` property reflected by `input-mode`; defaults to native. |
 
 Component listeners are disposed when the element disconnects and reinitialized if it is connected again.
 
-The `mode`, `input-mode`, `chat-title`, `subtitle`, `avatar`, `status`, `messages-label`, `empty-state`, `input-label`, `placeholder`, `send-label`, and `typing-label` attributes configure the element. `input-mode="virtual"` selects `simple-keyboard` 3.8.199 through KromaChat's private per-composer adapter; the visible composer switch can return to `native` at any time. The default `native` mode preserves the textarea, IME composition, dictation, and assistive-technology input. In virtual mode the library's internal value and caret are authoritative; the displayed div is only a projection and hardware-key bridge. The virtual surface intentionally does not emulate IME composition or system dictation. The dependency's default stylesheet is imported through the Vite entry; KromaChat constrains the engine to its composer flow without replacing its native theme. The `options` message remains an alias for the original QuickReplies contract.
+The `mode`, `chat-title`, `subtitle`, `avatar`, `status`, `messages-label`, `empty-state`, `input-label`, `placeholder`, `send-label`, and `typing-label` attributes configure the element. The composer always uses `simple-keyboard` 3.8.199 through KromaChat's private per-composer adapter; it does not expose a switch to the mobile system keyboard. The library's internal value and caret are authoritative; the displayed div is only a projection and hardware-key bridge. The virtual surface intentionally does not emulate IME composition or system dictation. The dependency's default stylesheet is imported through the Vite entry; KromaChat constrains the engine to its composer flow without replacing its native theme. The `options` message remains an alias for the original QuickReplies contract.
 
 ## Kitchen Mode
 
@@ -43,7 +42,7 @@ const mode: ChatMode = "kitchen";
 if (chat) chat.mode = mode;
 ```
 
-Changing mode rebuilds the transcript. Kitchen Mode loads its catalog asynchronously from the optional `kitchen/` module, leaves the composer visible but disabled, presents the virtual keyboard's alphabetic, shifted, numeric, and composer examples when virtual mode is selected, and suppresses host action, send, quantity and form-submit events. QuickReplies and ChoiceList may still show a local selected state without adding user messages. It does not run the host's commerce journey or call services.
+Changing mode rebuilds the transcript. Kitchen Mode loads its catalog asynchronously from the optional `kitchen/` module, leaves the composer visible but disabled, presents the virtual keyboard's alphabetic, shifted, numeric, and composer examples, and suppresses host action, send, quantity and form-submit events. QuickReplies and ChoiceList may still show a local selected state without adding user messages. It does not run the host's commerce journey or call services.
 
 The Cheatsheet's `/chat/` page provides the mode selector, clear/dark theme controls and responsive width/density controls. Its normal mode keeps the existing mock commerce journey; Kitchen Mode presents every example in order in that same `<kroma-chat>` instance.
 

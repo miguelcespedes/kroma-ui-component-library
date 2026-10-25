@@ -9597,7 +9597,6 @@ class ChatComposer {
   constructor(options) {
     this.options = options;
     this.disabled = Boolean(options.disabled);
-    this.inputMode = options.inputMode || "native";
     const showKeyboardShowcase = Boolean(options.showKeyboardShowcase);
     this.element = document.createElement("div");
     this.element.className = "kroma-chat__composer-area";
@@ -9615,7 +9614,7 @@ class ChatComposer {
     this.input.maxLength = 2e3;
     this.input.placeholder = options.placeholder;
     this.input.disabled = this.disabled;
-    this.controller = new VirtualKeyboardController(this.inputMode === "virtual" || showKeyboardShowcase);
+    this.controller = new VirtualKeyboardController(true);
     const displayCallbacks = {
       onCaretChange: (start2, end2) => {
         this.keyboard?.setCaretPosition(start2, end2);
@@ -9626,16 +9625,15 @@ class ChatComposer {
     };
     this.display = new VirtualTextDisplay(options.inputLabel, options.placeholder, displayCallbacks);
     this.display.setDisabled(this.disabled);
-    this.display.setVisible(this.inputMode === "virtual");
-    this.input.hidden = this.inputMode === "virtual";
+    this.display.setVisible(true);
+    this.input.hidden = true;
     this.actions = document.createElement("div");
     this.actions.className = "kroma-chat__composer-actions";
-    this.modeButton = this.createModeButton();
     this.keyboardButton = this.createKeyboardButton();
     this.sendButton = this.createSendButton(options.sendLabel);
-    this.actions.append(this.keyboardButton, this.modeButton, this.sendButton);
+    this.actions.append(this.keyboardButton, this.sendButton);
     this.form.append(label, this.input, this.display.element, this.actions);
-    if (this.inputMode === "virtual" || showKeyboardShowcase) this.createKeyboard();
+    this.createKeyboard();
     this.keyboardShowcase = showKeyboardShowcase ? this.createKeyboardShowcase() : null;
     this.element.append(this.form);
     if (this.keyboardShowcase) this.element.append(this.keyboardShowcase);
@@ -9646,32 +9644,20 @@ class ChatComposer {
     this.errorMessage.hidden = true;
     this.element.append(this.errorMessage);
     const signal = this.listeners.signal;
-    this.input.addEventListener("input", () => {
-      this.resizeInput();
-      this.updateSendButton();
-    }, { signal });
-    this.input.addEventListener("keydown", (event) => {
-      if (event.isComposing) return;
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        this.form.requestSubmit();
-      }
-    }, { signal });
     this.keyboardButton.addEventListener("click", () => this.toggleVirtualKeyboard(), { signal });
-    this.modeButton.addEventListener("click", () => this.toggleInputMode(), { signal });
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       const message = this.currentValue().trim();
       if (!message || this.disabled) return;
       options.onSend(message);
       this.clear();
-      if (this.inputMode === "virtual" && !this.disabled) this.display.element.focus();
+      if (!this.disabled) this.display.element.focus();
     }, { signal });
     this.unsubscribeController = this.controller.subscribe(() => {
       this.updateSendButton();
       this.updateShowcaseControls();
     });
-    this.updateModePresentation();
+    this.updateKeyboardPresentation();
     this.updateSendButton();
   }
   options;
@@ -9685,7 +9671,6 @@ class ChatComposer {
   listeners = new AbortController();
   disposers = [];
   actions;
-  modeButton;
   keyboardButton;
   keyboardShowcase;
   showcaseLayouts = /* @__PURE__ */ new Map();
@@ -9693,36 +9678,6 @@ class ChatComposer {
   keyboard = null;
   showcaseToggle = null;
   disabled;
-  inputMode;
-  setInputMode(mode) {
-    if (this.inputMode === mode) return;
-    if (mode === "virtual") {
-      const value = this.input.value;
-      const start2 = this.input.selectionStart || 0;
-      const end2 = this.input.selectionEnd || start2;
-      this.input.blur();
-      this.inputMode = mode;
-      if (!this.keyboard) this.createKeyboard();
-      if (!this.keyboardShowcase && this.keyboard && !this.keyboard.element.isConnected) {
-        this.element.insertBefore(this.keyboard.element, this.errorMessage);
-      }
-      this.keyboard?.setInput(value, start2, end2);
-      this.controller.setOpen(true);
-    } else {
-      this.input.value = this.keyboard ? this.keyboard.value : this.input.value;
-      const caret = this.keyboard?.getCaretRange() || { start: this.input.value.length, end: this.input.value.length };
-      this.input.setSelectionRange(caret.start, caret.end);
-      this.inputMode = mode;
-      this.controller.setOpen(Boolean(this.keyboardShowcase));
-      if (!this.keyboardShowcase && this.keyboard) {
-        this.keyboard.destroy();
-        this.keyboard.element.remove();
-        this.keyboard = null;
-      }
-    }
-    this.updateModePresentation();
-    this.updateSendButton();
-  }
   setDisabled(disabled) {
     this.disabled = disabled;
     this.input.disabled = disabled;
@@ -9748,17 +9703,13 @@ class ChatComposer {
     }
   }
   focus() {
-    if (this.inputMode === "virtual") {
-      this.keyboard?.setOpen(true);
-      this.display.element.focus();
-    } else {
-      this.input.focus();
-    }
+    this.keyboard?.setOpen(true);
+    this.display.element.focus();
   }
   clear() {
     this.input.value = "";
     this.input.rows = 1;
-    if (this.inputMode === "virtual") this.keyboard?.clear();
+    this.keyboard?.clear();
     this.setError(null);
     this.updateSendButton();
   }
@@ -9784,51 +9735,24 @@ class ChatComposer {
     });
   }
   currentValue() {
-    return this.inputMode === "virtual" ? this.keyboard?.value || "" : this.input.value;
-  }
-  toggleInputMode() {
-    const nextMode = this.inputMode === "native" ? "virtual" : "native";
-    this.setInputMode(nextMode);
-    this.options.onInputModeChange?.(nextMode);
-    if (nextMode === "native" && !this.disabled) this.input.focus();
+    return this.keyboard?.value || "";
   }
   toggleVirtualKeyboard() {
     this.keyboard?.setOpen(!this.controller.state.open);
-    this.updateModePresentation();
+    this.updateKeyboardPresentation();
     if (!this.controller.state.open) this.keyboardButton.focus();
     else this.display.element.focus();
   }
-  updateModePresentation() {
-    const virtual = this.inputMode === "virtual";
-    this.input.hidden = virtual;
-    this.display.setVisible(virtual);
-    this.keyboardButton.hidden = !virtual || Boolean(this.keyboardShowcase);
-    this.keyboardButton.setAttribute("aria-expanded", String(virtual && this.controller.state.open));
+  updateKeyboardPresentation() {
+    this.input.hidden = true;
+    this.display.setVisible(true);
+    this.keyboardButton.hidden = Boolean(this.keyboardShowcase);
+    this.keyboardButton.setAttribute("aria-expanded", String(this.controller.state.open));
     this.keyboardButton.setAttribute("aria-label", this.controller.state.open ? "Ocultar teclado virtual" : "Mostrar teclado virtual");
     this.keyboardButton.textContent = this.controller.state.open ? "⌃" : "⌄";
-    this.modeButton.setAttribute("aria-label", virtual ? "Usar teclado del dispositivo" : "Usar teclado virtual");
-    this.modeButton.title = virtual ? "Usar teclado del dispositivo" : "Usar teclado virtual";
-    this.modeButton.dataset.inputMode = this.inputMode;
   }
   updateSendButton() {
     this.sendButton.disabled = this.disabled || !this.currentValue().trim();
-  }
-  resizeInput() {
-    this.input.rows = 1;
-    const styles = window.getComputedStyle(this.input);
-    const lineHeight = Number.parseFloat(styles.lineHeight) || 21;
-    const verticalPadding = Number.parseFloat(styles.paddingTop) + Number.parseFloat(styles.paddingBottom);
-    const borderHeight = Number.parseFloat(styles.borderTopWidth) + Number.parseFloat(styles.borderBottomWidth);
-    const baselineHeight = Math.max((Number.parseFloat(styles.minHeight) || 0) - borderHeight, lineHeight + verticalPadding);
-    const contentLines = Math.ceil(Math.max(0, this.input.scrollHeight - baselineHeight) / lineHeight) + 1;
-    this.input.rows = Math.min(6, Math.max(1, contentLines));
-  }
-  createModeButton() {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "kroma-chat__input-mode";
-    button.textContent = "⌨";
-    return button;
   }
   createKeyboardButton() {
     const button = document.createElement("button");
@@ -11210,7 +11134,7 @@ class KromaChat extends HTMLElement {
   composer = null;
   modeRevision = 0;
   static get observedAttributes() {
-    return ["mode", "input-mode"];
+    return ["mode"];
   }
   get mode() {
     return this.getAttribute("mode") === "kitchen" ? "kitchen" : "default";
@@ -11219,16 +11143,8 @@ class KromaChat extends HTMLElement {
     if (this.mode === mode) return;
     this.setAttribute("mode", mode);
   }
-  get composerInputMode() {
-    return this.getAttribute("input-mode") === "virtual" ? "virtual" : "native";
-  }
-  set composerInputMode(mode) {
-    if (this.composerInputMode === mode) return;
-    this.setAttribute("input-mode", mode);
-  }
   attributeChangedCallback(name, previous, current) {
     if (name === "mode" && previous !== current && this.initialized) this.reinitializeForMode();
-    if (name === "input-mode" && previous !== current) this.composer?.setInputMode(this.composerInputMode);
   }
   connectedCallback() {
     if (this.initialized) return;
@@ -11270,11 +11186,7 @@ class KromaChat extends HTMLElement {
       placeholder: this.getAttribute("placeholder") || "Message…",
       sendLabel: this.getAttribute("send-label") || "Send message",
       disabled: this.composerDisabled || this.mode === "kitchen",
-      inputMode: this.composerInputMode,
       showKeyboardShowcase: this.mode === "kitchen",
-      onInputModeChange: (inputMode) => {
-        this.composerInputMode = inputMode;
-      },
       onSend: (message) => this.sendMessage(message)
     });
     this.header = header;
@@ -11390,7 +11302,7 @@ class KromaChat extends HTMLElement {
   loadKitchenConversation() {
     const revision = ++this.modeRevision;
     void __vitePreload(async () => {
-      const { createKitchenMessages } = await import("./kitchen.messages-Eew5Aaxg.js");
+      const { createKitchenMessages } = await import("./kitchen.messages-DOuT9TrU.js");
       return { createKitchenMessages };
     }, true ? [] : void 0, import.meta.url).then(({ createKitchenMessages }) => {
       if (!this.isConnected || this.mode !== "kitchen" || revision !== this.modeRevision) return;
@@ -11856,4 +11768,4 @@ export {
   poloImage as p,
   sneakerImage as s
 };
-//# sourceMappingURL=app-jZ_GYule.js.map
+//# sourceMappingURL=app-MQxMtcWO.js.map
