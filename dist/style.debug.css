@@ -14132,7 +14132,7 @@ textarea.form-control-lg {
   outline-offset: 2px;
 }
 
-.kroma-chat__composer textarea:focus-visible:not(:disabled) {
+.kroma-chat__composer textarea:focus-visible:not(:disabled), .kroma-chat__virtual-display:focus-visible {
   outline: none;
   box-shadow: none;
 }
