@@ -73,9 +73,7 @@ export class VirtualKeyboard {
     button.textContent = this.keyLabel(key);
     button.disabled = this.disabled
       || (key.action === "send" && !hasText)
-      || (key.action === "backspace" && state.cursor === 0)
-      || (key.action === "cursor-left" && state.cursor === 0)
-      || (key.action === "cursor-right" && state.cursor === state.value.length);
+      || (key.action === "backspace" && state.cursor === 0);
     if (key.action === "shift") {
       button.setAttribute("aria-pressed", String(state.shifted));
       button.setAttribute("aria-label", state.capsLock ? "Mayúsculas bloqueadas; pulsa para desbloquear" : key.ariaLabel || "Activar mayúscula; pulsa dos veces para bloqueo");
@@ -91,8 +89,6 @@ export class VirtualKeyboard {
     if (key.action === "space") return "Espacio";
     if (key.action === "backspace") return "⌫";
     if (key.action === "shift") return "⇧";
-    if (key.action === "cursor-left") return "←";
-    if (key.action === "cursor-right") return "→";
     return key.label;
   }
 
@@ -104,8 +100,6 @@ export class VirtualKeyboard {
       case "comma": controller.insert(","); break;
       case "period": controller.insert("."); break;
       case "backspace": controller.backspace(); break;
-      case "cursor-left": controller.moveCursor(-1); break;
-      case "cursor-right": controller.moveCursor(1); break;
       case "shift": controller.toggleShift(); break;
       case "symbols": controller.toggleSymbols(); break;
       case "letters": controller.showLetters(); break;

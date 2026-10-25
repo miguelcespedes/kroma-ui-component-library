@@ -17,7 +17,8 @@
   line-height: var(--kroma-chat-leading-body);
   box-shadow: var(--kroma-chat-elevation-shell);
   container-name: kroma-chat;
-  container-type: inline-size;
+  // Both axes are explicit, so components can adapt to narrow and short chat containers.
+  container-type: size;
 
   *, *::before, *::after { box-sizing: border-box; }
   [hidden] { display: none !important; }
