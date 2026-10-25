@@ -53,6 +53,10 @@ export class VirtualTextDisplay {
     if (visible) this.render();
   }
 
+  setEditing(editing: boolean) {
+    this.element.dataset.editing = String(editing);
+  }
+
   setDisabled(disabled: boolean) {
     this.disabled = disabled;
     this.element.setAttribute("aria-disabled", String(disabled));

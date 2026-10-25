@@ -109,15 +109,6 @@
     transition: border-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), box-shadow var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
 
     &:focus-within { border-color: var(--kroma-chat-state-focus); outline: 2px solid var(--kroma-chat-state-focus); outline-offset: 2px; }
-    &:has(.kroma-chat__input[aria-invalid="true"]) { border-color: var(--kroma-chat-state-error); }
-  }
-
-  &__composer-area[data-interaction-mode="guided"] &__composer {
-    min-height: 2.5rem;
-    padding: 0;
-    border-color: transparent;
-    background: transparent;
-    box-shadow: none;
   }
 
   &__virtual-display {
@@ -142,32 +133,9 @@
   &__virtual-display[aria-disabled="true"] { color: var(--kroma-chat-text-disabled); cursor: default; }
   &__virtual-display-placeholder { color: var(--kroma-chat-text-secondary); }
   &__virtual-display-caret { display: inline-block; width: 0; height: 1.2em; vertical-align: text-bottom; border-inline-start: 1.5px solid currentColor; animation: kroma-chat-virtual-caret 1s steps(2, start) infinite; }
+  &__virtual-display:not([data-editing="true"]) &__virtual-display-caret { opacity: 0; animation: none; }
 
-  &__composer-actions { display: flex; min-width: 0; flex: 0 0 auto; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--kroma-chat-spacing-tight); }
-  &__composer-guided-entry,
-  &__composer-guided-return,
-  &__keyboard-toggle {
-    display: inline-flex;
-    min-height: 2.25rem;
-    align-items: center;
-    justify-content: center;
-    padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control);
-    border: 0;
-    border-radius: var(--kroma-chat-radius-pill);
-    background: transparent;
-    color: var(--kroma-chat-text-accent);
-    font: inherit;
-    font-size: var(--kroma-chat-typography-action);
-    line-height: var(--kroma-chat-leading-action);
-    cursor: pointer;
-
-    &:hover:not(:disabled) { background: var(--kroma-chat-surface-hover); }
-    &:disabled { color: var(--kroma-chat-text-disabled); cursor: not-allowed; }
-  }
-  &__composer-guided-entry { min-height: 2.5rem; justify-content: flex-start; padding-inline: var(--kroma-chat-spacing-tight); font-weight: var(--kroma-chat-weight-medium); }
-  &__composer-icon-button { display: grid; width: 2.25rem; height: 2.25rem; flex: 0 0 2.25rem; place-items: center; padding: 0; color: var(--kroma-chat-text-secondary); }
-  &__composer-icon-button svg { width: var(--kroma-chat-icon-secondary-size); height: var(--kroma-chat-icon-secondary-size); fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
-  &__keyboard-toggle { color: var(--kroma-chat-text-accent); }
+  &__composer-actions { display: flex; min-width: 0; flex: 0 0 auto; align-items: center; gap: var(--kroma-chat-spacing-tight); }
 
   &__composer-area,
   &__composer,

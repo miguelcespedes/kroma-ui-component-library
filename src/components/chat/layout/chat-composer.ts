@@ -1,7 +1,6 @@
 import { VirtualKeyboard } from "../input/virtual-keyboard";
 import { VirtualKeyboardController, type VirtualKeyboardLayoutName } from "../input/virtual-keyboard-controller";
 import { VirtualTextDisplay, type VirtualTextDisplayCallbacks } from "../input/virtual-text-display";
-import { createIcon } from "../shared/icons";
 
 export type ChatInteractionMode = "guided" | "free-text";
 const COMPOSER_MAX_LENGTH = 2000;
@@ -29,9 +28,6 @@ export class ChatComposer {
   private readonly listeners = new AbortController();
   private readonly disposers: Array<() => void> = [];
   private readonly actions: HTMLDivElement;
-  private readonly guidedEntryButton: HTMLButtonElement;
-  private readonly guidedReturnButton: HTMLButtonElement;
-  private readonly keyboardButton: HTMLButtonElement;
   private readonly keyboardShowcase: HTMLElement | null;
   private readonly showcaseLayouts = new Map<VirtualKeyboardLayoutName, HTMLButtonElement>();
   private readonly unsubscribeController: () => void;
@@ -57,25 +53,23 @@ export class ChatComposer {
     this.controller = new VirtualKeyboardController(false);
     const displayCallbacks: VirtualTextDisplayCallbacks = {
       onCaretChange: (start, end) => {
-        if (this.interactionMode !== "free-text" || this.keyboardTarget) return;
+        if (this.keyboardTarget) return;
+        if (this.interactionMode !== "free-text") this.setInteractionMode("free-text");
         this.keyboard?.setCaretPosition(start, end);
         this.keyboard?.setOpen(true);
       },
       onPhysicalKey: (event) => this.keyboard?.handlePhysicalKey(event, () => this.form.requestSubmit()),
       onPhysicalKeyRelease: () => this.keyboard?.restoreCaretAfterPhysicalKey(),
     };
-    this.display = new VirtualTextDisplay(options.inputLabel, options.placeholder, displayCallbacks);
+    this.display = new VirtualTextDisplay(options.inputLabel, "", displayCallbacks);
     this.display.setDisabled(this.disabled);
     this.display.update(this.draftValue);
-    this.display.setVisible(false);
+    this.display.setVisible(true);
 
     this.actions = document.createElement("div");
     this.actions.className = "kroma-chat__composer-actions";
-    this.guidedEntryButton = this.createModeAction("kroma-chat__composer-guided-entry", "Escribir una consulta");
-    this.guidedReturnButton = this.createModeAction("kroma-chat__composer-guided-return", "Volver a opciones guiadas", "options");
-    this.keyboardButton = this.createModeAction("kroma-chat__keyboard-toggle", "Ocultar teclado virtual", "keyboard-up");
     this.sendButton = this.createSendButton(options.sendLabel);
-    this.actions.append(this.guidedEntryButton, this.guidedReturnButton, this.keyboardButton, this.sendButton);
+    this.actions.append(this.sendButton);
     this.form.append(this.display.element, this.actions);
 
     this.createKeyboard();
@@ -95,17 +89,16 @@ export class ChatComposer {
     document.addEventListener("pointerdown", (event) => {
       const target = event.target;
       if (!(target instanceof Node)) return;
-      if (this.display.element.contains(target) || this.keyboard?.element.contains(target) || this.keyboardButton.contains(target) || this.keyboardShowcase?.contains(target)) return;
+      if (this.keyboard?.element.contains(target) || this.keyboardShowcase?.contains(target)) return;
       if (this.keyboardTarget?.contains(target)) return;
       if (this.keyboardTarget) {
         this.setKeyboardTarget(null);
         return;
       }
+      if (this.display.element.contains(target)) return;
       this.controller.setOpen(false);
+      if (this.interactionMode === "free-text") this.setInteractionMode("guided");
     }, { capture: true, signal });
-    this.guidedEntryButton.addEventListener("click", () => this.setInteractionMode("free-text"), { signal });
-    this.guidedReturnButton.addEventListener("click", () => this.setInteractionMode("guided"), { signal });
-    this.keyboardButton.addEventListener("click", () => this.keyboard?.setOpen(!this.controller.state.open), { signal });
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       const message = this.currentValue().trim();
@@ -150,7 +143,6 @@ export class ChatComposer {
     this.updateSendButton();
     this.options.onInteractionModeChange?.(mode);
     if (mode === "free-text" && !this.disabled) this.display.element.focus();
-    else if (mode === "guided" && !this.disabled && !this.keyboardShowcase) this.guidedEntryButton.focus({ preventScroll: true });
   }
 
   setKeyboardTarget(target: HTMLInputElement | null) {
@@ -212,10 +204,9 @@ export class ChatComposer {
   }
 
   focus() {
-    // Move focus to a safe action without interpreting message-control selection as typing intent.
     if (this.interactionMode !== "guided") return;
     if (this.keyboardTarget) this.setKeyboardTarget(null);
-    if (!this.guidedEntryButton.hidden) this.guidedEntryButton.focus({ preventScroll: true });
+    this.display.element.focus({ preventScroll: true });
   }
 
   clear() {
@@ -273,32 +264,14 @@ export class ChatComposer {
     const externalInput = this.keyboardTarget !== null;
     const virtualInput = !guided || externalInput;
     this.element.dataset.interactionMode = this.interactionMode;
-    this.display.setVisible(virtualInput && !externalInput);
-    this.guidedEntryButton.hidden = !guided || this.disabled || Boolean(this.keyboardShowcase) || externalInput;
-    this.guidedEntryButton.textContent = this.draftValue ? "Continuar escribiendo" : "Escribir una consulta";
-    this.guidedReturnButton.hidden = guided || Boolean(this.keyboardShowcase) || externalInput;
-    this.guidedReturnButton.disabled = this.disabled;
-    this.keyboardButton.disabled = this.disabled;
-    this.keyboardButton.hidden = !virtualInput || Boolean(this.keyboardShowcase);
-    this.keyboardButton.replaceChildren(createIcon(this.controller.state.open ? "keyboard-up" : "keyboard"));
-    this.keyboardButton.setAttribute("aria-expanded", String(virtualInput && this.controller.state.open));
-    this.keyboardButton.setAttribute("aria-label", this.controller.state.open ? "Ocultar teclado virtual" : "Mostrar teclado virtual");
-    this.sendButton.hidden = guided || Boolean(this.keyboardShowcase) || externalInput;
+    this.display.setVisible(!externalInput);
+    this.display.setEditing(!guided && !externalInput);
+    this.sendButton.hidden = Boolean(this.keyboardShowcase) || externalInput;
     if (!virtualInput && !this.keyboardShowcase) this.controller.setOpen(false);
   }
 
   private updateSendButton() {
     this.sendButton.disabled = this.disabled || !this.currentValue().trim();
-  }
-
-  private createModeAction(className: string, label: string, iconName?: string) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = iconName ? `${className} kroma-chat__composer-icon-button` : className;
-    button.setAttribute("aria-label", label);
-    if (iconName) button.append(createIcon(iconName));
-    else button.textContent = label;
-    return button;
   }
 
   private createSendButton(sendLabel: string) {

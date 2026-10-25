@@ -7,10 +7,6 @@ const iconPaths: Record<string, string> = {
   clothing: "M8 4 5 6 2.5 9l3 3L8 9.5V20h8V9.5l2.5 2.5 3-3L19 6l-3-2a4 4 0 0 1-8 0z",
   accessories: "M5 8h14l-1 12H6L5 8z M9 8V6a3 3 0 0 1 6 0v2",
   cart: "M3 4h2l2.2 10.5h10.4L20 7H6 M8 18.5h.01 M17 18.5h.01",
-  keyboard: "M3 6h18v12H3z M6 9h.01 M9 9h.01 M12 9h.01 M15 9h.01 M18 9h.01 M6 12h.01 M9 12h.01 M12 12h.01 M15 12h.01 M18 12h.01 M8 15h8",
-  options: "M4 6h16 M4 12h16 M4 18h16",
-  "keyboard-up": "m6 14 6-6 6 6",
-  "keyboard-down": "m6 10 6 6 6-6",
 };
 
 export function createIcon(icon: string, className?: string) {
