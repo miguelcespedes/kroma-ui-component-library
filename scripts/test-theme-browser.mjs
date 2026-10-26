@@ -514,7 +514,7 @@ const runChatChecks = async (browserName, browser) => {
 
   await chat.evaluate((element) => element.setError("User-facing error"));
   assert.equal(await input.getAttribute("aria-invalid"), "true");
-  assert.equal(await chat.locator("[role=alert]").textContent(), "User-facing error");
+  assert.equal(await chat.locator(".kroma-chat__composer-area > [role=alert]").textContent(), "User-facing error");
   await chat.evaluate((element) => element.setError(null));
   assert.equal(await input.getAttribute("aria-invalid"), null);
   await chat.evaluate((element) => element.setComposerDisabled(true));

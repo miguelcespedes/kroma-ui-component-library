@@ -1,7 +1,7 @@
 import type { ChatCartItem, ChatCategory, ChatChoice, ChatMoney, ChatOption, ChatProduct, ChatProductVariant, JourneyMenuItem } from "../core/chat.types";
-import poloImage from "../../../assets/chat-polo-v2.png";
-import sneakerImage from "../../../assets/chat-sneaker-v2.png";
-import capImage from "../../../assets/chat-cap-v2.png";
+const poloImage = new URL("../../../assets/chat-polo-v2.png", import.meta.url).href;
+const sneakerImage = new URL("../../../assets/chat-sneaker-v2.png", import.meta.url).href;
+const capImage = new URL("../../../assets/chat-cap-v2.png", import.meta.url).href;
 
 export const kitchenProducts: ChatProduct[] = [
   {

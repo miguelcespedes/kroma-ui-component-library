@@ -1,0 +1,80 @@
+@use "../../components/chat/kroma-chat";
+
+@import "simple-keyboard/build/css/index.css";
+@import "../../themes/dracula/theme";
+@import "../../themes/kroma-entrepreneur/theme";
+
+// Bootstrap theme fallbacks: keep the official dark default when consumers do
+// not load Bootstrap, while still honoring its variables when they are present.
+:root:not([data-kroma-theme]) .kroma-chat,
+:root[data-kroma-theme="bootstrap"] .kroma-chat {
+  --kroma-chat-canvas: var(--bs-body-bg, #fff);
+  --kroma-chat-surface: var(--bs-secondary-bg, #e9ecef);
+  --kroma-chat-elevated: var(--bs-tertiary-bg, #f8f9fa);
+  --kroma-chat-accent: var(--bs-primary, #0d6efd);
+  --kroma-chat-on-accent: var(--bs-white, #fff);
+  --kroma-chat-surface-header: var(--kroma-chat-surface);
+  --kroma-chat-surface-composer: var(--kroma-chat-canvas);
+  --kroma-chat-surface-assistant: var(--kroma-chat-elevated);
+  --kroma-chat-surface-control: var(--kroma-chat-surface);
+  --kroma-chat-surface-card: var(--kroma-chat-elevated);
+  --kroma-chat-surface-hover: var(--kroma-chat-surface);
+  --kroma-chat-surface-selected: var(--kroma-chat-surface);
+  --kroma-chat-text-primary: var(--bs-body-color, #212529);
+  --kroma-chat-text-secondary: var(--bs-secondary-color, #6c757d);
+  --kroma-chat-border-subtle: var(--bs-border-color, #dee2e6);
+  --kroma-chat-border-interactive: var(--bs-border-color, #dee2e6);
+}
+
+:root[data-bs-theme="dark"]:not([data-kroma-theme]) .kroma-chat,
+:root[data-bs-theme="dark"][data-kroma-theme="bootstrap"] .kroma-chat {
+  --kroma-chat-canvas: var(--bs-body-bg, #212529);
+  --kroma-chat-surface: var(--bs-secondary-bg, #343a40);
+  --kroma-chat-elevated: var(--bs-tertiary-bg, #2b3035);
+  --kroma-chat-surface-assistant: var(--kroma-chat-elevated);
+  --kroma-chat-surface-control: var(--kroma-chat-surface);
+  --kroma-chat-surface-card: var(--kroma-chat-elevated);
+  --kroma-chat-surface-hover: var(--kroma-chat-elevated);
+  --kroma-chat-surface-selected: var(--kroma-chat-elevated);
+  --kroma-chat-text-primary: var(--bs-body-color, #dee2e6);
+  --kroma-chat-text-secondary: var(--bs-secondary-color, #adb5bd);
+  --kroma-chat-border-subtle: var(--bs-border-color, #495057);
+  --kroma-chat-border-interactive: var(--bs-border-color, #495057);
+}
+
+.kroma-chat--fullscreen {
+  --kroma-chat-width: 100%;
+  --kroma-chat-height: 100dvh;
+  --kroma-chat-max-height: none;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.kroma-chat--fullscreen .kroma-chat__header,
+.kroma-chat--fullscreen .kroma-chat__composer-area {
+  padding-inline: max(1rem, calc((100vw - 56rem) / 2));
+}
+
+.kroma-chat--fullscreen .kroma-chat__messages {
+  width: min(100%, 56rem);
+  align-self: center;
+  padding-inline: clamp(1rem, 3vw, 2rem);
+}
+
+.kroma-chat--fullscreen .kroma-chat__composer {
+  width: min(100%, 56rem);
+  margin-inline: auto;
+}
+
+@media (max-width: 30rem) {
+  .kroma-chat--fullscreen .kroma-chat__header,
+  .kroma-chat--fullscreen .kroma-chat__composer-area {
+    padding-inline: 1rem;
+  }
+}

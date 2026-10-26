@@ -3,8 +3,29 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "files": [
+    "lib-dist/chat"
+  ],
+  "exports": {
+    "./chat": {
+      "types": "./lib-dist/chat/index.d.ts",
+      "import": "./lib-dist/chat/index.js"
+    },
+    "./chat/styles.css": "./lib-dist/chat/styles.css"
+  },
+  "sideEffects": [
+    "./src/components/chat/index.ts",
+    "./src/components/chat/kroma-chat.ts",
+    "./src/library/chat/index.ts",
+    "./src/library/chat/styles.scss",
+    "./lib-dist/chat/index.js",
+    "./lib-dist/chat/styles.css"
+  ],
   "scripts": {
     "dev": "vite --config vite.config.js",
+    "prepare": "npm run build:lib",
+    "build:lib": "node scripts/build-lib.mjs",
+    "test:package": "node scripts/test-package.mjs",
     "test:theme-layers": "node scripts/check-theme-layers.mjs",
     "test:theme-browser": "node scripts/test-theme-browser.mjs",
     "test:theme-browser:all": "node scripts/test-theme-browser.mjs --all",
@@ -18,12 +39,10 @@
     "build:debug": "node scripts/clean-dist.mjs && vite build --config vite.config.js --mode debug",
     "start": "vite preview --config vite.config.js"
   },
-  "dependencies": {
-    "bootstrap": "5.3.8",
-    "simple-keyboard": "^3.8.199"
-  },
   "devDependencies": {
+    "bootstrap": "5.3.8",
     "playwright": "^1.55.0",
+    "simple-keyboard": "3.8.199",
     "sass": "^1.89.0",
     "typescript": "^5.9.0",
     "vite": "^7.0.0"
