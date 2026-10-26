@@ -145,6 +145,7 @@ try {
   assert.equal(await speechButton.getAttribute("aria-pressed"), "true");
   assert.equal(await speechSlash.isVisible(), false, "the microphone is unmuted while listening");
   assert.equal(await speechSlash.getAttribute("d"), "M4 20 20 4", "the slash follows the provided microphone-off reference");
+  assert.equal(await speechButton.evaluate((button) => getComputedStyle(button, "::after").content), "none", "the listening control has no decorative status dot");
   assert.equal(await keyboard.isHidden(), true, "dictation hides the virtual keyboard without clearing the draft");
   const recognitionSettings = await page.evaluate(() => ({
     lang: window.__FakeSpeechRecognition.lastInstance.lang,

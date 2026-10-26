@@ -199,17 +199,6 @@
     &[data-speech-state="listening"] [data-speech-slash],
     &[data-speech-state="stopping"] [data-speech-slash] { display: none; }
     &[data-speech-state="error"] { border-color: var(--kroma-chat-state-error); color: var(--kroma-chat-state-error); }
-    &[data-speech-state="listening"]::after,
-    &[data-speech-state="stopping"]::after {
-      position: absolute;
-      inset-block-start: .3rem;
-      inset-inline-end: .3rem;
-      width: .4rem;
-      height: .4rem;
-      border-radius: 50%;
-      background: var(--kroma-chat-on-accent);
-      content: "";
-    }
   }
 
   &__composer-area,
