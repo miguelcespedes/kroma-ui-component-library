@@ -1,6 +1,124 @@
 # Kroma UI Component Library
 
-Kroma es un sistema de diseño con tokens propios; Bootstrap 5.3.8 implementa los componentes del cheatsheet mediante un adaptador. La aplicación de documentación sigue siendo privada (`package.json` tiene `private: true`). No hay exports npm.
+Kroma es un sistema de diseño con tokens propios; Bootstrap 5.3.8 implementa los componentes del cheatsheet mediante un adaptador. La aplicación de documentación sigue siendo privada (`package.json` tiene `private: true`). KromaChat se puede instalar desde GitHub; no se publica en npm Registry.
+
+## Guías de uso
+
+Elige la guía según lo que necesitas hacer. El README resume el proyecto y ofrece un inicio rápido; las guías enlazadas detallan contratos y ejemplos completos.
+
+| Guía | Contenido |
+| --- | --- |
+| [Usar los componentes de Kroma UI](docs/COMPONENTS.md) | Qué APIs se distribuyen, estilos, temas, tokens, Bootstrap y cómo se conectan los componentes. |
+| [Crear y aplicar temas](docs/THEMES.md) | `data-kroma-theme` y contraste, capas Sass, contrato de tokens, estructura de tema, registro y validaciones. |
+| [KromaChat y su inventario interno](docs/CHAT.md) | Inventario de layout, mensajes, navegación, catálogo, comercio, formularios, teclado, métodos, tipos y eventos. |
+| [Instalación Git y Next.js](docs/GIT_INSTALLATION.md) | Instalar con tags/commits, importación SSR segura, recursos y actualización controlada. |
+
+La API de paquete actual publica `@kroma/ui-component-library/chat` y `@kroma/ui-component-library/chat/styles.css`; los dropdowns de tema/contraste y la paleta de tokens del cheatsheet son herramientas internas del catálogo, no imports públicos.
+
+## Usar KromaChat
+
+Instala desde la rama predeterminada o fija una versión mediante un tag/commit:
+
+```bash
+npm install github:miguelcespedes/kroma-ui-component-library
+# Recomendado para despliegues reproducibles:
+npm install github:miguelcespedes/kroma-ui-component-library#v1.0.0
+```
+
+Importa los estilos una vez desde la hoja global de la aplicación. El módulo registra el Web Component `kroma-chat` y expone su API y tipos:
+
+```ts
+import "@kroma/ui-component-library/chat/styles.css";
+import { KromaChat } from "@kroma/ui-component-library/chat";
+
+const chat = document.createElement("kroma-chat") as KromaChat;
+chat.setAttribute("chat-title", "Asistente Kroma");
+document.querySelector("#chat")?.append(chat);
+chat.addMessage({ author: "assistant", type: "text", text: "Hola." });
+chat.addEventListener("kroma-chat-send", (event) => {
+  console.log((event as CustomEvent<{ message: string }>).detail.message);
+});
+```
+
+En Next.js, importa el CSS desde `app/layout.tsx`, pero carga el módulo del componente con `import()` dentro de `useEffect` para que `HTMLElement` no se evalúe durante SSR. El ejemplo completo de App Router, eventos, cleanup, actualización por tags/SHA y solución de problemas está en [`docs/GIT_INSTALLATION.md`](docs/GIT_INSTALLATION.md).
+
+### Controles y mensajes del chat
+
+Las tarjetas y controles del chat no se importan ni se montan por separado: son renderers internos de `<kroma-chat>`. La API pública es `addMessage(ChatMessage)`; el campo `type` elige qué renderer se muestra. El host escucha las selecciones, aplica la lógica de negocio y agrega la respuesta siguiente.
+
+```ts
+import type { ChatMessage, KromaChat } from "@kroma/ui-component-library/chat";
+
+const chat = document.querySelector<KromaChat>("kroma-chat")!;
+const messages: ChatMessage[] = [
+  {
+    author: "assistant",
+    type: "quick-replies",
+    text: "¿Qué necesitas?",
+    replies: [
+      { id: "catalog", label: "Ver productos", value: "catalog" },
+      { id: "help", label: "Necesito ayuda", value: "help" },
+    ],
+  },
+  {
+    author: "assistant",
+    type: "choice-list",
+    text: "Elige una categoría",
+    choices: [
+      { id: "gas", title: "Gas", description: "Balones y recargas", value: "gas" },
+      { id: "water", title: "Agua", description: "Bidones y botellas", value: "water" },
+    ],
+  },
+  {
+    author: "assistant",
+    type: "product-detail",
+    product: {
+      id: "gas-10kg",
+      name: "Gas doméstico 10 kg",
+      description: "Balón para uso doméstico",
+      price: { amount: 55, currency: "PEN" },
+    },
+    quantity: 1,
+    minimumQuantity: 1,
+    maximumQuantity: 10,
+    addActionLabel: "Agregar al pedido",
+  },
+  {
+    author: "assistant",
+    type: "conversational-form",
+    text: "Déjanos tus datos",
+    title: "Contacto",
+    fields: [
+      { id: "customer-name", name: "name", label: "Nombre", type: "text", required: true },
+      { id: "customer-email", name: "email", label: "Correo", type: "email", required: true },
+    ],
+    submitLabel: "Continuar",
+  },
+];
+
+messages.forEach((message) => chat.addMessage(message));
+chat.addEventListener("kroma-chat-option-select", (event) => {
+  const { value } = (event as CustomEvent<{ value: string }>).detail;
+  // Aquí la aplicación decide el siguiente paso y llama a addMessage().
+  console.log("Opción elegida:", value);
+});
+chat.addEventListener("kroma-chat-quantity-change", (event) => {
+  const { productId, quantity } = (event as CustomEvent<{ productId?: string; quantity: number }>).detail;
+  console.log("Actualizar cantidad en el estado del host:", productId, quantity);
+});
+chat.addEventListener("kroma-chat-action", (event) => {
+  const { actionId, data } = (event as CustomEvent<{ actionId: string; data?: unknown }>).detail;
+  console.log("Procesar acción comercial:", actionId, data);
+});
+chat.addEventListener("kroma-chat-form-submit", (event) => {
+  const { values } = (event as CustomEvent<{ values: Record<string, string> }>).detail;
+  console.log("Validar/enviar datos desde la aplicación:", values);
+});
+```
+
+Los `type` disponibles incluyen `text`, `status`, `rich`, `quick-replies`, `choice-list`, `journey-menu`, `category-picker`, `product-card`, `product-list`, `product-carousel`, `product-detail`, `product-variant-selector`, `quantity-selector`, `cart-summary`, `conversational-form`, `order-review` y `confirmation`. `options` es el alias legado de `quick-replies`. Los contratos `ChatProduct`, `ChatCartItem`, `ChatFormField`, `ChatMoney` y los tipos de cada mensaje también se exportan desde `/chat`.
+
+Los controles notifican interacciones mediante eventos DOM (`kroma-chat-option-select`, `kroma-chat-action`, `kroma-chat-quantity-change` y `kroma-chat-form-submit`, entre otros); **no** gestionan carrito, precios, navegación, persistencia ni llamadas al backend. Consulta el [contrato completo de KromaChat](src/components/chat/README.md) para la lista de métodos, atributos y detalles de eventos.
 
 ## Capas
 
