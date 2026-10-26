@@ -5,11 +5,7 @@ import { initializeContrastDropdown } from "../components/contrast-dropdown/cont
 import { initializeThemeDropdown } from "../components/theme-dropdown/theme-dropdown";
 import { initializeColorTokenPalette } from "../components/color-token-palette/color-token-palette";
 import "../components/chat";
-import chatPoloImage from "../assets/chat-polo-v2.png";
-import chatJacketImage from "../assets/chat-jacket-v2.png";
 import chatBottleImage from "../assets/chat-bottle-v2.png";
-import chatSneakerImage from "../assets/chat-sneaker-v2.png";
-import chatCapImage from "../assets/chat-cap-v2.png";
 import type {
   ChatActionDetail,
   ChatCartItem,
@@ -69,7 +65,7 @@ document.querySelectorAll<HTMLAnchorElement>('a[href="#"]').forEach((link) => {
   link.addEventListener("click", (event) => event.preventDefault());
 });
 
-type DemoCategoryId = "all" | "clothing" | "accessories";
+type DemoCategoryId = "all" | "gas" | "water";
 type DemoCartLine = { readonly id: string; readonly productId: string; readonly variantId?: string; readonly quantity: number };
 type JourneyState =
   | { readonly step: "welcome"; readonly cart: readonly DemoCartLine[] }
@@ -77,6 +73,7 @@ type JourneyState =
   | { readonly step: "search-query"; readonly cart: readonly DemoCartLine[] }
   | { readonly step: "search-results"; readonly cart: readonly DemoCartLine[]; readonly query: string; readonly productIds: readonly string[] }
   | { readonly step: "order-help"; readonly cart: readonly DemoCartLine[] }
+  | { readonly step: "promotions"; readonly cart: readonly DemoCartLine[] }
   | { readonly step: "advisor-reason"; readonly cart: readonly DemoCartLine[] }
   | { readonly step: "advisor-topic"; readonly cart: readonly DemoCartLine[]; readonly reason: string }
   | { readonly step: "advisor-follow-up"; readonly cart: readonly DemoCartLine[]; readonly reason: string; readonly topic: string }
@@ -98,6 +95,7 @@ type JourneyEvent =
   | { readonly type: "search-query" }
   | { readonly type: "search-results"; readonly query: string; readonly productIds: readonly string[] }
   | { readonly type: "show-order-help" }
+  | { readonly type: "show-promotions" }
   | { readonly type: "start-advisor" }
   | { readonly type: "advisor-reason"; readonly reason: string }
   | { readonly type: "advisor-topic"; readonly reason: string; readonly topic: string }
@@ -126,77 +124,42 @@ type JourneyEvent =
   | { readonly type: "restart" };
 
 const demoCategories: ChatCategory[] = [
-  { id: "all", label: "Todos", icon: "all" },
-  { id: "clothing", label: "Ropa", icon: "clothing" },
-  { id: "accessories", label: "Accesorios", icon: "accessories" },
+  { id: "gas", label: "Gas en balón", description: "Balones domésticos de 10 kg", icon: "all" },
+  { id: "water", label: "Agua mineral", description: "Bidón retornable de 20 L", icon: "all" },
 ];
 
 const demoProducts: ChatProduct[] = [
   {
-    id: "cotton-polo",
-    name: "Polo de algodón",
-    summary: "Algodón suave, cuello redondo y corte clásico.",
-    description: "Polo de algodón suave, con cuello redondo y un corte clásico para el uso diario.",
-    image: { src: chatPoloImage, alt: "Polo blanco de algodón" },
-    price: { amount: 49, currency: "PEN", label: "S/ 49.00" },
-    features: ["Algodón suave", "Colores blanco y negro", "Lavable a máquina"],
-    variants: [
-      { id: "polo-size-s", label: "Talla S", value: "S" },
-      { id: "polo-size-m", label: "Talla M", value: "M" },
-      { id: "polo-size-l", label: "Talla L", value: "L" },
-    ],
+    id: "gas-refill-10kg",
+    name: "Recarga de gas 10 kg",
+    summary: "Para canje con un balón vacío compatible.",
+    description: "Recarga de balón doméstico de 10 kg. Requiere entregar un balón vacío compatible; confirma marca, cobertura y costo de delivery con el distribuidor.",
+    price: { amount: 55, currency: "PEN", label: "Desde S/ 55 · referencia publicada" },
+    features: ["Referencia publicada para algunas marcas y zonas de Lima", "Delivery y disponibilidad pueden variar", "No incluye envase nuevo"],
   },
   {
-    id: "light-jacket",
-    name: "Casaca ligera",
-    summary: "Una capa versátil para días frescos.",
-    description: "Casaca ligera y versátil para usar durante los días frescos.",
-    image: { src: chatJacketImage, alt: "Casaca ligera color grafito" },
-    price: { amount: 129, currency: "PEN", label: "S/ 129.00" },
-    features: ["Tela ligera", "Bolsillos laterales", "Cierre frontal"],
-    variants: [
-      { id: "jacket-size-s", label: "Talla S", value: "S" },
-      { id: "jacket-size-m", label: "Talla M", value: "M" },
-    ],
+    id: "gas-cylinder-10kg",
+    name: "Gas 10 kg con envase",
+    summary: "Para quien aún no tiene balón.",
+    description: "Presentación de 10 kg con envase. Es una referencia publicada, no una oferta de este comercio; confirma marca, zona, stock y delivery.",
+    price: { amount: 230, currency: "PEN", label: "Desde S/ 230 · referencia publicada" },
+    features: ["Incluye envase según la publicación consultada", "Delivery y cobertura por confirmar", "No es un combo promocional"],
   },
   {
-    id: "folding-bottle",
-    name: "Botella reutilizable",
-    summary: "Formato compacto para llevar contigo.",
-    description: "Botella reutilizable de formato compacto para llevar contigo.",
-    image: { src: chatBottleImage, alt: "Botella reutilizable de acero grafito" },
-    price: { amount: 35, currency: "PEN", label: "S/ 35.00" },
-    features: ["Tapa a rosca", "Fácil de transportar"],
-  },
-  {
-    id: "urban-sneaker",
-    name: "Zapatilla urbana",
-    summary: "Diseño ligero para todos los días.",
-    description: "Zapatilla urbana ligera en blanco con detalles grafito.",
-    image: { src: chatSneakerImage, alt: "Zapatilla urbana blanca" },
-    price: { amount: 129, currency: "PEN", label: "S/ 129.00" },
-    features: ["Suela flexible", "Malla transpirable"],
-    variants: [
-      { id: "sneaker-size-38", label: "Talla 38", value: "38" },
-      { id: "sneaker-size-40", label: "Talla 40", value: "40" },
-      { id: "sneaker-size-42", label: "Talla 42", value: "42" },
-    ],
-  },
-  {
-    id: "classic-cap",
-    name: "Gorra clásica",
-    summary: "Algodón con ajuste posterior.",
-    description: "Gorra de algodón azul noche con ajuste posterior.",
-    image: { src: chatCapImage, alt: "Gorra azul noche" },
-    price: { amount: 39, currency: "PEN", label: "S/ 39.00" },
-    features: ["Algodón tejido", "Ajuste regulable"],
+    id: "water-refill-20l",
+    name: "Agua mineral 20 L",
+    summary: "Recarga en bidón retornable.",
+    description: "Agua mineral en presentación retornable de 20 litros. Verifica si debes entregar un bidón vacío y si el delivery está incluido.",
+    image: { src: chatBottleImage, alt: "Bidón de agua retornable" },
+    price: { amount: 25, currency: "PEN", label: "Desde S/ 25 · referencia publicada" },
+    features: ["Referencia publicada para bidón retornable de 20 L", "Envase inicial y delivery pueden cobrarse aparte", "Confirma marca y cobertura"],
   },
 ];
 
 const productsByCategory: Record<DemoCategoryId, readonly string[]> = {
   all: demoProducts.map((product) => product.id),
-  clothing: ["cotton-polo", "light-jacket", "urban-sneaker"],
-  accessories: ["folding-bottle", "classic-cap"],
+  gas: ["gas-refill-10kg", "gas-cylinder-10kg"],
+  water: ["water-refill-20l"],
 };
 
 function getDemoProduct(productId: string) {
@@ -233,16 +196,16 @@ function freshJourney(): JourneyState {
 
 function welcomeMessage(): ChatMessage {
   const items: JourneyMenuItem[] = [
-    { id: "browse-products", label: "Explorar productos", description: "Ver categorías y productos", icon: "browse" },
-    { id: "search-product", label: "Buscar un producto", description: "Encuentra un artículo específico", icon: "search" },
-    { id: "order-status", label: "Consultar un pedido", description: "Consulta el estado de una solicitud", icon: "orders" },
-    { id: "advisor", label: "Hablar con un asesor", description: "Recibe ayuda personalizada", icon: "advisor" },
+    { id: "place-order", label: "Pedir gas o agua", description: "Balón de 10 kg o bidón retornable de 20 L", icon: "browse" },
+    { id: "promotions", label: "Ver promociones y combos", description: "Consultar ofertas disponibles", icon: "orders" },
+    { id: "order-status", label: "Seguir mi pedido", description: "Revisar el estado de una solicitud", icon: "search" },
+    { id: "advisor", label: "Hablar con un asesor", description: "Resolver una consulta", icon: "advisor" },
   ];
-  return { author: "assistant", type: "journey-menu", text: "¡Hola! Bienvenido. ¿Qué te gustaría hacer hoy?", items };
+  return { author: "assistant", type: "journey-menu", text: "¡Hola! ¿Qué necesitas hoy?", items };
 }
 
 function categoriesMessage(): ChatMessage {
-  return { author: "assistant", type: "category-picker", text: "Estas son nuestras categorías. Selecciona una para explorar los productos.", categories: demoCategories };
+  return { author: "assistant", type: "category-picker", text: "¿Qué te gustaría pedir?", categories: demoCategories };
 }
 
 function quickReplies(text: string, replies: ChatOption[]): ChatMessage {
@@ -255,27 +218,29 @@ function renderJourney(chat: KromaChat, state: JourneyState, onProductDetail?: (
       chat.addMessage(welcomeMessage());
       return;
     case "search-options":
-      chat.addMessage(quickReplies("¿Cómo prefieres buscar?", [
-        { id: "search-categories", label: "Explorar categorías", value: "explore-products" },
-        { id: "search-all", label: "Ver productos disponibles", value: "browse-all" },
-        { id: "search-name", label: "Escribir el nombre", value: "write-product-name" },
+      chat.addMessage(quickReplies("¿Qué necesitas pedir?", [
+        { id: "search-gas", label: "Gas en balón de 10 kg", value: "category-gas" },
+        { id: "search-water", label: "Agua mineral de 20 L", value: "category-water" },
       ]));
       return;
     case "search-query":
-      chat.addMessage({ author: "assistant", text: "Escribe un nombre del catálogo ficticio de esta demostración." });
-      chat.addMessage(quickReplies("También puedes explorar por categoría.", [{ id: "search-back", label: "Explorar categorías", value: "explore-products" }]));
+      chat.addMessage({ author: "assistant", text: "Escribe si buscas gas o agua." });
+      chat.addMessage(quickReplies("También puedes elegir una categoría.", [
+        { id: "search-gas", label: "Gas en balón de 10 kg", value: "category-gas" },
+        { id: "search-water", label: "Agua mineral de 20 L", value: "category-water" },
+      ]));
       return;
     case "search-results": {
       const products = state.productIds.map(getDemoProduct).filter((product): product is ChatProduct => Boolean(product));
       if (products.length) {
-        const prompt = state.query ? `Coincidencias de ejemplo para “${state.query}”.` : "Estos son los productos ficticios disponibles en la demostración.";
+        const prompt = state.query ? `Opciones relacionadas con “${state.query}”. Los precios son referencias, no una cotización de delivery.` : "Productos de referencia para esta demostración.";
         chat.addMessage({ author: "assistant", type: "product-list", text: prompt, products, productActionLabel: "Ver producto" });
         const replies: ChatOption[] = [
           { id: "search-again", label: "Cambiar búsqueda", value: "search-again" },
-          { id: "search-categories", label: "Explorar categorías", value: "explore-products" },
+          { id: "search-categories", label: "Elegir gas o agua", value: "explore-products" },
         ];
         if (state.cart.length) replies.push({ id: "cart", label: `Ver mi selección (${state.cart.length})`, value: "view-cart" });
-        chat.addMessage(quickReplies("El catálogo de la demostración es ficticio y limitado.", replies));
+        chat.addMessage(quickReplies("Verifica precio, marca, envase y delivery con el proveedor.", replies));
       } else {
         chat.addMessage({ author: "system", type: "status", status: "neutral", text: `No hay coincidencias de ejemplo para “${state.query}”.` });
         chat.addMessage(quickReplies("Puedes probar otra búsqueda o explorar las categorías.", [
@@ -286,23 +251,30 @@ function renderJourney(chat: KromaChat, state: JourneyState, onProductDetail?: (
       return;
     }
     case "order-help":
-      chat.addMessage({ author: "system", type: "status", status: "neutral", text: "La consulta de pedidos no está conectada en esta demostración. No se consultan ni se inventan estados de pedidos." });
-      chat.addMessage(quickReplies("Puedes continuar con el catálogo de ejemplo.", [
-        { id: "order-browse", label: "Explorar productos", value: "explore-products" },
+      chat.addMessage({ author: "system", type: "status", status: "neutral", text: "El seguimiento no está conectado en esta demostración. No se consultan ni se inventan estados de pedidos." });
+      chat.addMessage(quickReplies("Si quieres, puedes iniciar un pedido o volver al menú.", [
+        { id: "order-browse", label: "Pedir gas o agua", value: "explore-products" },
         { id: "order-home", label: "Volver al inicio", value: "home" },
+      ]));
+      return;
+    case "promotions":
+      chat.addMessage({ author: "assistant", type: "info", title: "Promociones y combos", description: "No hay un combo de gas y agua con precio y condiciones verificables para este comercio. Como referencias separadas, se encontraron recargas de gas de 10 kg desde S/ 55 para algunas marcas y zonas, y bidones retornables de agua de 20 L alrededor de S/ 23–25. El delivery, el envase y la cobertura pueden cambiar el total; confirma la cotización con el proveedor." });
+      chat.addMessage(quickReplies("¿Qué te gustaría hacer?", [
+        { id: "promotion-order", label: "Ver gas y agua", value: "explore-products" },
+        { id: "promotion-home", label: "Volver al inicio", value: "home" },
       ]));
       return;
     case "advisor-reason":
       chat.addMessage({ author: "assistant", type: "choice-list", text: "¿Sobre qué necesitas orientación?", choices: [
-        { id: "advisor-product", title: "Un producto", description: "Características o variantes", value: "product" },
-        { id: "advisor-selection", title: "Mi selección", description: "Cantidades o productos guardados", value: "selection" },
-        { id: "advisor-order", title: "Un pedido", description: "La consulta real no está disponible en la demo", value: "order" },
+        { id: "advisor-product", title: "Gas o agua", description: "Presentaciones y precios", value: "product" },
+        { id: "advisor-selection", title: "Mi pedido", description: "Productos y cantidades", value: "selection" },
+        { id: "advisor-order", title: "Seguimiento", description: "El estado real no está disponible en la demo", value: "order" },
       ] });
       return;
     case "advisor-topic":
       chat.addMessage(quickReplies("Elige el tema que mejor describe tu consulta.", state.reason === "product" ? [
         { id: "advisor-features", label: "Características", value: "features" },
-        { id: "advisor-variants", label: "Tallas y variantes", value: "variants" },
+        { id: "advisor-variants", label: "Presentaciones", value: "variants" },
       ] : state.reason === "selection" ? [
         { id: "advisor-quantities", label: "Modificar cantidades", value: "quantities" },
         { id: "advisor-review", label: "Revisar mi selección", value: "review" },
@@ -346,11 +318,11 @@ function renderJourney(chat: KromaChat, state: JourneyState, onProductDetail?: (
       return;
     case "products": {
       const products = productsByCategory[state.categoryId].map(getDemoProduct).filter((product): product is ChatProduct => Boolean(product));
-      const prompt = state.categoryId === "clothing"
-        ? "Estos son los productos de ropa. Selecciona uno para conocer sus características."
-        : state.categoryId === "accessories"
-          ? "Este es un accesorio de ejemplo. Selecciónalo para ver sus características."
-          : "Explora los productos ficticios disponibles en esta demostración.";
+      const prompt = state.categoryId === "gas"
+          ? "Elige una opción de gas y revisa las condiciones de canje o envase."
+        : state.categoryId === "water"
+          ? "Elige la presentación de agua y confirma envase y delivery con el proveedor."
+          : "Elige gas o agua para ver sus presentaciones.";
       chat.addMessage({ author: "assistant", type: "product-list", text: prompt, products, productActionLabel: "Ver producto" });
       const replies: ChatOption[] = state.cart.length
         ? [
@@ -499,13 +471,13 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
     const detail = (event as CustomEvent<ChatActionDetail>).detail;
     switch (detail.control) {
       case "journey-menu":
-        if (detail.value === "browse-products") transition({ type: "explore-products" });
-        else if (detail.value === "search-product") transition({ type: "search-products" });
+        if (detail.value === "place-order") transition({ type: "explore-products" });
+        else if (detail.value === "promotions") transition({ type: "show-promotions" });
         else if (detail.value === "order-status") transition({ type: "show-order-help" });
         else if (detail.value === "advisor") transition({ type: "start-advisor" });
         break;
       case "category-picker":
-        if (detail.value === "all" || detail.value === "clothing" || detail.value === "accessories") transition({ type: "choose-category", categoryId: detail.value });
+        if (detail.value === "all" || detail.value === "gas" || detail.value === "water") transition({ type: "choose-category", categoryId: detail.value });
         break;
       case "product-card":
       case "product-list":
@@ -604,6 +576,10 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
       case "explore-products":
         transition({ type: "explore-products" });
         break;
+      case "category-gas":
+      case "category-water":
+        transition({ type: "choose-category", categoryId: detail.value.slice("category-".length) as DemoCategoryId });
+        break;
       default:
         if (state.step === "advisor-reason" && ["product", "selection", "order"].includes(detail.value)) {
           transition({ type: "advisor-reason", reason: detail.value });
@@ -635,7 +611,7 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
       if (revision !== pendingReply) return;
       chat.setTyping(false);
       console.info("[kroma-chat demo] La escritura libre no está conectada a un asistente en esta demostración. Usa las opciones guiadas para explorar el catálogo de ejemplo.");
-      const replies: ChatOption[] = [{ id: "browse", label: "Explorar categorías", value: "explore-products" }];
+      const replies: ChatOption[] = [{ id: "browse", label: "Ver gas y agua", value: "explore-products" }];
       if (state.cart.length) replies.push({ id: "cart", label: `Ver mi selección (${state.cart.length})`, value: "view-cart" });
       chat.addMessage(quickReplies("¿Qué prefieres hacer?", replies));
     }, 420);
@@ -650,7 +626,7 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
 function reduceJourney(state: JourneyState, event: JourneyEvent): JourneyState {
   switch (event.type) {
     case "explore-products":
-      return ["welcome", "search-options", "search-query", "search-results", "order-help", "after-add", "cart", "customer-information", "advisor-reason", "advisor-topic", "advisor-follow-up", "advisor-note-received"].includes(state.step)
+      return ["welcome", "search-options", "search-query", "search-results", "order-help", "promotions", "after-add", "cart", "customer-information", "advisor-reason", "advisor-topic", "advisor-follow-up", "advisor-note-received"].includes(state.step)
         ? { step: "categories", cart: state.cart }
         : state;
     case "search-products":
@@ -663,6 +639,8 @@ function reduceJourney(state: JourneyState, event: JourneyEvent): JourneyState {
         : state;
     case "show-order-help":
       return state.step === "welcome" ? { step: "order-help", cart: state.cart } : state;
+    case "show-promotions":
+      return state.step === "welcome" ? { step: "promotions", cart: state.cart } : state;
     case "start-advisor":
       return ["welcome", "cart", "after-add"].includes(state.step) ? { step: "advisor-reason", cart: state.cart } : state;
     case "advisor-reason":
@@ -678,7 +656,7 @@ function reduceJourney(state: JourneyState, event: JourneyEvent): JourneyState {
     case "home":
       return { step: "welcome", cart: state.cart };
     case "choose-category":
-      return state.step === "categories" && demoCategories.some((category) => category.id === event.categoryId)
+      return ["categories", "search-options", "search-query"].includes(state.step) && demoCategories.some((category) => category.id === event.categoryId)
         ? { step: "products", cart: state.cart, categoryId: event.categoryId }
         : state;
     case "choose-product": {
@@ -689,7 +667,7 @@ function reduceJourney(state: JourneyState, event: JourneyEvent): JourneyState {
       if (!product) return state;
       const categoryId = state.step === "products"
         ? state.categoryId
-        : productsByCategory.clothing.includes(product.id) ? "clothing" : productsByCategory.accessories.includes(product.id) ? "accessories" : "all";
+        : productsByCategory.gas.includes(product.id) ? "gas" : productsByCategory.water.includes(product.id) ? "water" : "all";
       return { step: "product-detail", cart: state.cart, categoryId, productId: product.id, quantity: 1 };
     }
     case "choose-variant": {

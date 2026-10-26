@@ -23,6 +23,7 @@ const IDLE_STATUS: SpeechOutputStatus = { state: "idle", messageId: null, messag
 /** Handles explicit, per-message browser speech playback and its lifecycle. */
 export class SpeechOutputController {
   private readonly listeners = new Set<SpeechOutputListener>();
+  private readonly automaticQueue: Array<{ messageId: string; text: string }> = [];
   private currentStatus: SpeechOutputStatus;
   private utteranceSequence = 0;
   private destroyed = false;
@@ -52,6 +53,7 @@ export class SpeechOutputController {
 
   toggle(messageId: string, text: string) {
     if (this.destroyed || !this.supported || !text.trim()) return false;
+    this.automaticQueue.length = 0;
     if (this.currentStatus.state === "speaking" && this.currentStatus.messageId === messageId) {
       this.stop();
       return true;
@@ -87,6 +89,7 @@ export class SpeechOutputController {
   }
 
   stop() {
+    this.automaticQueue.length = 0;
     if (this.currentStatus.state !== "speaking") return false;
     this.cancelCurrentUtterance();
     this.publish(IDLE_STATUS);
@@ -96,8 +99,47 @@ export class SpeechOutputController {
   destroy() {
     if (this.destroyed) return;
     this.destroyed = true;
+    this.automaticQueue.length = 0;
     this.cancelCurrentUtterance();
     this.listeners.clear();
+  }
+
+  speakAutomatically(messageId: string, text: string) {
+    if (this.destroyed || !this.supported || !text.trim()) return false;
+    this.automaticQueue.push({ messageId, text: text.trim() });
+    if (this.currentStatus.state !== "speaking") this.playNextAutomatic();
+    return true;
+  }
+
+  private playNextAutomatic() {
+    const next = this.automaticQueue.shift();
+    if (!next || this.destroyed || !this.supported) return;
+    const sequence = ++this.utteranceSequence;
+    const utterance = this.createUtterance!(next.text);
+    utterance.lang = "es-PE";
+    utterance.voice = this.selectSpanishVoice(this.synthesis!.getVoices());
+    this.publish({ state: "speaking", messageId: next.messageId, message: "" });
+    utterance.onstart = () => {
+      if (!this.destroyed && this.utteranceSequence === sequence && this.currentStatus.messageId === next.messageId) {
+        this.publish({ state: "speaking", messageId: next.messageId, message: "" });
+      }
+    };
+    utterance.onend = () => {
+      if (this.destroyed || this.utteranceSequence !== sequence || this.currentStatus.messageId !== next.messageId) return;
+      this.publish(IDLE_STATUS);
+      this.playNextAutomatic();
+    };
+    utterance.onerror = () => {
+      if (this.destroyed || this.utteranceSequence !== sequence || this.currentStatus.messageId !== next.messageId) return;
+      this.publish({ state: "error", messageId: next.messageId, message: "No se pudo reproducir este mensaje." });
+      this.playNextAutomatic();
+    };
+    try {
+      this.synthesis!.speak(utterance);
+    } catch {
+      this.publish({ state: "error", messageId: next.messageId, message: "No se pudo iniciar la lectura en voz alta." });
+      this.playNextAutomatic();
+    }
   }
 
   private cancelCurrentUtterance() {

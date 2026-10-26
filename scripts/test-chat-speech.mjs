@@ -112,6 +112,7 @@ try {
   const display = chat.locator(".kroma-chat__virtual-display");
   const keyboard = chat.locator(".hg-theme-default");
   const speechButton = chat.locator(".kroma-chat__speech-button");
+  const autoReadToggle = chat.locator(".kroma-chat__speech-toggle");
   const speechSlash = speechButton.locator("[data-speech-slash]");
   const botMessage = chat.locator('li[data-author="assistant"]').first();
   const playbackButton = botMessage.locator(".kroma-chat__speak-button");
@@ -121,8 +122,14 @@ try {
   assert.equal(await chat.locator(".kroma-chat__send").count(), 0, "composer has no separate send button");
   assert.equal(await chat.locator(".kroma-chat__speech-status").count(), 0, "the composer does not create a speech-message element");
   assert.equal(await speechButton.getAttribute("title"), "Dictar mensaje por voz", "browser service details are not exposed as a microphone tooltip");
+  assert.equal(await autoReadToggle.isVisible(), true, "supported browsers show the automatic speech toggle in the header");
+  assert.equal(await autoReadToggle.getAttribute("aria-pressed"), "true", "automatic reading starts enabled");
   const enterKey = keyboard.locator('button[data-skbtn="{enter}"]');
   assert.equal(await playbackButton.count(), 1, "assistant text responses have their own playback button");
+  const welcomeSpeechText = "¡Hola! ¿Qué necesitas hoy? Puedes elegir una de estas opciones: pedir gas o agua, ver promociones y combos, seguir mi pedido o hablar con un asesor.";
+  await page.waitForFunction((text) => window.__fakeSpeechSynthesis.current?.text === text, welcomeSpeechText);
+  assert.equal(await page.evaluate(() => window.__fakeSpeechSynthesis.current?.text), welcomeSpeechText, "automatic reading includes the assistant prompt and its available buttons");
+  await page.evaluate(() => window.__fakeSpeechSynthesis.finish());
   assert.equal(await chat.locator('li[data-author="user"] .kroma-chat__speak-button').count(), 0, "user messages do not get a playback button");
   const bubbleBounds = await botMessage.locator(".kroma-chat__bubble").boundingBox();
   const playbackBounds = await playbackButton.boundingBox();
@@ -134,7 +141,7 @@ try {
     text: window.__fakeSpeechSynthesis.current?.text,
     lang: window.__fakeSpeechSynthesis.current?.lang,
   }));
-  assert.equal(spokenMessage.text, await botMessage.locator(".kroma-chat__text").innerText(), "playback reads only the selected assistant response");
+  assert.equal(spokenMessage.text, welcomeSpeechText, "manual playback also reads the assistant prompt and available buttons");
   assert.equal(spokenMessage.lang, "es-PE", "playback uses Peruvian Spanish");
   await page.evaluate(() => window.__fakeSpeechSynthesis.finish());
   await page.waitForFunction(() => document.querySelector(".kroma-chat__speak-button")?.dataset.speechState === "idle");
@@ -265,12 +272,54 @@ try {
   ]));
   assert.equal(await display.innerText(), "", "late recognition results cannot refill the composer after send clears it");
 
+  await autoReadToggle.click();
+  assert.equal(await autoReadToggle.getAttribute("aria-pressed"), "false", "the header toggle disables automatic reading");
+  await chat.evaluate((element) => element.addMessage({ author: "assistant", type: "text", text: "Respuesta que no debe leerse" }));
+  await page.waitForTimeout(50);
+  assert.equal(await page.evaluate(() => window.__fakeSpeechSynthesis.current), null, "new assistant messages stay silent while automatic reading is disabled");
+  await autoReadToggle.click();
+  assert.equal(await autoReadToggle.getAttribute("aria-pressed"), "true", "the header toggle re-enables automatic reading");
+  await chat.evaluate((element) => {
+    element.addMessage({ author: "assistant", type: "text", text: "Primera respuesta automática" });
+    element.addMessage({ author: "assistant", type: "text", text: "Segunda respuesta automática" });
+  });
+  await page.waitForFunction(() => window.__fakeSpeechSynthesis.current?.text === "Primera respuesta automática");
+  await page.evaluate(() => window.__fakeSpeechSynthesis.finish());
+  await page.waitForFunction(() => window.__fakeSpeechSynthesis.current?.text === "Segunda respuesta automática");
+  await page.evaluate(() => window.__fakeSpeechSynthesis.finish());
+  await chat.evaluate((element) => element.addMessage({
+    author: "assistant",
+    type: "quick-replies",
+    text: "¿Cómo prefieres buscar?",
+    replies: [
+      { id: "categories", label: "Explorar categorías" },
+      { id: "all", label: "Ver productos disponibles" },
+      { id: "name", label: "Escribir el nombre" },
+    ],
+  }));
+  await page.waitForFunction(() => window.__fakeSpeechSynthesis.current?.text === "¿Cómo prefieres buscar? Puedes elegir una de estas opciones: explorar categorías, ver productos disponibles o escribir el nombre.");
+  await page.evaluate(() => window.__fakeSpeechSynthesis.finish());
+  await chat.evaluate((element) => element.addMessage({
+    author: "assistant",
+    type: "journey-menu",
+    text: "¿Qué necesitas hoy?",
+    items: [{ id: "place-order", label: "Pedir gas o agua" }],
+  }));
+  await page.waitForFunction(() => window.__fakeSpeechSynthesis.current?.text === "¿Qué necesitas hoy? Puedes elegir esta opción: pedir gas o agua.");
+  await page.evaluate(() => window.__fakeSpeechSynthesis.finish());
+  await chat.locator('li[data-message-type="journey-menu"]').last().locator(".kroma-chat__journey-item").click();
+  await page.waitForFunction(() => window.__fakeSpeechSynthesis.current?.text === "Elegiste la opción «Pedir gas o agua».");
+  await page.evaluate(() => window.__fakeSpeechSynthesis.finish());
+  await page.waitForFunction(() => window.__fakeSpeechSynthesis.current?.text === "¿Qué te gustaría pedir? Puedes elegir entre estas categorías: gas en balón o agua mineral.");
+  await page.evaluate(() => window.__fakeSpeechSynthesis.finish());
+
   await display.click();
   await page.keyboard.type("Borrador sin enviar");
   await page.reload();
   await page.waitForFunction(() => document.querySelector("kroma-chat")?.isConnected === true);
   const reloadedChat = page.locator("kroma-chat");
   const reloadedDisplay = reloadedChat.locator(".kroma-chat__virtual-display");
+  assert.equal(await reloadedChat.locator(".kroma-chat__speech-toggle").getAttribute("aria-pressed"), "true", "automatic reading resets to enabled after a page reload");
   assert.equal(await reloadedDisplay.innerText(), "Borrador sin enviar", "an unsent draft is restored after a page refresh");
   await reloadedDisplay.click();
   const reloadedSpeechButton = reloadedChat.locator(".kroma-chat__speech-button");
@@ -281,7 +330,7 @@ try {
   await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "idle");
   assert.equal(await page.evaluate(() => sessionStorage.getItem("kroma-chat-draft:kroma-chat-input-1")), null, "sending clears the persisted unsent draft");
   assert.deepEqual(errors, [], "dictation integration produces no browser errors");
-  console.log("Chat speech Playwright checks passed: Web Speech API insertion, permission-pending startup, interim/final replacement, playback and Enter submission.");
+  console.log("Chat speech Playwright checks passed: dictation permissions and insertion, automatic and manual speech playback, header toggle and Enter submission.");
 } finally {
   await browser?.close();
   server.kill();

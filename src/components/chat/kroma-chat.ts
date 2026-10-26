@@ -1,6 +1,7 @@
 import { ChatComposer, type ChatInteractionMode } from "./layout/chat-composer";
 import { ChatHeader, type ChatHeaderAction } from "./layout/chat-header";
 import { ChatMessageList } from "./layout/chat-message-list";
+import { getChatMessageSpeechText } from "./messages/speech-text";
 import { CHAT_EVENTS, emitKromaChatEvent } from "./core/chat.events";
 import type {
   ChatAction,
@@ -91,6 +92,7 @@ export class KromaChat extends HTMLElement {
   private composerDisabled = false;
   private interactionModeValue: ChatInteractionMode = "guided";
   private headerActions: ChatHeaderAction[] = [];
+  private autoReadEnabled = true;
   private header: ChatHeader | null = null;
   private messageList: ChatMessageList | null = null;
   private composer: ChatComposer | null = null;
@@ -145,7 +147,11 @@ export class KromaChat extends HTMLElement {
       avatar: this.getAttribute("avatar"),
       subtitle: this.getAttribute("subtitle"),
       status: this.status ?? this.getAttribute("status"),
+    }, (enabled) => {
+      this.autoReadEnabled = enabled;
+      if (!enabled) this.messageList?.stopSpeech();
     });
+    header.setSpeechToggleVisible(this.mode !== "kitchen");
     const messageList = new ChatMessageList({
       createMessageId: () => this.createMessageId(),
       consumedActions: this.consumedActions,
@@ -208,6 +214,10 @@ export class KromaChat extends HTMLElement {
     }
     this.history.push({ id, message: normalized });
     this.messageList?.addMessage(normalized, id);
+    if (this.mode !== "kitchen" && this.autoReadEnabled && normalized.author === "assistant") {
+      const speakableText = getChatMessageSpeechText(normalized);
+      if (speakableText) this.messageList?.speakAutomatically(id, speakableText);
+    }
     return id;
   }
 
@@ -265,6 +275,7 @@ export class KromaChat extends HTMLElement {
 
   private emitOptionSelect(detail: ChatOptionSelectEventDetail) {
     if (this.mode === "kitchen") return;
+    this.speakSelectionAcknowledgement(detail.messageId, detail.label);
     this.selectedOptions.set(detail.messageId, detail.optionId);
     emitKromaChatEvent(this, CHAT_EVENTS.optionSelect, detail);
   }
@@ -276,7 +287,13 @@ export class KromaChat extends HTMLElement {
 
   private emitAction(detail: ChatActionDetail, _userMessage?: string) {
     if (this.mode === "kitchen") return;
+    if (detail.control === "journey-menu") this.speakSelectionAcknowledgement(detail.messageId, detail.label);
     emitKromaChatEvent(this, CHAT_EVENTS.action, detail);
+  }
+
+  private speakSelectionAcknowledgement(messageId: string, label: string) {
+    if (!this.autoReadEnabled || !label.trim()) return;
+    this.messageList?.speakAutomatically(`${messageId}-selection`, `Elegiste la opción «${label}».`);
   }
 
   private emitQuantityChange(detail: ChatQuantityChangeDetail) {
@@ -317,6 +334,7 @@ export class KromaChat extends HTMLElement {
     });
   }
 }
+
 
 /** Backwards-compatible export for hosts using the former class name. */
 export { KromaChat as KromaChatElement };

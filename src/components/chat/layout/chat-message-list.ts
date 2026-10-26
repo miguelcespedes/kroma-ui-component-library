@@ -11,6 +11,7 @@ import { renderChatMessage } from "../core/chat.renderers";
 import type { ChatRendererHandlers } from "../core/chat.renderers";
 import { createTypingIndicator } from "../messages/typing-indicator";
 import { SpeechOutputController, type SpeechOutputStatus } from "../messages/speech-output-controller";
+import { getChatMessageSpeechText } from "../messages/speech-text";
 
 export type ChatMessageListCallbacks = {
   createMessageId: () => string;
@@ -104,7 +105,7 @@ export class ChatMessageList {
       onAction: (detail, userMessage) => this.emitAction(detail, userMessage),
       onRichAction: (id, action, userMessage) => this.emitRichAction(id, action, userMessage),
       onSpeak: this.speechOutput.supported
-        ? (id, text) => this.speechOutput.toggle(id, text)
+        ? (id) => this.speechOutput.toggle(id, getChatMessageSpeechText(message))
         : undefined,
       onOptionSelect: (selection, group, button) => this.selectOption(selection, group, button),
       onQuantityChange: this.callbacks.onQuantityChange,
@@ -117,6 +118,14 @@ export class ChatMessageList {
     this.emptyState.hidden = true;
     if (stick) this.scrollToMessage(item);
     return messageId;
+  }
+
+  speakAutomatically(messageId: string, text: string) {
+    return this.speechOutput.speakAutomatically(messageId, text);
+  }
+
+  stopSpeech() {
+    this.speechOutput.stop();
   }
 
   setTyping(active: boolean, label: string, messageId?: string) {

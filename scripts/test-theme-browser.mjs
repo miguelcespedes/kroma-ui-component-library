@@ -238,23 +238,16 @@ const runChatChecks = async (browserName, browser) => {
     element.addEventListener("kroma-chat-form-submit", (event) => element.__chatTestEvents.forms.push(event.detail));
   });
 
-  await chat.getByRole("button", { name: "Explorar productos" }).click();
+  await chat.getByRole("button", { name: "Pedir gas o agua" }).click();
   await page.waitForSelector("#chat .kroma-chat__category-picker");
   assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions[0])).control, "journey-menu");
-  await chat.locator(".kroma-chat__category").filter({ hasText: "Todos" }).click();
+  await chat.locator(".kroma-chat__category").filter({ hasText: "Gas en balón" }).click();
   await page.waitForSelector("#chat .kroma-chat__product-list");
   assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions[1])).control, "category-picker");
 
   await chat.locator(".kroma-chat__product-list .kroma-chat__product-card").first().click();
   await page.waitForSelector("#chat .kroma-chat__product-detail");
   assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions[2])).control, "product-list");
-  assert.equal(await chat.locator(".kroma-chat__product-detail .kroma-chat__variant-selector input").count(), 3, `${browserName}: product variants are rendered`);
-  await chat.getByLabel("Talla M").focus();
-  await chat.getByLabel("Talla M").press("Space");
-  assert.equal(await chat.getByLabel("Talla M").isChecked(), true, `${browserName}: keyboard can select a product variant`);
-  const variantEvent = await chat.evaluate((element) => element.__chatTestEvents.actions.at(-1));
-  assert.equal(variantEvent.control, "product-variant-selector");
-  assert.equal(variantEvent.data.variantId, "polo-size-m");
   await chat.locator(".kroma-chat__product-detail .kroma-chat__quantity-button").last().click();
   const quantityEvent = await chat.evaluate((element) => element.__chatTestEvents.quantities.at(-1));
   assert.equal(quantityEvent.quantity, 2, `${browserName}: QuantitySelector increments and emits its state`);
@@ -263,17 +256,18 @@ const runChatChecks = async (browserName, browser) => {
   const addEvent = await chat.evaluate((element) => element.__chatTestEvents.actions.at(-1));
   assert.equal(addEvent.actionId, "add-to-cart");
   assert.equal(addEvent.data.quantity, 2, `${browserName}: add action carries the selected quantity`);
-  assert.equal(addEvent.data.variantId, "polo-size-m", `${browserName}: add action carries the selected variant`);
+  assert.equal(addEvent.data.productId, "gas-refill-10kg", `${browserName}: add action carries the selected gas product`);
   await chat.getByRole("button", { name: "Seguir explorando" }).last().click();
   await page.waitForFunction(() => document.querySelectorAll("#chat .kroma-chat__product-list").length >= 2);
   await chat.locator(".kroma-chat__product-list").last().locator(".kroma-chat__product-card").nth(1).click();
-  await page.waitForFunction(() => [...document.querySelectorAll("#chat .kroma-chat__product-detail-title")].some((title) => title.textContent === "Casaca ligera"));
+  await page.waitForFunction(() => [...document.querySelectorAll("#chat .kroma-chat__product-detail-title")].some((title) => title.textContent === "Gas 10 kg con envase"));
   await chat.locator(".kroma-chat__product-add").last().click();
   await page.waitForFunction(() => [...document.querySelectorAll("#chat .kroma-chat__option")].some((button) => button.textContent?.startsWith("Revisar selección (2)")));
   await chat.getByRole("button", { name: "Revisar selección (2)" }).last().click();
   await page.waitForSelector("#chat .kroma-chat__cart-summary");
   assert.equal(await chat.locator(".kroma-chat__cart-item").count(), 2, `${browserName}: cart keeps multiple products`);
-  await chat.locator(".kroma-chat__cart-remove").first().click();
+  await chat.locator('.kroma-chat__cart-remove[data-action-id="remove-item"]').first().click();
+  assert.equal((await chat.evaluate((element) => element.__chatTestEvents.actions.at(-1))).actionId, "remove-item");
   await page.waitForFunction(() => {
     const summaries = document.querySelectorAll("#chat .kroma-chat__cart-summary");
     const latest = summaries[summaries.length - 1];
@@ -283,11 +277,12 @@ const runChatChecks = async (browserName, browser) => {
   await page.waitForSelector("#chat .kroma-chat__conversational-form");
   const customerInputs = chat.locator(".kroma-chat__form-input");
   assert.equal(await customerInputs.count(), 3, `${browserName}: customer form has the three requested fields`);
-  assert.equal(await chat.locator(".kroma-chat__form-fields").evaluate((form) => form.checkValidity()), false, `${browserName}: customer form validates required fields`);
+  assert.equal(await customerInputs.evaluateAll((inputs) => inputs.every((input) => input.required && !input.value)), true, `${browserName}: customer form marks all empty fields as required`);
+  await customerInputs.evaluateAll((inputs) => inputs.forEach((input) => { input.readOnly = false; }));
   await customerInputs.nth(0).fill("Miguel");
   await customerInputs.nth(1).fill("miguel@example.test");
   await customerInputs.nth(2).fill("Lima");
-  assert.equal(await chat.locator(".kroma-chat__form-fields").evaluate((form) => form.checkValidity()), true);
+  assert.equal(await customerInputs.evaluateAll((inputs) => inputs.every((input) => Boolean(input.value))), true);
   await chat.getByRole("button", { name: "Revisar solicitud" }).last().click();
   await page.waitForSelector("#chat .kroma-chat__order-review");
   assert.equal(await chat.locator(".kroma-chat__customer-details").innerText().then((text) => text.includes("Miguel")), true, `${browserName}: form values reach the in-memory review`);
@@ -303,12 +298,14 @@ const runChatChecks = async (browserName, browser) => {
   await chat.getByRole("button", { name: "Iniciar otra conversación" }).last().click();
   await page.waitForFunction(() => document.querySelectorAll("#chat .kroma-chat__journey-menu").length >= 2);
   assert.equal(await chat.locator(".kroma-chat__confirmation-title").count(), 1, `${browserName}: restart preserves the completed history`);
-  await chat.getByRole("button", { name: "Explorar productos" }).last().click();
+  await chat.getByRole("button", { name: "Ver promociones y combos" }).last().click();
+  await chat.getByText(/No hay un combo de gas y agua con precio y condiciones verificables/).waitFor();
+  await chat.getByRole("button", { name: "Ver gas y agua" }).last().click();
   await page.waitForFunction(() => document.querySelectorAll("#chat .kroma-chat__category-picker").length >= 2);
-  await chat.locator(".kroma-chat__category").filter({ hasText: "Accesorios" }).last().click();
+  await chat.locator(".kroma-chat__category").filter({ hasText: "Agua mineral" }).last().click();
   await page.waitForFunction(() => document.querySelectorAll("#chat .kroma-chat__product-list").length >= 3);
   await chat.locator(".kroma-chat__product-list").last().locator(".kroma-chat__product-card").click();
-  await page.waitForFunction(() => [...document.querySelectorAll("#chat .kroma-chat__product-detail-title")].some((title) => title.textContent === "Botella reutilizable"));
+  await page.waitForFunction(() => [...document.querySelectorAll("#chat .kroma-chat__product-detail-title")].some((title) => title.textContent === "Agua mineral 20 L"));
 
   await chat.evaluate((element) => element.addMessage({
     id: "chat-product-card-contract",
