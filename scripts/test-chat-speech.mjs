@@ -100,11 +100,13 @@ try {
   const display = chat.locator(".kroma-chat__virtual-display");
   const keyboard = chat.locator(".hg-theme-default");
   const speechButton = chat.locator(".kroma-chat__speech-button");
+  const speechSlash = speechButton.locator("[data-speech-slash]");
   const sendButton = chat.locator(".kroma-chat__send");
   const botMessage = chat.locator('li[data-author="assistant"]').first();
   const playbackButton = botMessage.locator(".kroma-chat__speak-button");
   assert.equal(await speechButton.isVisible(), true, "the microphone is available when the browser provides Web Speech API");
   assert.equal(await speechButton.isDisabled(), false);
+  assert.equal(await speechSlash.isVisible(), true, "idle dictation shows the muted microphone");
   assert.equal(await chat.locator(".kroma-chat__speech-status").count(), 0, "the composer does not create a speech-message element");
   assert.equal(await speechButton.getAttribute("title"), "Dictar mensaje por voz", "browser service details are not exposed as a microphone tooltip");
   assert.equal(await playbackButton.count(), 1, "assistant text responses have their own playback button");
@@ -141,6 +143,8 @@ try {
   await speechButton.click();
   await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "listening");
   assert.equal(await speechButton.getAttribute("aria-pressed"), "true");
+  assert.equal(await speechSlash.isVisible(), false, "the microphone is unmuted while listening");
+  assert.equal(await speechSlash.getAttribute("d"), "M4 20 20 4", "the slash follows the provided microphone-off reference");
   assert.equal(await keyboard.isHidden(), true, "dictation hides the virtual keyboard without clearing the draft");
   const recognitionSettings = await page.evaluate(() => ({
     lang: window.__FakeSpeechRecognition.lastInstance.lang,
@@ -165,6 +169,7 @@ try {
     window.__FakeSpeechRecognition.holdStop = false;
   });
   await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "idle");
+  assert.equal(await speechSlash.isVisible(), true, "the microphone returns to muted when dictation stops");
   await speechButton.click();
   await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "listening");
   await page.evaluate(() => window.__FakeSpeechRecognition.lastInstance.emitError("network"));
@@ -192,6 +197,19 @@ try {
   await sendButton.click();
   await page.waitForFunction(() => document.querySelector(".kroma-chat__virtual-display")?.innerText === "");
   assert.equal(await display.innerText(), "", "manual send submits and clears the edited draft");
+  await speechButton.click();
+  await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "listening");
+  await page.evaluate(() => window.__FakeSpeechRecognition.lastInstance.emitResults([
+    { transcript: "Texto dictado", isFinal: false },
+  ]));
+  assert.equal(await display.innerText(), "Texto dictado", "active dictation appears in the composer before sending");
+  const latestRecognition = await page.evaluateHandle(() => window.__FakeSpeechRecognition.lastInstance);
+  await sendButton.click();
+  await page.waitForFunction(() => document.querySelector(".kroma-chat__virtual-display")?.innerText === "");
+  await latestRecognition.evaluate((recognition) => recognition.emitResults([
+    { transcript: "resultado tardío", isFinal: true },
+  ]));
+  assert.equal(await display.innerText(), "", "late recognition results cannot refill the composer after send clears it");
   assert.deepEqual(errors, [], "dictation integration produces no browser errors");
   console.log("Chat speech Playwright checks passed: Web Speech API insertion, interim/final replacement, playback, keyboard editing and manual send.");
 } finally {

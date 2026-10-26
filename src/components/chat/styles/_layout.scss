@@ -183,6 +183,7 @@
     &[hidden] { display: none; }
 
     svg { width: var(--kroma-chat-icon-action-size); height: var(--kroma-chat-icon-action-size); }
+    [data-speech-slash] { display: initial; }
     &:hover:not(:disabled) { border-color: var(--kroma-chat-border-interactive); color: var(--kroma-chat-text-primary); }
     &:disabled { color: var(--kroma-chat-text-disabled); cursor: not-allowed; opacity: .7; }
     &[data-speech-state="listening"],
@@ -195,6 +196,8 @@
       svg { stroke-width: 2.2; }
     }
     &[data-speech-state="starting"] { border-color: var(--kroma-chat-state-focus); color: var(--kroma-chat-state-focus); }
+    &[data-speech-state="listening"] [data-speech-slash],
+    &[data-speech-state="stopping"] [data-speech-slash] { display: none; }
     &[data-speech-state="error"] { border-color: var(--kroma-chat-state-error); color: var(--kroma-chat-state-error); }
     &[data-speech-state="listening"]::after,
     &[data-speech-state="stopping"]::after {

@@ -125,6 +125,8 @@ export class ChatComposer {
       event.preventDefault();
       const message = this.currentValue().trim();
       if (!message || this.disabled) return;
+      this.speechInsertion = null;
+      this.speechInput.cancel();
       options.onSend(message);
       this.clear();
       this.setInteractionMode("guided");
@@ -351,7 +353,11 @@ export class ChatComposer {
     microphone.setAttribute("d", "M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z");
     const stand = document.createElementNS("http://www.w3.org/2000/svg", "path");
     stand.setAttribute("d", "M19 11a7 7 0 0 1-14 0m7 7v4m-4 0h8");
-    icon.append(microphone, stand);
+    const stopIndicator = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    stopIndicator.setAttribute("d", "M4 20 20 4");
+    stopIndicator.setAttribute("stroke-width", "2.4");
+    stopIndicator.dataset.speechSlash = "true";
+    icon.append(microphone, stand, stopIndicator);
     button.append(icon);
     button.addEventListener("click", () => this.toggleSpeechInput(), { signal: this.listeners.signal });
     return button;
