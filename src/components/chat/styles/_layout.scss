@@ -162,7 +162,7 @@
   &__virtual-display-caret { display: inline-block; width: 0; height: 1.2em; vertical-align: text-bottom; border-inline-start: 1.5px solid currentColor; animation: kroma-chat-virtual-caret 1s steps(2, start) infinite; }
   &__virtual-display:not([data-editing="true"]) &__virtual-display-caret { opacity: 0; animation: none; }
 
-  &__composer-actions { display: flex; min-width: 0; flex: 0 0 auto; align-items: center; gap: var(--kroma-chat-spacing-tight); }
+  &__composer-actions { display: flex; min-width: 0; flex: 0 0 auto; align-items: center; gap: .75rem; }
 
   &__speech-button {
     position: relative;

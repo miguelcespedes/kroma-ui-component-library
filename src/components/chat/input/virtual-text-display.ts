@@ -1,4 +1,5 @@
 export type VirtualTextDisplayCallbacks = {
+  onFocus: () => void;
   onCaretChange: (start: number, end: number) => void;
   onPhysicalKey: (event: KeyboardEvent) => void;
   onPhysicalKeyRelease: () => void;
@@ -30,6 +31,7 @@ export class VirtualTextDisplay {
     this.textLayer = document.createElement("span");
     this.textLayer.className = "kroma-chat__virtual-display-text";
     this.element.append(this.textLayer);
+    this.element.addEventListener("focus", () => this.callbacks.onFocus());
     this.element.addEventListener("click", (event) => {
       if (this.disabled) return;
       const cursor = this.cursorAtPoint(event.clientX, event.clientY);

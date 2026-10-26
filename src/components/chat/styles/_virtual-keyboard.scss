@@ -67,11 +67,23 @@
 .kroma-chat .hg-theme-default button[data-skbtn="{bksp}"],
 .kroma-chat .hg-theme-default button[data-skbtn="{numbers}"],
 .kroma-chat .hg-theme-default button[data-skbtn="{symbols}"],
-.kroma-chat .hg-theme-default button[data-skbtn="{abc}"],
-.kroma-chat .hg-theme-default button[data-skbtn="{enter}"] {
+.kroma-chat .hg-theme-default button[data-skbtn="{abc}"] {
   border-color: var(--kroma-chat-border-interactive);
   background: var(--kroma-chat-action-secondary-surface);
   color: var(--kroma-chat-action-secondary-content);
+}
+
+.kroma-chat .hg-theme-default button[data-skbtn="{enter}"] {
+  border-color: var(--kroma-chat-action-primary-surface);
+  background: var(--kroma-chat-action-primary-surface);
+  color: var(--kroma-chat-action-primary-content);
+}
+
+.kroma-chat .hg-theme-default button.hg-button[data-skbtn="{enter}"]:hover:not(:disabled),
+.kroma-chat .hg-theme-default button.hg-button[data-skbtn="{enter}"].hg-activeButton {
+  border-color: var(--kroma-chat-action-primary-hover);
+  background: var(--kroma-chat-action-primary-hover);
+  color: var(--kroma-chat-action-primary-hover-content);
 }
 
 .kroma-chat .hg-theme-default button[data-skbtn="{shift}"][aria-pressed="true"] {

@@ -38,6 +38,7 @@ export class ChatComposer {
   private readonly unsubscribeController: () => void;
   private readonly speechInput: SpeechInputController;
   private readonly speechUnsubscribers: Array<() => void> = [];
+  private readonly draftStorageKey: string;
   private keyboard: VirtualKeyboard | null = null;
   private keyboardTarget: HTMLInputElement | null = null;
   private readonly inputsWithPhysicalKeyHandlers = new WeakSet<HTMLInputElement>();
@@ -48,11 +49,15 @@ export class ChatComposer {
   private caretStart = 0;
   private caretEnd = 0;
   private speechInsertion: { value: string; start: number; end: number } | null = null;
-  private speechHidKeyboard = false;
+  private applyingSpeechTranscript = false;
 
   constructor(private readonly options: ChatComposerOptions) {
     this.disabled = Boolean(options.disabled);
     this.interactionMode = options.interactionMode || "guided";
+    this.draftStorageKey = `kroma-chat-draft:${options.id}`;
+    this.draftValue = this.readStoredDraft();
+    this.caretStart = this.draftValue.length;
+    this.caretEnd = this.draftValue.length;
     const showKeyboardShowcase = Boolean(options.showKeyboardShowcase);
     this.element = document.createElement("div");
     this.element.className = "kroma-chat__composer-area";
@@ -63,7 +68,9 @@ export class ChatComposer {
     this.composerField.className = "kroma-chat__composer-field";
     this.controller = new VirtualKeyboardController(false);
     const displayCallbacks: VirtualTextDisplayCallbacks = {
+      onFocus: () => this.stopSpeechForEditing(),
       onCaretChange: (start, end) => {
+        this.stopSpeechForEditing();
         if (this.keyboardTarget) return;
         if (this.interactionMode !== "free-text") this.setInteractionMode("free-text");
         this.keyboard?.setCaretPosition(start, end);
@@ -87,6 +94,7 @@ export class ChatComposer {
     this.form.append(this.composerField, this.actions);
 
     this.createKeyboard();
+    this.keyboard?.setInput(this.draftValue, this.caretStart, this.caretEnd);
     this.keyboardShowcase = showKeyboardShowcase ? this.createKeyboardShowcase() : null;
     this.keyboardDock = this.keyboard && !this.keyboardShowcase ? document.createElement("div") : null;
     if (this.keyboardDock) {
@@ -245,6 +253,7 @@ export class ChatComposer {
     this.caretEnd = 0;
     this.keyboard?.clear();
     this.display.update("");
+    this.persistDraft();
     this.setError(null);
     this.updateSendButton();
   }
@@ -267,6 +276,7 @@ export class ChatComposer {
       maxLength: COMPOSER_MAX_LENGTH,
       disabled: this.disabled,
       onChange: (value, start, end) => {
+        if (!this.applyingSpeechTranscript) this.stopSpeechForEditing();
         if (this.keyboardTarget) {
           this.keyboardTarget.value = value;
           this.setTargetSelection(this.keyboardTarget, start, end);
@@ -277,6 +287,7 @@ export class ChatComposer {
         this.caretStart = start;
         this.caretEnd = end;
         this.display.update(value, start, end);
+        this.persistDraft();
         this.updateSendButton();
       },
       onEnter: () => {
@@ -284,6 +295,7 @@ export class ChatComposer {
         else this.form.requestSubmit();
       },
     });
+    this.keyboard.element.addEventListener("pointerdown", () => this.stopSpeechForEditing(), { signal: this.listeners.signal });
   }
 
   private currentValue() {
@@ -372,7 +384,7 @@ export class ChatComposer {
     if (state === "stopping" || !this.speechInput.supported || this.disabled) return;
 
     this.captureSpeechInsertion();
-    if (this.speechInput.start()) this.keyboard?.setOpen(false);
+    if (this.speechInput.start()) this.keyboard?.setOpen(true);
     else this.speechInsertion = null;
   }
 
@@ -384,7 +396,6 @@ export class ChatComposer {
       start: Math.max(0, Math.min(caret.start, this.draftValue.length)),
       end: Math.max(0, Math.min(caret.end, this.draftValue.length)),
     };
-    this.speechHidKeyboard = this.controller.state.open;
   }
 
   private updateSpeechStatus(status: SpeechInputStatus) {
@@ -403,8 +414,6 @@ export class ChatComposer {
     if (status.state === "idle" || isError || status.state === "unsupported") {
       const returnFocusToComposer = status.state === "idle" && this.speechInsertion !== null;
       this.speechInsertion = null;
-      if (isError && this.speechHidKeyboard && this.interactionMode === "free-text") this.keyboard?.setOpen(true);
-      this.speechHidKeyboard = false;
       if (returnFocusToComposer && !this.disabled) this.display.element.focus({ preventScroll: true });
     }
   }
@@ -419,7 +428,35 @@ export class ChatComposer {
       result.transcript,
       COMPOSER_MAX_LENGTH,
     );
-    this.keyboard?.setInput(inserted.value, inserted.caretStart, inserted.caretEnd);
+    this.applyingSpeechTranscript = true;
+    try {
+      this.keyboard?.setInput(inserted.value, inserted.caretStart, inserted.caretEnd);
+    } finally {
+      this.applyingSpeechTranscript = false;
+    }
+  }
+
+  private stopSpeechForEditing() {
+    if (!["starting", "listening"].includes(this.speechInput.status.state)) return;
+    this.speechInsertion = null;
+    this.speechInput.stop();
+  }
+
+  private readStoredDraft() {
+    try {
+      return window.sessionStorage.getItem(this.draftStorageKey) || "";
+    } catch {
+      return "";
+    }
+  }
+
+  private persistDraft() {
+    try {
+      if (this.draftValue) window.sessionStorage.setItem(this.draftStorageKey, this.draftValue);
+      else window.sessionStorage.removeItem(this.draftStorageKey);
+    } catch {
+      // Draft persistence is best-effort when browser storage is unavailable.
+    }
   }
 
   private createKeyboardShowcase() {
@@ -479,6 +516,7 @@ export class ChatComposer {
     caption.className = "kroma-chat__keyboard-showcase-label";
     caption.textContent = label;
     const display = new VirtualTextDisplay(label, this.options.placeholder, {
+      onFocus: () => undefined,
       onCaretChange: () => undefined,
       onPhysicalKey: () => undefined,
       onPhysicalKeyRelease: () => undefined,

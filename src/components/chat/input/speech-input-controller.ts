@@ -27,6 +27,8 @@ export type SpeechRecognitionLike = {
   interimResults: boolean;
   maxAlternatives: number;
   onstart: (() => void) | null;
+  onspeechstart: (() => void) | null;
+  onspeechend: (() => void) | null;
   onend: (() => void) | null;
   onerror: ((event: { error: string }) => void) | null;
   onresult: ((event: { results: SpeechRecognitionResultListLike }) => void) | null;
@@ -52,6 +54,7 @@ type BrowserNavigator = Navigator & {
 export type BrowserFamily = "edge" | "brave" | "chrome" | "safari" | "other";
 
 const DEFAULT_STATUS: SpeechInputStatus = { state: "idle", message: "" };
+const SPEECH_SILENCE_TIMEOUT_MS = 1000;
 
 /** Owns Web Speech API lifecycle and exposes transcripts without coupling them to chat state. */
 export class SpeechInputController {
@@ -60,6 +63,8 @@ export class SpeechInputController {
   private recognition: SpeechRecognitionLike | null = null;
   private currentStatus: SpeechInputStatus;
   private destroyed = false;
+  private silenceTimer: ReturnType<typeof setTimeout> | null = null;
+  private pendingErrorMessage: string | null = null;
 
   constructor(private readonly factory = detectSpeechRecognitionFactory()) {
     this.currentStatus = factory
@@ -107,15 +112,28 @@ export class SpeechInputController {
     }
 
     recognition.lang = "es-PE";
-    recognition.continuous = detectBrowserFamily() === "edge";
+    recognition.continuous = true;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
+    this.pendingErrorMessage = null;
     this.recognition = recognition;
     this.publishStatus("starting", "Preparando el dictado…");
 
     recognition.onstart = () => {
       if (this.recognition !== recognition || this.destroyed) return;
       this.publishStatus("listening", "Escuchando. Puedes detener el dictado cuando quieras.");
+    };
+    recognition.onspeechstart = () => {
+      if (this.recognition !== recognition || this.destroyed) return;
+      this.clearSilenceTimer();
+    };
+    recognition.onspeechend = () => {
+      if (this.recognition !== recognition || this.destroyed) return;
+      this.clearSilenceTimer();
+      this.silenceTimer = setTimeout(() => {
+        this.silenceTimer = null;
+        if (this.recognition === recognition && this.currentStatus.state === "listening") this.stop();
+      }, SPEECH_SILENCE_TIMEOUT_MS);
     };
     recognition.onresult = (event) => {
       if (this.recognition !== recognition || this.destroyed) return;
@@ -136,12 +154,19 @@ export class SpeechInputController {
     };
     recognition.onerror = (event) => {
       if (this.recognition !== recognition || this.destroyed) return;
-      this.publishStatus("error", messageForSpeechError(event.error));
+      this.clearSilenceTimer();
+      this.pendingErrorMessage = messageForSpeechError(event.error);
     };
     recognition.onend = () => {
       if (this.recognition !== recognition || this.destroyed) return;
+      this.clearSilenceTimer();
       this.recognition = null;
-      if (this.currentStatus.state === "error") return;
+      if (this.pendingErrorMessage) {
+        const errorMessage = this.pendingErrorMessage;
+        this.pendingErrorMessage = null;
+        this.publishStatus("error", errorMessage);
+        return;
+      }
       if (this.currentStatus.state === "starting") {
         this.publishStatus("error", "El reconocimiento terminó antes de empezar. Puedes intentarlo de nuevo o escribir.");
         return;
@@ -162,12 +187,19 @@ export class SpeechInputController {
   stop() {
     if (!this.recognition || !["starting", "listening"].includes(this.currentStatus.state)) return false;
     const recognition = this.recognition;
+    this.clearSilenceTimer();
     this.publishStatus("stopping", "Deteniendo el dictado…");
     try {
       recognition.stop();
     } catch {
-      this.detachRecognition(recognition);
-      this.publishStatus("error", "No se pudo detener el dictado correctamente. Puedes seguir escribiendo.");
+      this.pendingErrorMessage = "No se pudo detener el dictado correctamente. Puedes seguir escribiendo.";
+      try {
+        recognition.abort();
+      } catch {
+        this.detachRecognition(recognition);
+        this.pendingErrorMessage = null;
+        this.publishStatus("error", "No se pudo detener el dictado correctamente. Puedes seguir escribiendo.");
+      }
       return false;
     }
     return true;
@@ -176,19 +208,28 @@ export class SpeechInputController {
   cancel() {
     const recognition = this.recognition;
     if (recognition) {
-      this.detachRecognition(recognition);
+      this.clearSilenceTimer();
+      this.pendingErrorMessage = null;
+      recognition.onstart = null;
+      recognition.onspeechstart = null;
+      recognition.onspeechend = null;
+      recognition.onerror = null;
+      recognition.onresult = null;
+      this.publishStatus("stopping", "Deteniendo el dictado…");
       try {
         recognition.abort();
       } catch {
         // The recognition may already have ended; cleanup is still complete.
+        this.detachRecognition(recognition);
+        this.publishStatus("idle", "");
       }
-    }
-    if (!this.destroyed && this.currentStatus.state !== "unsupported") this.publishStatus("idle", "");
+    } else if (!this.destroyed && this.currentStatus.state !== "unsupported") this.publishStatus("idle", "");
   }
 
   destroy() {
     if (this.destroyed) return;
     this.destroyed = true;
+    this.clearSilenceTimer();
     const recognition = this.recognition;
     if (recognition) {
       this.detachRecognition(recognition);
@@ -203,11 +244,20 @@ export class SpeechInputController {
   }
 
   private detachRecognition(recognition: SpeechRecognitionLike) {
+    this.clearSilenceTimer();
     if (this.recognition === recognition) this.recognition = null;
     recognition.onstart = null;
+    recognition.onspeechstart = null;
+    recognition.onspeechend = null;
     recognition.onend = null;
     recognition.onerror = null;
     recognition.onresult = null;
+  }
+
+  private clearSilenceTimer() {
+    if (this.silenceTimer === null) return;
+    clearTimeout(this.silenceTimer);
+    this.silenceTimer = null;
   }
 
   private publishStatus(state: SpeechInputState, message: string) {

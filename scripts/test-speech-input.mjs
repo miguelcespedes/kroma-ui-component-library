@@ -15,6 +15,8 @@ class FakeRecognition {
   interimResults = false;
   maxAlternatives = 3;
   onstart = null;
+  onspeechstart = null;
+  onspeechend = null;
   onend = null;
   onerror = null;
   onresult = null;
@@ -24,8 +26,10 @@ class FakeRecognition {
 
   start() { this.started = true; }
   stop() { this.stopped = true; }
-  abort() { this.aborted = true; }
+  abort() { this.aborted = true; this.onend?.(); }
   emitStart() { this.onstart?.(); }
+  emitSpeechStart() { this.onspeechstart?.(); }
+  emitSpeechEnd() { this.onspeechend?.(); }
   emitEnd() { this.onend?.(); }
   emitError(error) { this.onerror?.({ error }); }
   emitResults(results) {
@@ -46,7 +50,7 @@ assert.equal(controller.status.state, "idle");
 assert.equal(controller.start(), true);
 assert.equal(controller.status.state, "starting");
 assert.equal(recognition.lang, "es-PE");
-assert.equal(recognition.continuous, false);
+assert.equal(recognition.continuous, true);
 assert.equal(recognition.interimResults, true);
 assert.equal(recognition.maxAlternatives, 1);
 recognition.emitStart();
@@ -68,24 +72,35 @@ assert.equal(controller.status.state, "idle");
 
 controller.start();
 recognition.emitStart();
+const silenceEndedRecognition = recognition;
+silenceEndedRecognition.emitSpeechEnd();
+assert.equal(controller.status.state, "listening", "speech-end starts the silence threshold without immediately muting");
+await new Promise((resolve) => setTimeout(resolve, 1050));
+assert.equal(controller.status.state, "stopping", "one second of silence requests recognition to stop");
+assert.equal(silenceEndedRecognition.stopped, true);
+silenceEndedRecognition.emitEnd();
+  assert.equal(controller.status.state, "idle", "recognition end confirms the microphone is muted");
+
+controller.start();
+recognition.emitStart();
 recognition.emitError("not-allowed");
-assert.equal(controller.status.state, "error");
-assert.match(controller.status.message, /permiso/i, "permission denial has an accessible explanation");
+assert.equal(controller.status.state, "listening", "an error does not mute the icon before recognition ends");
 recognition.emitEnd();
-assert.equal(controller.status.state, "error", "end after an error does not erase the error status");
+assert.equal(controller.status.state, "error");
+assert.match(controller.status.message, /permiso/i, "permission denial has an accessible explanation after shutdown");
 
 controller.start();
 recognition.emitError("audio-capture");
-assert.match(controller.status.message, /micrófono/i, "missing audio capture device is explained");
 recognition.emitEnd();
+assert.match(controller.status.message, /micrófono/i, "missing audio capture device is explained");
 controller.start();
 recognition.emitError("network");
-assert.match(controller.status.message, /conexión/i, "network errors are explained");
 recognition.emitEnd();
+assert.match(controller.status.message, /conexión/i, "network errors are explained");
 controller.start();
 recognition.emitError("no-speech");
-assert.match(controller.status.message, /voz/i, "silence is explained without interrupting the chat");
 recognition.emitEnd();
+assert.match(controller.status.message, /voz/i, "silence is explained without interrupting the chat");
 
 controller.start();
 const cancelled = recognition;
