@@ -162,7 +162,7 @@
   &__virtual-display-caret { display: inline-block; width: 0; height: 1.2em; vertical-align: text-bottom; border-inline-start: 1.5px solid currentColor; animation: kroma-chat-virtual-caret 1s steps(2, start) infinite; }
   &__virtual-display:not([data-editing="true"]) &__virtual-display-caret { opacity: 0; animation: none; }
 
-  &__composer-actions { display: flex; min-width: 0; flex: 0 0 auto; align-items: center; gap: .75rem; }
+  &__composer-actions { display: flex; min-width: 0; flex: 0 0 auto; align-items: center; }
 
   &__speech-button {
     position: relative;
@@ -204,23 +204,5 @@
   &__composer-area,
   &__composer,
   &__virtual-display { max-width: 100%; }
-
-  &__send {
-    display: grid;
-    width: 2.75rem;
-    height: 2.75rem;
-    flex: 0 0 auto;
-    place-items: center;
-    border: 0;
-    border-radius: 50%;
-    background: var(--kroma-chat-action-primary-surface);
-    color: var(--kroma-chat-action-primary-content);
-    cursor: pointer;
-    transition: background-color var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard), opacity var(--kroma-chat-motion-fast) var(--kroma-chat-motion-standard);
-
-    svg { width: var(--kroma-chat-icon-action-size); height: var(--kroma-chat-icon-action-size); fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
-    &:hover:not(:disabled) { background: var(--kroma-chat-action-primary-hover); color: var(--kroma-chat-action-primary-hover-content); }
-    &:disabled { background: var(--kroma-chat-action-primary-disabled); color: var(--kroma-chat-action-primary-disabled-content); cursor: not-allowed; }
-  }
 
 }

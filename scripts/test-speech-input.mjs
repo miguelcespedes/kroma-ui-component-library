@@ -126,6 +126,7 @@ assert.equal(unsupported.start(), false);
 unsupported.destroy();
 assert.equal(detectSpeechRecognitionFactory({ isSecureContext: false, SpeechRecognition: FakeRecognition }), null, "recognition is not exposed outside secure browser contexts");
 assert.equal(typeof detectSpeechRecognitionFactory({ isSecureContext: true, webkitSpeechRecognition: FakeRecognition }), "function", "webkit-prefixed browser capability is detected without user-agent sniffing");
+assert.equal(detectSpeechRecognitionFactory({ isSecureContext: true, navigator: { userAgent: "Mozilla/5.0 Chrome/130.0.0.0", brave: {} }, SpeechRecognition: FakeRecognition }), null, "Brave hides dictation even when it exposes the Chromium speech API");
 assert.equal(detectBrowserFamily({ navigator: { userAgent: "Mozilla/5.0 Edg/130.0.0.0" } }), "edge", "Edge desktop is detected for its recognition configuration");
 assert.equal(detectBrowserFamily({ navigator: { userAgent: "Mozilla/5.0 EdgA/130.0.0.0" } }), "edge", "Edge Android is detected for its recognition configuration");
 assert.equal(detectBrowserFamily({ navigator: { userAgent: "Mozilla/5.0 Chrome/130.0.0.0", userAgentData: { brands: [{ brand: "Microsoft Edge" }] } } }), "edge", "Edge is detected through User-Agent Client Hints where available");

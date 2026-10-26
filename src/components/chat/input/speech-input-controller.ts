@@ -268,6 +268,7 @@ export class SpeechInputController {
 
 export function detectSpeechRecognitionFactory(scope: Window | null = typeof window === "undefined" ? null : window) {
   if (!scope || !scope.isSecureContext) return null;
+  if (scope.navigator && detectBrowserFamily(scope) === "brave") return null;
   const speechWindow = scope as SpeechRecognitionWindow;
   const Recognition = speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
   return Recognition ? () => new Recognition() : null;

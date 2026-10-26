@@ -11,7 +11,7 @@ function routeChatPage(server) {
     if (!request.url) return next();
     const url = new URL(request.url, "http://localhost");
     const pathname = url.pathname.replace(/\/$/, "");
-    if (pathname === "/chat" || pathname.endsWith("/chat")) {
+    if (pathname === "/chat" || pathname.endsWith("/chat") || pathname === "/kroma-chat" || pathname.endsWith("/kroma-chat")) {
       if (!url.pathname.endsWith("/")) {
         response.statusCode = 308;
         response.setHeader("Location", `${pathname}/${url.search}`);
@@ -34,7 +34,7 @@ export default defineConfig(({ mode }) => ({
     cssCodeSplit: false,
     assetsDir: ".",
     rollupOptions: {
-      input: ["src/cheatsheet/index.html", "src/cheatsheet/chat/index.html"],
+      input: ["src/cheatsheet/index.html", "src/cheatsheet/chat/index.html", "src/cheatsheet/kroma-chat/index.html"],
       output: {
         entryFileNames: mode === "min" ? "main.min.js" : "main.js",
         assetFileNames: (assetInfo) => {

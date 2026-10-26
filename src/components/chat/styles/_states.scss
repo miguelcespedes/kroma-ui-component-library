@@ -13,7 +13,6 @@
   &__cart-remove:focus-visible,
   &__speech-button:focus-visible,
   &__speak-button:focus-visible,
-  &__send:focus-visible { outline: 2px solid var(--kroma-chat-state-focus); outline-offset: 2px; }
 
   .kroma-chat__virtual-display:focus-visible { outline: none; outline-offset: 0; box-shadow: none; }
   &__message[data-controls-disabled="true"] :where(.kroma-chat__journey-item, .kroma-chat__category, .kroma-chat__cart-remove, .kroma-chat__rich-action):disabled { color: var(--kroma-chat-text-secondary); opacity: .9; }

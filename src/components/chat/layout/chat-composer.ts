@@ -11,7 +11,6 @@ export type ChatComposerOptions = {
   id: string;
   inputLabel: string;
   placeholder: string;
-  sendLabel: string;
   disabled?: boolean;
   showKeyboardShowcase?: boolean;
   interactionMode?: ChatInteractionMode;
@@ -24,7 +23,6 @@ export class ChatComposer {
   readonly element: HTMLDivElement;
   readonly form: HTMLFormElement;
   readonly display: VirtualTextDisplay;
-  readonly sendButton: HTMLButtonElement;
   readonly speechButton: HTMLButtonElement;
   readonly errorMessage: HTMLParagraphElement;
   readonly controller: VirtualKeyboardController;
@@ -80,6 +78,7 @@ export class ChatComposer {
       onPhysicalKeyRelease: () => this.keyboard?.restoreCaretAfterPhysicalKey(),
     };
     this.display = new VirtualTextDisplay(options.inputLabel, "", displayCallbacks);
+    this.display.element.id = options.id;
     this.display.setDisabled(this.disabled);
     this.display.update(this.draftValue);
     this.display.setVisible(true);
@@ -88,8 +87,7 @@ export class ChatComposer {
     this.actions.className = "kroma-chat__composer-actions";
     this.speechInput = new SpeechInputController();
     this.speechButton = this.createSpeechButton();
-    this.sendButton = this.createSendButton(options.sendLabel);
-    this.actions.append(this.speechButton, this.sendButton);
+    this.actions.append(this.speechButton);
     this.composerField.append(this.display.element);
     this.form.append(this.composerField, this.actions);
 
@@ -118,9 +116,6 @@ export class ChatComposer {
       if (this.keyboard?.element.contains(target) || this.keyboardShowcase?.contains(target)) return;
       if (this.keyboardTarget?.contains(target)) return;
       if (this.speechButton.contains(target)) return;
-      // Keep the submit target stable until its click is dispatched. Closing
-      // the dock on pointerdown can reflow the composer before pointerup.
-      if (this.sendButton.contains(target)) return;
       if (this.keyboardTarget) {
         this.setKeyboardTarget(null);
         return;
@@ -140,14 +135,14 @@ export class ChatComposer {
       this.setInteractionMode("guided");
     }, { signal });
     this.unsubscribeController = this.controller.subscribe(() => {
-      this.updateSendButton();
+      this.updateComposerControls();
       this.updateShowcaseControls();
       this.updatePresentation();
     });
     this.speechUnsubscribers.push(this.speechInput.subscribeStatus((status) => this.updateSpeechStatus(status)));
     this.speechUnsubscribers.push(this.speechInput.subscribeResults((result) => this.applySpeechTranscript(result)));
     this.updatePresentation();
-    this.updateSendButton();
+    this.updateComposerControls();
   }
 
   setDisabled(disabled: boolean) {
@@ -158,7 +153,7 @@ export class ChatComposer {
       this.setKeyboardTarget(null);
       this.speechInput.cancel();
     }
-    this.updateSendButton();
+    this.updateComposerControls();
     this.updatePresentation();
   }
 
@@ -166,7 +161,7 @@ export class ChatComposer {
     return this.interactionMode;
   }
 
-  setInteractionMode(mode: ChatInteractionMode) {
+  setInteractionMode(mode: ChatInteractionMode, focusDisplay = true) {
     if (this.interactionMode === mode) return;
     if (this.keyboardTarget) this.setKeyboardTarget(null);
     this.interactionMode = mode;
@@ -177,9 +172,9 @@ export class ChatComposer {
       this.controller.setOpen(false);
     }
     this.updatePresentation();
-    this.updateSendButton();
+    this.updateComposerControls();
     this.options.onInteractionModeChange?.(mode);
-    if (mode === "free-text" && !this.disabled) this.display.element.focus();
+    if (focusDisplay && mode === "free-text" && !this.disabled) this.display.element.focus();
   }
 
   setKeyboardTarget(target: HTMLInputElement | null) {
@@ -204,7 +199,7 @@ export class ChatComposer {
       this.controller.setOpen(false);
     }
     this.updatePresentation();
-    this.updateSendButton();
+    this.updateComposerControls();
   }
 
   private bindPhysicalKeyboard(target: HTMLInputElement) {
@@ -255,7 +250,7 @@ export class ChatComposer {
     this.display.update("");
     this.persistDraft();
     this.setError(null);
-    this.updateSendButton();
+    this.updateComposerControls();
   }
 
   destroy() {
@@ -288,7 +283,6 @@ export class ChatComposer {
         this.caretEnd = end;
         this.display.update(value, start, end);
         this.persistDraft();
-        this.updateSendButton();
       },
       onEnter: () => {
         if (this.keyboardTarget) this.keyboardTarget.form?.requestSubmit();
@@ -311,34 +305,13 @@ export class ChatComposer {
     this.display.setEditing(!guided && !externalInput);
     this.form.hidden = externalInput;
     this.speechButton.hidden = Boolean(this.keyboardShowcase) || externalInput || !this.speechInput.supported;
-    this.sendButton.hidden = Boolean(this.keyboardShowcase) || externalInput;
+    this.actions.hidden = this.speechButton.hidden;
     if (this.keyboardDock) this.keyboardDock.hidden = !this.controller.state.open;
     if (!virtualInput && !this.keyboardShowcase) this.controller.setOpen(false);
   }
 
-  private updateSendButton() {
-    this.sendButton.disabled = this.disabled || !this.currentValue().trim();
+  private updateComposerControls() {
     this.speechButton.disabled = this.disabled || !this.speechInput.supported || this.speechInput.status.state === "stopping";
-  }
-
-  private createSendButton(sendLabel: string) {
-    const button = document.createElement("button");
-    button.className = "kroma-chat__send";
-    button.type = "submit";
-    button.disabled = true;
-    const label = document.createElement("span");
-    label.className = "kroma-chat__sr-only";
-    label.textContent = sendLabel;
-    const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    icon.setAttribute("viewBox", "0 0 24 24");
-    icon.setAttribute("aria-hidden", "true");
-    icon.setAttribute("focusable", "false");
-    const outerPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    outerPath.setAttribute("d", "M12 19V5m-7 7 7-7 7 7");
-    icon.setAttribute("stroke-width", "2");
-    icon.append(outerPath);
-    button.append(label, icon);
-    return button;
   }
 
   private createSpeechButton() {
@@ -384,17 +357,20 @@ export class ChatComposer {
     if (state === "stopping" || !this.speechInput.supported || this.disabled) return;
 
     this.captureSpeechInsertion();
-    if (this.speechInput.start()) this.keyboard?.setOpen(true);
-    else this.speechInsertion = null;
+    if (this.interactionMode !== "free-text") this.setInteractionMode("free-text", false);
+    if (!this.speechInput.start()) {
+      this.speechInsertion = null;
+      return;
+    }
+    this.keyboard?.setOpen(true);
   }
 
   private captureSpeechInsertion() {
-    if (this.interactionMode !== "free-text") this.setInteractionMode("free-text");
-    const caret = this.keyboard?.getCaretRange() ?? { start: this.caretStart, end: this.caretEnd };
+    const end = this.draftValue.length;
     this.speechInsertion = {
       value: this.draftValue,
-      start: Math.max(0, Math.min(caret.start, this.draftValue.length)),
-      end: Math.max(0, Math.min(caret.end, this.draftValue.length)),
+      start: end,
+      end,
     };
   }
 
@@ -405,6 +381,7 @@ export class ChatComposer {
     this.speechButton.dataset.speechState = status.state;
     this.speechButton.hidden = !this.speechInput.supported
       || Boolean(this.keyboardShowcase) || this.keyboardTarget !== null;
+    this.actions.hidden = this.speechButton.hidden;
     this.speechButton.setAttribute("aria-pressed", String(active));
     this.speechButton.setAttribute("aria-label", active
       ? status.state === "stopping" ? "Deteniendo dictado por voz" : "Detener dictado por voz"

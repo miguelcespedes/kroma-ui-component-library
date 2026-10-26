@@ -634,7 +634,7 @@ function initializeCommerceJourneyDemo(chat: KromaChat) {
     window.setTimeout(() => {
       if (revision !== pendingReply) return;
       chat.setTyping(false);
-      chat.addMessage({ author: "system", type: "status", status: "neutral", text: "La escritura libre no está conectada a un asistente en esta demostración. Usa las opciones guiadas para explorar el catálogo de ejemplo." });
+      console.info("[kroma-chat demo] La escritura libre no está conectada a un asistente en esta demostración. Usa las opciones guiadas para explorar el catálogo de ejemplo.");
       const replies: ChatOption[] = [{ id: "browse", label: "Explorar categorías", value: "explore-products" }];
       if (state.cart.length) replies.push({ id: "cart", label: `Ver mi selección (${state.cart.length})`, value: "view-cart" });
       chat.addMessage(quickReplies("¿Qué prefieres hacer?", replies));

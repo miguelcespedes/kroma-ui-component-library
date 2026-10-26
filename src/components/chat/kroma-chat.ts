@@ -163,7 +163,6 @@ export class KromaChat extends HTMLElement {
       id: `kroma-chat-input-${this.instanceId}`,
       inputLabel: this.getAttribute("input-label") || "Write a message",
       placeholder: this.getAttribute("placeholder") || "Message…",
-      sendLabel: this.getAttribute("send-label") || "Send message",
       disabled: this.composerDisabled || this.mode === "kitchen",
       showKeyboardShowcase: this.mode === "kitchen",
       interactionMode: this.mode === "kitchen" ? "guided" : this.interactionModeValue,

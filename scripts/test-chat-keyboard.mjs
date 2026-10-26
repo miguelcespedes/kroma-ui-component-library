@@ -42,22 +42,17 @@ try {
   assert.equal(await key("{enter}").innerText(), "↵", "Enter key uses the return symbol rather than text");
   assert.equal(await key("{enter}").getAttribute("aria-label"), "Enviar mensaje", "Enter keeps its accessible action label");
   assert.equal(await chat.locator(".kroma-chat__composer-field").evaluate((element) => getComputedStyle(element).borderRadius), "24px", "text field uses a softly rounded shell");
-  assert.equal(await chat.locator(".kroma-chat__composer-field").evaluate((element) => element.contains(element.closest(".kroma-chat__send"))), false, "send button sits outside the text field");
+  assert.equal(await chat.locator(".kroma-chat__send").count(), 0, "composer omits a separate send button");
   assert.equal(await chat.locator(".kroma-chat__composer-field").evaluate((element) => element.closest(".kroma-chat__keyboard-dock")), null, "composer is structurally independent from the keyboard dock");
   assert.equal(await keyboard.evaluate((element) => element.parentElement?.classList.contains("kroma-chat__keyboard-dock")), true, "keyboard lives in its own bottom dock");
-  assert.equal(await chat.locator(".kroma-chat__send").evaluate((element) => getComputedStyle(element).borderRadius), "50%", "send button is circular");
-  assert.equal(await chat.locator(".kroma-chat__send").evaluate((element) => element.getBoundingClientRect().width), await chat.locator(".kroma-chat__send").evaluate((element) => element.getBoundingClientRect().height), "send button is a circle");
-  assert.ok(await chat.locator(".kroma-chat__composer-field").evaluate((element) => {
-    const fieldHeight = element.getBoundingClientRect().height;
-    const buttonHeight = element.closest(".kroma-chat__composer")?.querySelector(".kroma-chat__send")?.getBoundingClientRect().height ?? 0;
-    return fieldHeight >= 40 && fieldHeight <= buttonHeight;
-  }), "text field is compact and visually balanced with the send button");
-  assert.equal(await chat.locator(".kroma-chat__send").evaluate((element) => element.parentElement?.previousElementSibling?.classList.contains("kroma-chat__composer-field")), true, "send action sits in a sibling control to the right of the text field");
-  assert.ok(await chat.locator(".kroma-chat__send").evaluate((element) => {
-    const field = element.closest(".kroma-chat__composer")?.querySelector(".kroma-chat__composer-field");
-    return Boolean(field && element.getBoundingClientRect().left > field.getBoundingClientRect().right);
-  }), "send button is positioned to the right of the text field");
-  assert.equal(await chat.locator(".kroma-chat__send svg path").getAttribute("d"), "M12 19V5m-7 7 7-7 7 7", "send action uses a clean upward arrow icon");
+  assert.equal(await key("{enter}").evaluate((element) => getComputedStyle(element).backgroundColor), await key("{enter}").evaluate((element) => {
+    const probe = document.createElement("span");
+    probe.style.backgroundColor = getComputedStyle(element.closest(".kroma-chat")).getPropertyValue("--kroma-chat-action-primary-surface");
+    document.body.append(probe);
+    const color = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return color;
+  }), "Enter key uses the primary action color");
   await display.focus();
   await page.keyboard.type("d");
   assert.match(await display.innerText(), /d/, "physical keyboard input still reaches the composer");
@@ -99,11 +94,13 @@ try {
       await page.keyboard.press("Tab");
     }
     const tabStop = await page.evaluate(() => ({
-      isSendButton: document.activeElement?.matches(".kroma-chat__send"),
+      isKeyboardKey: document.activeElement?.matches(".hg-theme-default button.hg-button"),
+      key: document.activeElement?.getAttribute("data-skbtn"),
       outlineStyle: document.activeElement ? getComputedStyle(document.activeElement).outlineStyle : "none",
     }));
-    assert.equal(tabStop.isSendButton, true, "Tab advances from the textbox to the send button");
-    assert.equal(tabStop.outlineStyle, "solid", "other interactive controls retain their keyboard focus indicator");
+    assert.equal(tabStop.isKeyboardKey, true, "Tab advances from the microphone to the virtual keyboard");
+    assert.equal(tabStop.key, "q", "the keyboard's first key follows the microphone in the tab order");
+    assert.equal(tabStop.outlineStyle, "solid", "virtual keys retain their keyboard focus indicator");
     const unfocusedBorder = await composerArea.locator(".kroma-chat__composer-field").evaluate((element) => getComputedStyle(element).borderTopColor);
     await page.keyboard.press("Shift+Tab");
     if (microphoneEnabled) await page.keyboard.press("Shift+Tab");
@@ -342,15 +339,51 @@ try {
   assert.equal(sends, 1, "Enter sends the composed message");
   assert.equal(await display.innerText(), "", "sending clears the composer");
   await display.click();
-  await page.keyboard.type("send by click");
-  assert.equal(await keyboard.isVisible(), true, "typing opens the virtual keyboard before clicking Send");
+  await page.keyboard.type("send by Enter");
+  assert.equal(await keyboard.isVisible(), true, "typing opens the virtual keyboard before submitting with Enter");
   await chat.evaluate((element) => element.addEventListener("kroma-chat-send", () => {
     element.dataset.keyboardSendCount = String(Number(element.dataset.keyboardSendCount || 0) + 1);
   }));
-  await chat.locator(".kroma-chat__send").click();
-  assert.equal(await chat.getAttribute("data-keyboard-send-count"), "1", "clicking Send submits while the virtual keyboard is open");
-  assert.equal(await display.innerText(), "", "click submission clears the composer");
-  assert.equal(await keyboard.isHidden(), true, "successful submission closes the virtual keyboard");
+  await key("{enter}").click();
+  assert.equal(await chat.getAttribute("data-keyboard-send-count"), "1", "Enter submits while the virtual keyboard is open");
+  assert.equal(await display.innerText(), "", "Enter submission clears the composer");
+  assert.equal(await keyboard.isHidden(), true, "successful Enter submission closes the virtual keyboard");
+
+  const adaptivePage = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  await adaptivePage.addInitScript(() => {
+    localStorage.setItem("kroma-theme-mode", "dracula");
+    localStorage.setItem("kroma-color-mode", "light");
+    Object.defineProperty(navigator, "brave", { configurable: true, value: {} });
+    Object.defineProperty(window, "SpeechRecognition", { configurable: true, value: class {} });
+  });
+  await adaptivePage.goto(`${url}kroma-chat`);
+  await adaptivePage.waitForFunction(() => document.querySelector("kroma-chat")?.isConnected === true);
+  await adaptivePage.waitForFunction(() => document.documentElement.dataset.kromaTheme === "dracula"
+    && document.querySelector("#kroma-theme-stylesheet")?.media === "all");
+  const standaloneState = await adaptivePage.evaluate(() => {
+    const page = document.querySelector(".kroma-chat-page");
+    const chat = document.querySelector("kroma-chat");
+    return {
+      hasToolbar: Boolean(document.querySelector(".kroma-chat-lab__toolbar")),
+      hasVisibleThemeControls: [...document.querySelectorAll("[data-theme-selector], [data-bs-theme-value]")]
+        .some((control) => control.getClientRects().length > 0),
+      adaptive: page?.hasAttribute("data-chat-layout-adaptive"),
+      chatWidth: getComputedStyle(chat).width,
+      contrast: document.documentElement.dataset.bsTheme,
+      speechButtonHidden: chat.querySelector(".kroma-chat__speech-button")?.hidden,
+      composerFieldEnd: chat.querySelector(".kroma-chat__composer-field").getBoundingClientRect().right,
+      composerEnd: chat.querySelector(".kroma-chat__composer").getBoundingClientRect().right,
+    };
+  });
+  assert.equal(standaloneState.hasToolbar, false, "standalone route omits the customization toolbar");
+  assert.equal(standaloneState.hasVisibleThemeControls, false, "standalone route exposes no theme or contrast controls");
+  assert.equal(standaloneState.adaptive, true, "standalone route starts in adaptive layout");
+  assert.equal(standaloneState.chatWidth, "390px", "adaptive chat fills the viewport width");
+  assert.equal(standaloneState.contrast, "light", "standalone route restores saved contrast mode");
+  assert.equal(standaloneState.speechButtonHidden, true, "Brave does not show the unsupported microphone control");
+  assert.ok(Math.abs(standaloneState.composerEnd - standaloneState.composerFieldEnd) < 1, "composer field uses the full available width when no action buttons are visible");
+  await adaptivePage.close();
+
   assert.deepEqual(errors, [], "keyboard interactions produce no browser errors");
   console.log("Chat keyboard Playwright checks passed: 360/390/430px, light/dark popup surfaces, short/long/edge presses, pointer slide/cancel, excluded keys and input behavior.");
 } finally {

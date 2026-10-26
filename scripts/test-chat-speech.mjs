@@ -29,14 +29,21 @@ try {
   page.on("pageerror", (error) => errors.push(error.message));
   await page.addInitScript(() => {
     window.__speechWarnings = [];
+    window.__speechInfos = [];
     const originalWarn = console.warn.bind(console);
+    const originalInfo = console.info.bind(console);
     console.warn = (...args) => {
       window.__speechWarnings.push(args.map(String).join(" "));
       originalWarn(...args);
     };
+    console.info = (...args) => {
+      window.__speechInfos.push(args.map(String).join(" "));
+      originalInfo(...args);
+    };
     class FakeSpeechRecognition {
       static lastInstance;
       static holdStop = false;
+      static holdStart = false;
       lang = "";
       continuous = true;
       interimResults = false;
@@ -48,9 +55,10 @@ try {
       onerror = null;
       onresult = null;
       constructor() { FakeSpeechRecognition.lastInstance = this; }
-      start() { queueMicrotask(() => this.onstart?.()); }
+      start() { if (!FakeSpeechRecognition.holdStart) queueMicrotask(() => this.onstart?.()); }
       stop() { if (!FakeSpeechRecognition.holdStop) queueMicrotask(() => this.onend?.()); }
       abort() { this.onend?.(); }
+      emitStart() { this.onstart?.(); }
       emitSpeechStart() { this.onspeechstart?.(); }
       emitSpeechEnd() { this.onspeechend?.(); }
       emitEnd() { this.onend?.(); }
@@ -105,15 +113,12 @@ try {
   const keyboard = chat.locator(".hg-theme-default");
   const speechButton = chat.locator(".kroma-chat__speech-button");
   const speechSlash = speechButton.locator("[data-speech-slash]");
-  const sendButton = chat.locator(".kroma-chat__send");
   const botMessage = chat.locator('li[data-author="assistant"]').first();
   const playbackButton = botMessage.locator(".kroma-chat__speak-button");
   assert.equal(await speechButton.isVisible(), true, "the microphone is available when the browser provides Web Speech API");
   assert.equal(await speechButton.isDisabled(), false);
   assert.equal(await speechSlash.isVisible(), true, "idle dictation shows the muted microphone");
-  const microphoneBounds = await speechButton.boundingBox();
-  const sendBounds = await sendButton.boundingBox();
-  assert.ok(microphoneBounds && sendBounds && sendBounds.x - (microphoneBounds.x + microphoneBounds.width) >= 12, "microphone and send controls have a clear visual gap");
+  assert.equal(await chat.locator(".kroma-chat__send").count(), 0, "composer has no separate send button");
   assert.equal(await chat.locator(".kroma-chat__speech-status").count(), 0, "the composer does not create a speech-message element");
   assert.equal(await speechButton.getAttribute("title"), "Dictar mensaje por voz", "browser service details are not exposed as a microphone tooltip");
   const enterKey = keyboard.locator('button[data-skbtn="{enter}"]');
@@ -157,7 +162,14 @@ try {
   } });
   assert.equal(await keyboard.isVisible(), true, "the virtual keyboard is available before dictation starts");
   assert.equal(await display.innerText(), "Tengo una consulta", "starting dictation does not change the existing draft");
+  await page.evaluate(() => { window.__FakeSpeechRecognition.holdStart = true; });
   await speechButton.click();
+  await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "starting");
+  assert.equal(await display.innerText(), "Tengo una consulta", "the draft remains intact while the browser permission prompt is pending");
+  await page.evaluate(() => {
+    window.__FakeSpeechRecognition.holdStart = false;
+    window.__FakeSpeechRecognition.lastInstance.emitStart();
+  });
   await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "listening");
   assert.equal(await speechButton.getAttribute("aria-pressed"), "true");
   assert.equal(await speechSlash.isVisible(), false, "the microphone is unmuted while listening");
@@ -174,11 +186,11 @@ try {
     { transcript: "Hola ", isFinal: true },
     { transcript: "¿cómo estás?", isFinal: false },
   ]));
-  assert.equal(await display.innerText(), "Tengo Hola ¿cómo estás? una consulta", "interim recognition is inserted at the current caret");
+  assert.equal(await display.innerText(), "Tengo una consulta Hola ¿cómo estás?", "interim recognition appends after existing text even when the caret is elsewhere");
   await page.evaluate(() => window.__FakeSpeechRecognition.lastInstance.emitResults([
     { transcript: "Hola, ¿cómo estás hoy?", isFinal: true },
   ]));
-  assert.equal(await display.innerText(), "Tengo Hola, ¿cómo estás hoy? una consulta", "final recognition replaces interim text without submitting the draft");
+  assert.equal(await display.innerText(), "Tengo una consulta Hola, ¿cómo estás hoy?", "final recognition replaces interim text at the end without submitting the draft");
   await page.evaluate(() => { window.__FakeSpeechRecognition.holdStop = true; });
   await display.click();
   await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "stopping");
@@ -225,7 +237,7 @@ try {
   assert.equal(await keyboard.isVisible(), true, "the virtual keyboard reopens for editing after dictation");
   await keyboard.locator('button[data-skbtn="a"]').click();
   const keyboardEditedDraft = await display.innerText();
-  assert.notEqual(keyboardEditedDraft, "Tengo Hola, ¿cómo estás hoy? una consulta", "virtual keyboard edits recognized text");
+  assert.notEqual(keyboardEditedDraft, "Tengo una consulta Hola, ¿cómo estás hoy?", "virtual keyboard edits recognized text");
   assert.match(keyboardEditedDraft, /a/, "virtual keyboard input is present in the draft");
   await display.focus();
   await page.keyboard.type("x");
@@ -233,9 +245,12 @@ try {
   assert.notEqual(physicallyEditedDraft, keyboardEditedDraft, "physical typing edits recognized text");
   assert.match(physicallyEditedDraft, /x/, "physical keyboard input is present in the draft");
 
-  await sendButton.click();
+  await enterKey.click();
   await page.waitForFunction(() => document.querySelector(".kroma-chat__virtual-display")?.innerText === "");
-  assert.equal(await display.innerText(), "", "manual send submits and clears the edited draft");
+  assert.equal(await display.innerText(), "", "virtual Enter submits and clears the edited draft");
+  await page.waitForTimeout(450);
+  assert.doesNotMatch(await chat.innerText(), /La escritura libre no está conectada a un asistente/i, "the demo disclaimer is not rendered in the chat interface");
+  assert.match((await page.evaluate(() => window.__speechInfos)).join(" "), /La escritura libre no está conectada a un asistente/i, "the demo diagnostic is written to the browser console");
   await speechButton.click();
   await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "listening");
   await page.evaluate(() => window.__FakeSpeechRecognition.lastInstance.emitResults([
@@ -243,7 +258,7 @@ try {
   ]));
   assert.equal(await display.innerText(), "Texto dictado", "active dictation appears in the composer before sending");
   const latestRecognition = await page.evaluateHandle(() => window.__FakeSpeechRecognition.lastInstance);
-  await sendButton.click();
+  await enterKey.click();
   await page.waitForFunction(() => document.querySelector(".kroma-chat__virtual-display")?.innerText === "");
   await latestRecognition.evaluate((recognition) => recognition.emitResults([
     { transcript: "resultado tardío", isFinal: true },
@@ -266,7 +281,7 @@ try {
   await page.waitForFunction(() => document.querySelector(".kroma-chat__speech-button")?.dataset.speechState === "idle");
   assert.equal(await page.evaluate(() => sessionStorage.getItem("kroma-chat-draft:kroma-chat-input-1")), null, "sending clears the persisted unsent draft");
   assert.deepEqual(errors, [], "dictation integration produces no browser errors");
-  console.log("Chat speech Playwright checks passed: Web Speech API insertion, interim/final replacement, playback, keyboard editing and manual send.");
+  console.log("Chat speech Playwright checks passed: Web Speech API insertion, permission-pending startup, interim/final replacement, playback and Enter submission.");
 } finally {
   await browser?.close();
   server.kill();

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <script>try { if (localStorage.getItem("kroma-theme-mode") && localStorage.getItem("kroma-theme-mode") !== "bootstrap") document.documentElement.style.visibility = "hidden"; } catch { /* Storage is optional. */ }</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="KromaChat adaptable">
+    <meta name="theme-color" content="#111827">
+    <title>KromaChat · Kroma</title>
+  </head>
+  <body class="kroma-chat-standalone kroma-chat-standalone--adaptive">
+    <div hidden data-theme-dropdown aria-hidden="true"></div>
+    <main class="kroma-chat-page" data-chat-lab data-chat-layout-adaptive>
+      <section class="kroma-chat-page__preview" data-chat-preview aria-label="KromaChat">
+        <kroma-chat
+          class="kroma-chat-page__device"
+          mode="default"
+          data-demo="commerce-journey"
+          data-density="comfortable"
+          avatar="K"
+          aria-label="KromaChat: asistente conversacional"
+          chat-title="Asistente Kroma"
+          status="Disponible para ayudarte"
+          messages-label="Mensajes"
+          input-label="Escribe un mensaje"
+          placeholder="Mensaje…"
+          empty-state="Inicia la conversación">
+        </kroma-chat>
+      </section>
+    </main>
+    <script type="module" src="./kroma-chat-page.ts"></script>
+  </body>
+</html>

@@ -187,23 +187,31 @@ const runChatChecks = async (browserName, browser) => {
   assert.equal(initial.menuItems, 4, `${browserName}: JourneyMenu renders the entry actions`);
   assert.ok(initial.messageId, `${browserName}: messages receive a stable id`);
 
-  const composerInput = chat.locator(".kroma-chat__input");
-  await composerInput.focus();
+  const composerInput = chat.locator(".kroma-chat__virtual-display");
+  await composerInput.evaluate((element) => element.focus({ preventScroll: true }));
   await page.waitForTimeout(180);
   const focusState = await chat.evaluate((element) => {
-    const input = element.querySelector(".kroma-chat__input");
+    const input = element.querySelector(".kroma-chat__virtual-display");
     const composer = element.querySelector(".kroma-chat__composer");
     return {
       inputOutline: getComputedStyle(input).outlineStyle,
       inputBorder: getComputedStyle(input).borderWidth,
       inputShadow: getComputedStyle(input).boxShadow,
-      composerRing: getComputedStyle(composer).boxShadow,
+      composerBorder: getComputedStyle(composer.querySelector(".kroma-chat__composer-field")).borderColor,
     };
   });
-  assert.equal(focusState.inputOutline, "none", `${browserName}: textarea has no inner focus outline`);
-  assert.equal(focusState.inputBorder, "0px", `${browserName}: textarea has no inner border`);
-  assert.equal(focusState.inputShadow, "none", `${browserName}: textarea has no inner shadow`);
-  assert.notEqual(focusState.composerRing, "none", `${browserName}: composer retains an accessible focus ring`);
+  assert.equal(focusState.inputOutline, "none", `${browserName}: virtual textbox has no inner focus outline`);
+  assert.equal(focusState.inputBorder, "0px", `${browserName}: virtual textbox has no inner border`);
+  assert.equal(focusState.inputShadow, "none", `${browserName}: virtual textbox has no inner shadow`);
+  const focusBorder = await chat.evaluate((element) => {
+    const probe = document.createElement("span");
+    probe.style.color = getComputedStyle(element).getPropertyValue("--kroma-chat-state-focus");
+    document.body.append(probe);
+    const color = getComputedStyle(probe).color;
+    probe.remove();
+    return color;
+  });
+  assert.equal(focusState.composerBorder, focusBorder, `${browserName}: composer border communicates focus accessibly`);
   await composerInput.blur();
 
   const optionHover = chat.locator(".kroma-chat__journey-item").first();
@@ -217,7 +225,7 @@ const runChatChecks = async (browserName, browser) => {
 
   await chat.evaluate((element) => element.setComposerDisabled(true));
   assert.equal(await composerInput.isDisabled(), true, `${browserName}: host can disable the composer`);
-  assert.equal(await chat.getByRole("button", { name: "Enviar mensaje" }).isDisabled(), true, `${browserName}: disabled composer disables send`);
+  assert.equal(await chat.locator('.hg-theme-default button[data-skbtn="{enter}"]').isDisabled(), true, `${browserName}: disabled composer disables Enter submission`);
   await chat.evaluate((element) => element.setComposerDisabled(false));
 
   await chat.evaluate((element) => {
@@ -478,60 +486,34 @@ const runChatChecks = async (browserName, browser) => {
     description: "<script>unsafe()</script>",
   }, `${browserName}: RichMessage escapes content and rejects script URLs`);
 
-  const input = chat.locator(".kroma-chat__input");
+  const input = chat.locator(".kroma-chat__virtual-display");
   const measureComposer = () => chat.evaluate((element) => {
-    const textarea = element.querySelector(".kroma-chat__input");
-    const send = element.querySelector(".kroma-chat__send");
+    const display = element.querySelector(".kroma-chat__virtual-display");
     return {
-      rows: textarea.rows,
-      textareaHeight: textarea.getBoundingClientRect().height,
+      displayHeight: display.getBoundingClientRect().height,
       composerHeight: element.querySelector(".kroma-chat__composer").getBoundingClientRect().height,
-      scrollHeight: textarea.scrollHeight,
-      clientHeight: textarea.clientHeight,
-      sendHeight: send.getBoundingClientRect().height,
-      sendDisabled: send.disabled,
+      scrollHeight: display.scrollHeight,
+      clientHeight: display.clientHeight,
+      sendButtons: element.querySelectorAll(".kroma-chat__send").length,
     };
   });
-  await input.fill("");
   let composer = await measureComposer();
-  assert.equal(composer.rows, 1, `${browserName}: empty composer starts at one row`);
-  assert.ok(composer.textareaHeight >= 44 && composer.textareaHeight <= 48, `${browserName}: empty textarea height (${composer.textareaHeight}px)`);
+  assert.ok(composer.displayHeight >= 44 && composer.displayHeight <= 48, `${browserName}: empty composer height (${composer.displayHeight}px)`);
   assert.ok(composer.composerHeight <= 52, `${browserName}: compact composer height (${composer.composerHeight}px)`);
-  assert.equal(composer.sendDisabled, true, `${browserName}: empty send button disabled`);
-
-  await input.fill("One line");
-  composer = await measureComposer();
-  assert.equal(composer.rows, 1, `${browserName}: one line remains one row`);
-  assert.ok(composer.textareaHeight >= 44 && composer.textareaHeight <= 48);
-  assert.equal(composer.sendDisabled, false);
-
-  await input.fill("First line\nSecond line\nThird line");
-  composer = await measureComposer();
-  assert.ok(composer.rows >= 3 && composer.textareaHeight > 48 && composer.textareaHeight < 120, `${browserName}: multiline composer grows naturally`);
-
-  await input.fill("A long message to force the composer to grow and then use its own scrollbar. ".repeat(30));
-  composer = await measureComposer();
-  assert.equal(composer.rows, 6, `${browserName}: long composer is capped at six rows`);
-  assert.ok(composer.textareaHeight <= 120, `${browserName}: long textarea does not exceed the maximum height`);
-  assert.ok(composer.scrollHeight > composer.clientHeight, `${browserName}: long textarea scrolls internally`);
-
-  await input.fill("");
-  composer = await measureComposer();
-  assert.equal(composer.rows, 1, `${browserName}: clearing restores one row`);
-  assert.ok(composer.textareaHeight >= 44 && composer.textareaHeight <= 48, `${browserName}: clearing restores compact height`);
+  assert.equal(composer.sendButtons, 0, `${browserName}: composer has no separate send button`);
 
   let sendEventCount = await chat.evaluate((element) => element.__chatTestEvents.sends.length);
-  await input.fill("Line before newline");
+  await input.focus();
+  await page.keyboard.type("Line before newline");
   await input.press("Shift+Enter");
   assert.equal(await chat.evaluate((element) => element.__chatTestEvents.sends.length), sendEventCount, `${browserName}: Shift+Enter does not send`);
-  assert.ok(await input.inputValue() .then((value) => value.includes("\n")), `${browserName}: Shift+Enter inserts a newline`);
+  assert.ok((await input.innerText()).includes("\n"), `${browserName}: Shift+Enter inserts a newline`);
   await input.press("Enter");
-  await page.waitForFunction(() => document.querySelector("#chat kroma-chat .kroma-chat__input")?.value === "");
+  await page.waitForFunction(() => document.querySelector("#chat kroma-chat .kroma-chat__virtual-display")?.innerText === "");
   sendEventCount += 1;
   assert.equal(await chat.evaluate((element) => element.__chatTestEvents.sends.length), sendEventCount, `${browserName}: Enter emits one text-send event`);
   composer = await measureComposer();
-  assert.equal(composer.rows, 1, `${browserName}: sending resets the composer to one row`);
-  assert.ok(composer.textareaHeight >= 44 && composer.textareaHeight <= 48, `${browserName}: sending restores compact height`);
+  assert.ok(composer.displayHeight >= 44 && composer.displayHeight <= 48, `${browserName}: sending restores compact height`);
 
   await chat.evaluate((element) => element.setError("User-facing error"));
   assert.equal(await input.getAttribute("aria-invalid"), "true");
@@ -540,7 +522,7 @@ const runChatChecks = async (browserName, browser) => {
   assert.equal(await input.getAttribute("aria-invalid"), null);
   await chat.evaluate((element) => element.setComposerDisabled(true));
   assert.equal(await input.isDisabled(), true);
-  assert.equal(await chat.getByRole("button", { name: "Enviar mensaje" }).isDisabled(), true);
+  assert.equal(await chat.locator('.hg-theme-default button[data-skbtn="{enter}"]').isDisabled(), true);
   await chat.evaluate((element) => element.setComposerDisabled(false));
 
   const legacyForms = await chat.locator("form").count();
@@ -560,7 +542,7 @@ const runChatChecks = async (browserName, browser) => {
   const secondChat = page.locator("body > kroma-chat").last();
   await secondChat.waitFor();
   await secondChat.evaluate((element) => element.addMessage({ author: "assistant", text: "Isolated second instance" }));
-  const instanceIds = await page.evaluate(() => [...document.querySelectorAll("kroma-chat .kroma-chat__input")].map((input) => input.id));
+  const instanceIds = await page.evaluate(() => [...document.querySelectorAll("kroma-chat .kroma-chat__virtual-display")].map((input) => input.id));
   assert.equal(new Set(instanceIds).size, instanceIds.length, `${browserName}: composer IDs are unique across instances`);
   assert.equal(await secondChat.locator(".kroma-chat__message").count(), 1, `${browserName}: second instance owns an independent history`);
   await secondChat.evaluate((element) => element.remove());
