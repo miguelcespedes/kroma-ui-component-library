@@ -1,21 +1,29 @@
 # Instalación de KromaChat desde Git
 
-El paquete se distribuye desde este repositorio, no desde npm Registry. El build GitHub Pages sigue siendo independiente. El paquete incluye KromaChat, declaraciones TypeScript, CSS, Inter Variable, imágenes de Kitchen Mode y los temas Dracula y Kroma Entrepreneur. `simple-keyboard` se incorpora al bundle; no hace falta instalar Bootstrap.
+El repositorio es privado y el paquete conserva `private: true`; KromaChat se distribuye desde Git, no desde npm Registry. Para instalarlo, cada desarrollador/CI debe tener una clave SSH autorizada para leer `miguelcespedes/kroma-ui-component-library` y tener configurado GitHub como host SSH. El build GitHub Pages sigue siendo independiente. El paquete incluye KromaChat, declaraciones TypeScript, CSS, Inter Variable, imágenes de Kitchen Mode y los temas Dracula y Kroma Entrepreneur. `simple-keyboard` se incorpora al bundle; no hace falta instalar Bootstrap.
 
 Para entender los mensajes y controles, consulta [el inventario completo de KromaChat](CHAT.md). La guía de [componentes](COMPONENTS.md) resume la API pública del paquete y [temas](THEMES.md) explica las marcas incluidas y el contrato para crear otra.
 
 ## Instalar una versión
 
-En la aplicación consumidora, fija una etiqueta publicada manualmente:
+En la aplicación consumidora, instala una etiqueta creada manualmente. Las comillas protegen el `#tag` en shells que lo tratan especialmente:
 
 ```sh
-npm install github:miguelcespedes/kroma-ui-component-library#v1.0.0
+npm install "git+ssh://git@github.com/miguelcespedes/kroma-ui-component-library.git#v1.0.0"
 ```
 
-También se puede fijar un commit completo para una prueba reproducible:
+Para probar la rama predeterminada (menos reproducible), omite el fragmento. También puedes fijar un commit completo:
 
 ```sh
-npm install github:miguelcespedes/kroma-ui-component-library#<commit-sha>
+npm install "git+ssh://git@github.com/miguelcespedes/kroma-ui-component-library.git"
+npm install "git+ssh://git@github.com/miguelcespedes/kroma-ui-component-library.git#<commit-sha>"
+```
+
+Antes de instalar, verifica que la autenticación SSH funciona y que la cuenta tiene permiso de lectura:
+
+```sh
+ssh -T git@github.com
+git ls-remote "git@github.com:miguelcespedes/kroma-ui-component-library.git" refs/heads/main
 ```
 
 No se crean ni actualizan tags automáticamente. Para actualizar, cambia la referencia explícita y ejecuta el comando de instalación; confirma el `package-lock.json` resultante. `npm update @kroma/ui-component-library` puede mantener la referencia actual y no sustituye cambiar la etiqueta o SHA fijados.
@@ -24,10 +32,10 @@ Las instalaciones Git ejecutan `prepare` y compilan `lib-dist/chat` durante la p
 
 ### npm 12
 
-La instalación Git se verificó localmente con npm 11.16.0. npm 12 no está instalado en este entorno, así que no se afirma que se haya comprobado su política de permisos. Si npm 12 bloquea la preparación por `allow-git`, limita la autorización al repositorio consumidor mediante su `.npmrc` (no la configures globalmente):
+La instalación Git local se verificó con npm 11.16.0. npm 12 no está instalado en este entorno, así que no se afirma que se haya comprobado su política de permisos. Si npm 12 bloquea la dependencia por `allow-git`, limita la autorización al repositorio consumidor mediante su `.npmrc` (no la configures globalmente):
 
 ```ini
-allow-git=github:miguelcespedes/kroma-ui-component-library
+allow-git=git+ssh://git@github.com/miguelcespedes/kroma-ui-component-library.git
 ```
 
 Verifica el nombre y formato admitidos por la versión concreta con `npm config get allow-git` y la documentación de `npm help config` antes de desplegar.
@@ -127,7 +135,7 @@ Los eventos son eventos DOM con `detail`; el host conserva el estado y la lógic
 
 ```sh
 npm ls @kroma/ui-component-library
-npm pack --dry-run github:miguelcespedes/kroma-ui-component-library#v1.0.0
+npm pack --dry-run "git+ssh://git@github.com/miguelcespedes/kroma-ui-component-library.git#v1.0.0"
 ```
 
 En el paquete instalado deben existir `lib-dist/chat/index.js`, `index.d.ts`, `styles.css`, una fuente `.woff2`, imágenes `.png` y chunks de JavaScript bajo `lib-dist/chat/`. `styles.css` referencia la fuente como recurso relativo al paquete. En DevTools → Network, confirma que las solicitudes CSS, WOFF2 e imágenes responden correctamente.

@@ -1,6 +1,6 @@
 # Kroma UI Component Library
 
-Kroma es un sistema de diseño con tokens propios; Bootstrap 5.3.8 implementa los componentes del cheatsheet mediante un adaptador. La aplicación de documentación sigue siendo privada (`package.json` tiene `private: true`). KromaChat se puede instalar desde GitHub; no se publica en npm Registry.
+Kroma es un sistema de diseño con tokens propios; Bootstrap 5.3.8 implementa los componentes del cheatsheet mediante un adaptador. El repositorio es privado y el paquete mantiene `private: true`: KromaChat no se publica en npm Registry. Para instalarlo, el consumidor necesita acceso SSH concedido al repositorio de GitHub.
 
 ## Guías de uso
 
@@ -20,9 +20,9 @@ La API de paquete actual publica `@kroma/ui-component-library/chat` y `@kroma/ui
 Instala desde la rama predeterminada o fija una versión mediante un tag/commit:
 
 ```bash
-npm install github:miguelcespedes/kroma-ui-component-library
+npm install "git+ssh://git@github.com/miguelcespedes/kroma-ui-component-library.git"
 # Recomendado para despliegues reproducibles:
-npm install github:miguelcespedes/kroma-ui-component-library#v1.0.0
+npm install "git+ssh://git@github.com/miguelcespedes/kroma-ui-component-library.git#v1.0.0"
 ```
 
 Importa los estilos una vez desde la hoja global de la aplicación. El módulo registra el Web Component `kroma-chat` y expone su API y tipos:
