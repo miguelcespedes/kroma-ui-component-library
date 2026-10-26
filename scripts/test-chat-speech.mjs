@@ -20,7 +20,10 @@ try {
   assert.equal(ready, true, "Vite preview starts for the local Playwright run");
 
   browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({ viewport: { width: 430, height: 900 } });
+  const context = await browser.newContext({
+    viewport: { width: 430, height: 900 },
+    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
+  });
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -137,7 +140,7 @@ try {
     continuous: window.__FakeSpeechRecognition.lastInstance.continuous,
     interimResults: window.__FakeSpeechRecognition.lastInstance.interimResults,
   }));
-  assert.deepEqual(recognitionSettings, { lang: "es-PE", continuous: false, interimResults: true });
+  assert.deepEqual(recognitionSettings, { lang: "es-PE", continuous: true, interimResults: true }, "Edge keeps recognition active to return complete transcripts");
   await page.evaluate(() => window.__FakeSpeechRecognition.lastInstance.emitResults([
     { transcript: "Hola ", isFinal: true },
     { transcript: "¿cómo estás?", isFinal: false },

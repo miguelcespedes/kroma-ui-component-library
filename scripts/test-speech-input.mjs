@@ -7,7 +7,7 @@ const source = await readFile(resolve("src/components/chat/input/speech-input-co
 const compiled = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
 }).outputText;
-const { SpeechInputController, detectSpeechRecognitionFactory } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString("base64")}`);
+const { SpeechInputController, detectSpeechRecognitionFactory, detectBrowserFamily } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString("base64")}`);
 
 class FakeRecognition {
   lang = "";
@@ -111,5 +111,12 @@ assert.equal(unsupported.start(), false);
 unsupported.destroy();
 assert.equal(detectSpeechRecognitionFactory({ isSecureContext: false, SpeechRecognition: FakeRecognition }), null, "recognition is not exposed outside secure browser contexts");
 assert.equal(typeof detectSpeechRecognitionFactory({ isSecureContext: true, webkitSpeechRecognition: FakeRecognition }), "function", "webkit-prefixed browser capability is detected without user-agent sniffing");
+assert.equal(detectBrowserFamily({ navigator: { userAgent: "Mozilla/5.0 Edg/130.0.0.0" } }), "edge", "Edge desktop is detected for its recognition configuration");
+assert.equal(detectBrowserFamily({ navigator: { userAgent: "Mozilla/5.0 EdgA/130.0.0.0" } }), "edge", "Edge Android is detected for its recognition configuration");
+assert.equal(detectBrowserFamily({ navigator: { userAgent: "Mozilla/5.0 Chrome/130.0.0.0", userAgentData: { brands: [{ brand: "Microsoft Edge" }] } } }), "edge", "Edge is detected through User-Agent Client Hints where available");
+assert.equal(detectBrowserFamily({ navigator: { userAgent: "Mozilla/5.0 Chrome/130.0.0.0", brave: {} } }), "brave", "Brave is identified before its Chromium-based Chrome user agent");
+assert.equal(detectBrowserFamily({ navigator: { userAgent: "Mozilla/5.0 Chrome/130.0.0.0" } }), "chrome", "Chrome is detected by its UA brand or token");
+assert.equal(detectBrowserFamily({ navigator: { userAgent: "Mozilla/5.0 (Macintosh) AppleWebKit/605.1.15 Version/18.0 Safari/605.1.15" } }), "safari", "Safari is distinguished from Chromium browsers");
+assert.equal(detectBrowserFamily(null), "other", "server-side usage safely reports an unknown browser");
 
 console.log(`Speech input controller checks passed: ${states.length} state updates and ${transcripts.length} transcript snapshots.`);

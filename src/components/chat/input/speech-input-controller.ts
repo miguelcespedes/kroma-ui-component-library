@@ -44,6 +44,12 @@ type SpeechRecognitionWindow = Window & {
   SpeechRecognition?: SpeechRecognitionConstructor;
   webkitSpeechRecognition?: SpeechRecognitionConstructor;
 };
+type BrowserNavigator = Navigator & {
+  userAgentData?: { brands?: ReadonlyArray<{ brand: string }> };
+  brave?: unknown;
+};
+
+export type BrowserFamily = "edge" | "brave" | "chrome" | "safari" | "other";
 
 const DEFAULT_STATUS: SpeechInputStatus = { state: "idle", message: "" };
 
@@ -101,7 +107,7 @@ export class SpeechInputController {
     }
 
     recognition.lang = "es-PE";
-    recognition.continuous = false;
+    recognition.continuous = detectBrowserFamily() === "edge";
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
     this.recognition = recognition;
@@ -215,6 +221,18 @@ export function detectSpeechRecognitionFactory(scope: Window | null = typeof win
   const speechWindow = scope as SpeechRecognitionWindow;
   const Recognition = speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
   return Recognition ? () => new Recognition() : null;
+}
+
+export function detectBrowserFamily(scope: Pick<Window, "navigator"> | null = typeof window === "undefined" ? null : window): BrowserFamily {
+  if (!scope) return "other";
+  const browserNavigator = scope.navigator as BrowserNavigator;
+  const userAgent = scope.navigator.userAgent;
+  const brands = browserNavigator.userAgentData?.brands || [];
+  if (brands.some(({ brand }) => brand === "Microsoft Edge") || /\bEdg(?:A|iOS)?\/|\bEdge\//i.test(userAgent)) return "edge";
+  if (browserNavigator.brave || /\bBrave\//i.test(userAgent)) return "brave";
+  if (brands.some(({ brand }) => brand === "Google Chrome") || /\b(?:Chrome|CriOS)\//i.test(userAgent)) return "chrome";
+  if (/\bSafari\//i.test(userAgent)) return "safari";
+  return "other";
 }
 
 function messageForSpeechError(error: string) {
