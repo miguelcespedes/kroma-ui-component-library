@@ -30,7 +30,7 @@ The `mode`, `chat-title`, `subtitle`, `avatar`, `status`, `messages-label`, `emp
 
 ## Voice dictation
 
-Dictation uses the browser's Web Speech API (`SpeechRecognition`, with the `webkitSpeechRecognition` alias where needed), configured for Peruvian Spanish (`es-PE`) with interim results. In Microsoft Edge, recognition uses continuous mode so longer utterances can be returned as a complete transcript; the browser or service may still end a session, and the user can stop it manually. The browser requests microphone access only after the user activates the microphone button. Recognized text is inserted at the current composer selection; the user can edit it and must submit it manually. The microphone is hidden when the browser does not expose the API, without adding a notice to the composer.
+Dictation uses the browser's Web Speech API (`SpeechRecognition`, with the `webkitSpeechRecognition` alias where needed), configured for Peruvian Spanish (`es-PE`) with interim results. In Microsoft Edge, recognition uses continuous mode so longer utterances can be returned as a complete transcript; the browser or service may still end a session, and the user can stop it manually. The browser requests microphone access only after the user activates the microphone button. Recognized text is inserted at the current composer selection; the user can edit it and must submit it manually. The microphone is hidden when the browser does not expose the API; the composer does not render speech status or error messages. Recognition errors are written to the browser console instead of the component UI.
 
 ## Kitchen Mode
 

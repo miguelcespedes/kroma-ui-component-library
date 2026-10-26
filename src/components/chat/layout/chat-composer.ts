@@ -26,7 +26,6 @@ export class ChatComposer {
   readonly display: VirtualTextDisplay;
   readonly sendButton: HTMLButtonElement;
   readonly speechButton: HTMLButtonElement;
-  readonly speechStatus: HTMLParagraphElement;
   readonly errorMessage: HTMLParagraphElement;
   readonly controller: VirtualKeyboardController;
   readonly keyboardDock: HTMLDivElement | null;
@@ -104,12 +103,6 @@ export class ChatComposer {
     this.errorMessage.hidden = true;
     this.element.append(this.errorMessage);
 
-    this.speechStatus = document.createElement("p");
-    this.speechStatus.className = "kroma-chat__speech-status";
-    this.speechStatus.setAttribute("role", "status");
-    this.speechStatus.setAttribute("aria-live", "polite");
-    this.speechStatus.setAttribute("aria-atomic", "true");
-    this.element.append(this.speechStatus);
     const signal = this.listeners.signal;
     document.addEventListener("pointerdown", (event) => {
       const target = event.target;
@@ -343,7 +336,7 @@ export class ChatComposer {
       ? "Iniciar dictado por voz"
       : this.speechInput.status.message);
     button.setAttribute("aria-pressed", "false");
-    button.title = this.speechInput.status.message || "Dictar mensaje por voz";
+    button.title = "Dictar mensaje por voz";
     button.hidden = !this.speechInput.supported;
     const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("viewBox", "0 0 24 24");
@@ -391,6 +384,7 @@ export class ChatComposer {
   private updateSpeechStatus(status: SpeechInputStatus) {
     const active = ["starting", "listening", "stopping"].includes(status.state);
     const isError = status.state === "error";
+    if (isError && status.message) console.warn(status.message);
     this.speechButton.dataset.speechState = status.state;
     this.speechButton.hidden = !this.speechInput.supported
       || Boolean(this.keyboardShowcase) || this.keyboardTarget !== null;
@@ -398,11 +392,8 @@ export class ChatComposer {
     this.speechButton.setAttribute("aria-label", active
       ? status.state === "stopping" ? "Deteniendo dictado por voz" : "Detener dictado por voz"
       : this.speechInput.supported ? "Iniciar dictado por voz" : status.message);
-    this.speechButton.title = status.message || "Dictar mensaje por voz";
+    this.speechButton.title = "Dictar mensaje por voz";
     this.speechButton.disabled = this.disabled || !this.speechInput.supported || status.state === "stopping";
-    this.speechStatus.textContent = status.message;
-    this.speechStatus.dataset.state = status.state;
-    this.speechStatus.hidden = !status.message;
     if (status.state === "idle" || isError || status.state === "unsupported") {
       const returnFocusToComposer = status.state === "idle" && this.speechInsertion !== null;
       this.speechInsertion = null;

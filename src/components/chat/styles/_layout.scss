@@ -209,15 +209,6 @@
     }
   }
 
-  &__speech-status {
-    margin: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-tight) 0;
-    color: var(--kroma-chat-text-secondary);
-    font-size: var(--kroma-chat-typography-body-small);
-    line-height: var(--kroma-chat-leading-small);
-
-    &[data-state="error"] { color: var(--kroma-chat-state-error); }
-  }
-
   &__composer-area,
   &__composer,
   &__virtual-display { max-width: 100%; }
