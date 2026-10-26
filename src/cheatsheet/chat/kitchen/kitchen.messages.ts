@@ -1,4 +1,4 @@
-import type { ChatMessage } from "../core/chat.types";
+import type { ChatMessage } from "../../../components/chat/core/chat.types";
 import { kitchenCatalog } from "./kitchen.catalog";
 
 /** Creates the static conversation used by Kitchen Mode through the existing chat renderer. */

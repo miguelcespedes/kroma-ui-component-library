@@ -1,4 +1,4 @@
-import type { ChatCartItem, ChatCategory, ChatChoice, ChatMoney, ChatOption, ChatProduct, ChatProductVariant, JourneyMenuItem } from "../core/chat.types";
+import type { ChatCartItem, ChatCategory, ChatChoice, ChatMoney, ChatOption, ChatProduct, ChatProductVariant, JourneyMenuItem } from "../../../components/chat/core/chat.types";
 const poloImage = new URL("../../../assets/chat-polo-v2.png", import.meta.url).href;
 const sneakerImage = new URL("../../../assets/chat-sneaker-v2.png", import.meta.url).href;
 const capImage = new URL("../../../assets/chat-cap-v2.png", import.meta.url).href;

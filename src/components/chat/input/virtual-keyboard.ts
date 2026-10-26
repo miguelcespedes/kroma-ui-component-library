@@ -143,10 +143,6 @@ export class VirtualKeyboard {
     this.options.controller.setOpen(open);
   }
 
-  setLayoutDemo(layoutName: "default" | "shift" | "numbers" | "symbols") {
-    this.options.controller.setLayout(layoutName);
-  }
-
   clear() {
     if (!this.keyboard) return;
     this.keyboard.clearInput(this.options.inputName);

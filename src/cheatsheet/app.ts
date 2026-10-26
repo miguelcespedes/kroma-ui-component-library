@@ -19,7 +19,6 @@ import type {
   ChatProduct,
   ChatQuantityChangeDetail,
   ChatSendDetail,
-  ChatMode,
   JourneyMenuItem,
   KromaChat,
 } from "../components/chat";
@@ -37,21 +36,23 @@ document.documentElement.setAttribute("data-bs-theme", "dark");
 initializeThemeDropdown(bootstrap);
 initializeContrastDropdown(bootstrap);
 initializeColorTokenPalette();
-const commerceDemoCleanups = new WeakMap<KromaChat, () => void>();
-document.querySelectorAll<KromaChat>("kroma-chat[data-demo='commerce-journey']").forEach((chat) => {
-  const modeControl = document.querySelector<HTMLSelectElement>("[data-chat-mode]");
-  if (chat.mode === "default") commerceDemoCleanups.set(chat, initializeCommerceJourneyDemo(chat));
-  if (!modeControl) return;
-
-  modeControl.value = chat.mode;
-  modeControl.addEventListener("change", () => {
-    const nextMode: ChatMode = modeControl.value === "kitchen" ? "kitchen" : "default";
-    if (nextMode === chat.mode) return;
-    commerceDemoCleanups.get(chat)?.();
-    commerceDemoCleanups.delete(chat);
-    chat.mode = nextMode;
-    if (nextMode === "default") commerceDemoCleanups.set(chat, initializeCommerceJourneyDemo(chat));
-  });
+const commerceChats = [...document.querySelectorAll<KromaChat>("kroma-chat[data-demo='commerce-journey']")];
+const kitchenChats = [...document.querySelectorAll<KromaChat>("kroma-chat[data-demo='kitchen-lab']")];
+commerceChats.forEach((chat) => initializeCommerceJourneyDemo(chat));
+const kitchenReady = new WeakSet<KromaChat>();
+document.querySelector<HTMLSelectElement>("[data-chat-mode]")?.addEventListener("change", (event) => {
+  const kitchenSelected = (event.currentTarget as HTMLSelectElement).value === "kitchen";
+  commerceChats.forEach((chat) => { chat.hidden = kitchenSelected; });
+  kitchenChats.forEach((chat) => { chat.hidden = !kitchenSelected; });
+  if (kitchenSelected) {
+    void import("./chat/kitchen-lab").then(({ initializeKitchenLab }) => {
+      kitchenChats.forEach((chat) => {
+        if (kitchenReady.has(chat)) return;
+        initializeKitchenLab(chat);
+        kitchenReady.add(chat);
+      });
+    }).catch((error: unknown) => console.error("[cheatsheet] Kitchen examples could not be loaded.", error));
+  }
 });
 
 document.querySelectorAll<HTMLElement>('[data-bs-toggle="tooltip"]').forEach((element) => new bootstrap.Tooltip(element));

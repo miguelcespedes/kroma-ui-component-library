@@ -1,5 +1,5 @@
 import { VirtualKeyboard } from "../input/virtual-keyboard";
-import { VirtualKeyboardController, type VirtualKeyboardLayoutName } from "../input/virtual-keyboard-controller";
+import { VirtualKeyboardController } from "../input/virtual-keyboard-controller";
 import { SpeechInputController, type SpeechInputStatus, type SpeechInputTranscript } from "../input/speech-input-controller";
 import { insertSpeechTranscript } from "../input/speech-transcript-insertion";
 import { VirtualTextDisplay, type VirtualTextDisplayCallbacks } from "../input/virtual-text-display";
@@ -12,7 +12,6 @@ export type ChatComposerOptions = {
   inputLabel: string;
   placeholder: string;
   disabled?: boolean;
-  showKeyboardShowcase?: boolean;
   interactionMode?: ChatInteractionMode;
   onInteractionModeChange?: (mode: ChatInteractionMode) => void;
   onSend: (message: string) => void;
@@ -28,11 +27,8 @@ export class ChatComposer {
   readonly controller: VirtualKeyboardController;
   readonly keyboardDock: HTMLDivElement | null;
   private readonly listeners = new AbortController();
-  private readonly disposers: Array<() => void> = [];
   private readonly composerField: HTMLDivElement;
   private readonly actions: HTMLDivElement;
-  private readonly keyboardShowcase: HTMLElement | null;
-  private readonly showcaseLayouts = new Map<VirtualKeyboardLayoutName, HTMLButtonElement>();
   private readonly unsubscribeController: () => void;
   private readonly speechInput: SpeechInputController;
   private readonly speechUnsubscribers: Array<() => void> = [];
@@ -40,7 +36,6 @@ export class ChatComposer {
   private keyboard: VirtualKeyboard | null = null;
   private keyboardTarget: HTMLInputElement | null = null;
   private readonly inputsWithPhysicalKeyHandlers = new WeakSet<HTMLInputElement>();
-  private showcaseToggle: HTMLButtonElement | null = null;
   private disabled: boolean;
   private interactionMode: ChatInteractionMode;
   private draftValue = "";
@@ -56,7 +51,6 @@ export class ChatComposer {
     this.draftValue = this.readStoredDraft();
     this.caretStart = this.draftValue.length;
     this.caretEnd = this.draftValue.length;
-    const showKeyboardShowcase = Boolean(options.showKeyboardShowcase);
     this.element = document.createElement("div");
     this.element.className = "kroma-chat__composer-area";
 
@@ -93,15 +87,13 @@ export class ChatComposer {
 
     this.createKeyboard();
     this.keyboard?.setInput(this.draftValue, this.caretStart, this.caretEnd);
-    this.keyboardShowcase = showKeyboardShowcase ? this.createKeyboardShowcase() : null;
-    this.keyboardDock = this.keyboard && !this.keyboardShowcase ? document.createElement("div") : null;
+    this.keyboardDock = this.keyboard ? document.createElement("div") : null;
     if (this.keyboardDock) {
       this.keyboardDock.className = "kroma-chat__keyboard-dock";
       this.keyboardDock.append(this.keyboard!.element);
     }
-    if (this.interactionMode === "free-text" && !this.keyboardShowcase) this.keyboard?.setOpen(true);
+    if (this.interactionMode === "free-text") this.keyboard?.setOpen(true);
     this.element.append(this.form);
-    if (this.keyboardShowcase) this.element.append(this.keyboardShowcase);
 
     this.errorMessage = document.createElement("p");
     this.errorMessage.className = "kroma-chat__error";
@@ -113,7 +105,7 @@ export class ChatComposer {
     document.addEventListener("pointerdown", (event) => {
       const target = event.target;
       if (!(target instanceof Node)) return;
-      if (this.keyboard?.element.contains(target) || this.keyboardShowcase?.contains(target)) return;
+      if (this.keyboard?.element.contains(target)) return;
       if (this.keyboardTarget?.contains(target)) return;
       if (this.speechButton.contains(target)) return;
       if (this.keyboardTarget) {
@@ -136,7 +128,6 @@ export class ChatComposer {
     }, { signal });
     this.unsubscribeController = this.controller.subscribe(() => {
       this.updateComposerControls();
-      this.updateShowcaseControls();
       this.updatePresentation();
     });
     this.speechUnsubscribers.push(this.speechInput.subscribeStatus((status) => this.updateSpeechStatus(status)));
@@ -260,7 +251,6 @@ export class ChatComposer {
     this.speechInput.destroy();
     this.display.destroy();
     this.keyboard?.destroy();
-    this.disposers.forEach((dispose) => dispose());
   }
 
   private createKeyboard() {
@@ -304,10 +294,10 @@ export class ChatComposer {
     this.display.setVisible(!externalInput);
     this.display.setEditing(!guided && !externalInput);
     this.form.hidden = externalInput;
-    this.speechButton.hidden = Boolean(this.keyboardShowcase) || externalInput || !this.speechInput.supported;
+    this.speechButton.hidden = externalInput || !this.speechInput.supported;
     this.actions.hidden = this.speechButton.hidden;
     if (this.keyboardDock) this.keyboardDock.hidden = !this.controller.state.open;
-    if (!virtualInput && !this.keyboardShowcase) this.controller.setOpen(false);
+    if (!virtualInput) this.controller.setOpen(false);
   }
 
   private updateComposerControls() {
@@ -379,8 +369,7 @@ export class ChatComposer {
     const isError = status.state === "error";
     if (isError && status.message) console.warn(status.message);
     this.speechButton.dataset.speechState = status.state;
-    this.speechButton.hidden = !this.speechInput.supported
-      || Boolean(this.keyboardShowcase) || this.keyboardTarget !== null;
+    this.speechButton.hidden = !this.speechInput.supported || this.keyboardTarget !== null;
     this.actions.hidden = this.speechButton.hidden;
     this.speechButton.setAttribute("aria-pressed", String(active));
     this.speechButton.setAttribute("aria-label", active
@@ -436,82 +425,4 @@ export class ChatComposer {
     }
   }
 
-  private createKeyboardShowcase() {
-    const showcase = document.createElement("section");
-    showcase.className = "kroma-chat__keyboard-showcase";
-    showcase.setAttribute("aria-label", "Estados del composer y teclado virtual");
-    const title = document.createElement("h3");
-    title.className = "kroma-chat__keyboard-showcase-title";
-    title.textContent = "Teclado virtual · variantes";
-
-    const controls = document.createElement("div");
-    controls.className = "kroma-chat__keyboard-showcase-layouts";
-    const layouts: ReadonlyArray<{ label: string; name: VirtualKeyboardLayoutName }> = [
-      { label: "ABC", name: "default" },
-      { label: "Shift", name: "shift" },
-      { label: "123", name: "numbers" },
-      { label: "#+=", name: "symbols" },
-    ];
-    layouts.forEach(({ label, name }) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "kroma-chat__keyboard-showcase-layout";
-      button.textContent = label;
-      button.setAttribute("aria-pressed", String(this.controller.state.layoutName === name));
-      button.addEventListener("click", () => this.keyboard?.setLayoutDemo(name), { signal: this.listeners.signal });
-      this.showcaseLayouts.set(name, button);
-      controls.append(button);
-    });
-
-    const toggle = document.createElement("button");
-    toggle.type = "button";
-    toggle.className = "kroma-chat__keyboard-showcase-toggle";
-    toggle.dataset.keyboardShowcaseToggle = "true";
-    toggle.addEventListener("click", () => this.keyboard?.setOpen(!this.controller.state.open), { signal: this.listeners.signal });
-    this.showcaseToggle = toggle;
-    this.updateShowcaseControls();
-    controls.append(toggle);
-
-    const composerSamples = document.createElement("div");
-    composerSamples.className = "kroma-chat__keyboard-showcase-composers";
-    composerSamples.append(this.createComposerSample("Composer vacío", ""));
-    composerSamples.append(this.createComposerSample("Composer con texto", "¿Tienen atención los sábados?"));
-    const disabledLabel = document.createElement("span");
-    disabledLabel.className = "kroma-chat__keyboard-showcase-label";
-    disabledLabel.textContent = "Composer deshabilitado";
-
-    showcase.append(title, controls);
-    if (this.keyboard) showcase.append(this.keyboard.element);
-    showcase.append(composerSamples, disabledLabel);
-    return showcase;
-  }
-
-  private createComposerSample(label: string, value: string) {
-    const sample = document.createElement("div");
-    sample.className = "kroma-chat__keyboard-showcase-composer";
-    const caption = document.createElement("span");
-    caption.className = "kroma-chat__keyboard-showcase-label";
-    caption.textContent = label;
-    const display = new VirtualTextDisplay(label, this.options.placeholder, {
-      onFocus: () => undefined,
-      onCaretChange: () => undefined,
-      onPhysicalKey: () => undefined,
-      onPhysicalKeyRelease: () => undefined,
-    });
-    display.element.classList.add("kroma-chat__virtual-display--sample");
-    display.setDisabled(true);
-    display.update(value, value.length);
-    this.disposers.push(() => display.destroy());
-    sample.append(caption, display.element);
-    return sample;
-  }
-
-  private updateShowcaseControls() {
-    const state = this.controller.state;
-    this.showcaseLayouts.forEach((button, layout) => button.setAttribute("aria-pressed", String(state.layoutName === layout)));
-    if (this.showcaseToggle) {
-      this.showcaseToggle.textContent = state.open ? "Ocultar teclado" : "Mostrar teclado";
-      this.showcaseToggle.setAttribute("aria-expanded", String(state.open));
-    }
-  }
 }

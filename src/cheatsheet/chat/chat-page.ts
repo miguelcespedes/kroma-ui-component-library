@@ -2,7 +2,7 @@ import "../app";
 import "./chat-page.scss";
 
 const preview = document.querySelector<HTMLElement>("[data-chat-preview]");
-const chat = document.querySelector<HTMLElement>("kroma-chat[data-demo='commerce-journey']");
+const chats = document.querySelectorAll<HTMLElement>("kroma-chat[data-demo]");
 const lab = document.querySelector<HTMLElement>("[data-chat-lab]");
 
 class FullscreenViewportController {
@@ -74,7 +74,8 @@ class FullscreenViewportController {
   };
 }
 
-const fullscreenViewport = lab && chat ? new FullscreenViewportController(lab, chat) : null;
+const fullscreenChat = document.querySelector<HTMLElement>("kroma-chat[data-demo='commerce-journey']");
+const fullscreenViewport = lab && fullscreenChat ? new FullscreenViewportController(lab, fullscreenChat) : null;
 
 const setPreviewWidth = (button: HTMLButtonElement) => {
   const width = button.dataset.chatWidth || "fluid";
@@ -82,7 +83,7 @@ const setPreviewWidth = (button: HTMLButtonElement) => {
   const cssWidth = adaptive ? "100%" : width;
 
   preview?.style.setProperty("--chat-preview-width", cssWidth);
-  chat?.style.setProperty("--kroma-chat-width", cssWidth);
+  chats.forEach((chat) => chat.style.setProperty("--kroma-chat-width", cssWidth));
   lab?.toggleAttribute("data-chat-layout-adaptive", adaptive);
   document.body.classList.toggle("kroma-chat-standalone--adaptive", adaptive);
   fullscreenViewport?.setEnabled(adaptive);
@@ -98,7 +99,7 @@ document.querySelectorAll<HTMLButtonElement>("[data-chat-width]").forEach((butto
 
 document.querySelector<HTMLSelectElement>("[data-chat-density]")?.addEventListener("change", (event) => {
   const select = event.currentTarget as HTMLSelectElement;
-  chat?.setAttribute("data-density", select.value === "compact" ? "compact" : "comfortable");
+  chats.forEach((chat) => chat.setAttribute("data-density", select.value === "compact" ? "compact" : "comfortable"));
 });
 
 const initialWidth = document.querySelector<HTMLButtonElement>('[data-chat-width][aria-pressed="true"]');

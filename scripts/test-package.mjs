@@ -27,8 +27,10 @@ assert.equal(packageManifest.exports["./chat"].types, "./lib-dist/chat/index.d.t
 assert.equal(packageManifest.exports["./chat/styles.css"], "./lib-dist/chat/styles.css");
 assert.deepEqual(packageManifest.dependencies || {}, {}, "no runtime packages need separate installation");
 
-const dryRun = JSON.parse(execFileSync(node, [npmCli, "pack", "--dry-run", "--json", "--ignore-scripts"], { cwd: root, encoding: "utf8" }))[0];
+const dryRunOutput = JSON.parse(execFileSync(node, [npmCli, "pack", "--dry-run", "--json", "--ignore-scripts"], { cwd: root, encoding: "utf8" }));
+const dryRun = Array.isArray(dryRunOutput) ? dryRunOutput[0] : dryRunOutput["@kroma/ui-component-library"];
 const packedFiles = new Set(dryRun.files.map((file) => file.path));
+assert.ok(![...packedFiles].some((file) => /kitchen|fixture|demo/i.test(file)), "npm pack excludes Kitchen, fixture and demo files");
 for (const required of [
   "lib-dist/chat/index.js",
   "lib-dist/chat/index.d.ts",
@@ -36,8 +38,16 @@ for (const required of [
   "lib-dist/chat/kroma-chat.d.ts",
 ]) assert.ok(packedFiles.has(required), `npm pack includes ${required}`);
 assert.ok([...packedFiles].some((file) => file.endsWith(".woff2")), "npm pack includes Inter Variable");
-assert.ok([...packedFiles].some((file) => file.endsWith(".png")), "npm pack includes Kitchen image assets");
-assert.ok([...packedFiles].some((file) => /lib-dist\/chat\/chunks\/kitchen\.messages-.*\.js/.test(file)), "npm pack includes the lazy Kitchen Mode module");
+const libraryFiles = await listFiles(path.join(root, "lib-dist/chat"));
+const forbiddenLabContent = /kitchen|fixture|demo(?:nstration)?|SIM-000|ada@example\.test|Polo de algodón|chat-(?:polo|sneaker|cap)-v2/i;
+for (const file of libraryFiles) {
+  const relative = path.relative(path.join(root, "lib-dist/chat"), file).replaceAll(path.sep, "/");
+  assert.doesNotMatch(relative, forbiddenLabContent, `library output path is consumer-only: ${relative}`);
+  const content = await readFile(file);
+  if (/\.(?:js|css|d\.ts|json|html|svg|txt|map)$/i.test(file)) {
+    assert.doesNotMatch(content.toString("utf8"), forbiddenLabContent, `library output content is consumer-only: ${relative}`);
+  }
+}
 
 const cssPath = path.join(root, "lib-dist/chat/styles.css");
 const css = await readFile(cssPath, "utf8");
@@ -57,15 +67,20 @@ execFileSync("git", ["-c", "user.name=Kroma package test", "-c", "user.email=kro
 await mkdir(gitConsumer, { recursive: true });
 await writeFile(path.join(gitConsumer, "package.json"), JSON.stringify({ name: "kroma-git-consumer-smoke", private: true }, null, 2));
 const gitUrl = `git+${pathToFileURL(gitSnapshot).href}#main`;
-execFileSync(node, [npmCli, "install", "--offline", "--no-audit", "--no-fund", "--prefix", gitConsumer, gitUrl], { cwd: root, stdio: "inherit" });
+execFileSync(node, [npmCli, "install", "--offline", "--no-audit", "--no-fund", "--prefix", gitConsumer, gitUrl], {
+  cwd: root,
+  stdio: "inherit",
+  env: { ...process.env, npm_config_allow_git: "all" },
+});
 for (const required of [
   "node_modules/@kroma/ui-component-library/lib-dist/chat/index.js",
   "node_modules/@kroma/ui-component-library/lib-dist/chat/index.d.ts",
   "node_modules/@kroma/ui-component-library/lib-dist/chat/styles.css",
 ]) assert.ok(await exists(path.join(gitConsumer, required)), `Git prepare creates installed ${required}`);
 
-const packedTarballs = JSON.parse(execFileSync(node, [npmCli, "pack", "--json", "--ignore-scripts", "--pack-destination", cacheRoot], { cwd: root, encoding: "utf8" }));
-const tarball = path.join(cacheRoot, packedTarballs[0].filename);
+const packedTarballOutput = JSON.parse(execFileSync(node, [npmCli, "pack", "--json", "--ignore-scripts", "--pack-destination", cacheRoot], { cwd: root, encoding: "utf8" }));
+const packedTarball = Array.isArray(packedTarballOutput) ? packedTarballOutput[0] : packedTarballOutput["@kroma/ui-component-library"];
+const tarball = path.join(cacheRoot, packedTarball.filename);
 await writeFile(path.join(consumer, "package.json"), JSON.stringify({ name: "kroma-package-consumer-smoke", private: true, type: "module" }, null, 2));
 execFileSync(node, [npmCli, "install", "--offline", "--ignore-scripts", "--no-audit", "--no-fund", "--prefix", consumer, tarball], { cwd: root, stdio: "inherit" });
 
@@ -114,8 +129,6 @@ try {
   await chat.locator(".kroma-chat__header").click();
   await page.waitForFunction(() => document.querySelector(".kroma-chat__keyboard-dock")?.hasAttribute("hidden"));
 
-  await chat.evaluate((element) => { element.mode = "kitchen"; });
-  await page.waitForFunction(() => [...document.querySelectorAll("kroma-chat img")].some((image) => image.complete && image.naturalWidth > 0));
   assert.deepEqual(failedResponses, [], "all JS, CSS, font and image requests succeed");
   assert.deepEqual(pageErrors, [], "the installed component runs without browser errors");
   console.log(`Package consumer smoke passed: ${packedFiles.size} packed files; local Git prepare; TypeScript declarations; browser events, quantity control, virtual keyboard and loaded assets.`);
@@ -149,4 +162,14 @@ async function exists(filePath) {
   } catch {
     return false;
   }
+}
+
+async function listFiles(directory) {
+  const result = [];
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const fullPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) result.push(...await listFiles(fullPath));
+    else result.push(fullPath);
+  }
+  return result;
 }

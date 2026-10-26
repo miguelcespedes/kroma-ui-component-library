@@ -36,25 +36,9 @@ Dictation uses the browser's Web Speech API (`SpeechRecognition`, with the `webk
 
 When browser speech synthesis is available, the header includes an accessible speaker toggle. It starts enabled on every page load and reads newly added assistant responses aloud in Peruvian Spanish; turning it off stops current playback and discards queued automatic responses until enabled again. For choice messages, it reads the prompt followed by a complete sentence such as “Puedes elegir una de estas opciones: explorar categorías, ver productos disponibles o escribir el nombre”; category pickers use “Puedes elegir entre estas categorías: …”. The same complete text is used by the per-message playback control. Selecting a Journey Menu or QuickReplies/ChoiceList option also speaks “Elegiste la opción «[etiqueta]».” before the assistant's next response. This setting is not persisted. Kitchen Mode does not automatically read its static component catalog.
 
-## Kitchen Mode
+## Kitchen laboratory
 
-Kitchen Mode is a static component-inspection conversation rendered by the same message list and renderers as the default chat. It is selected with the additive `mode` attribute or typed property; the default remains `default`.
-
-```html
-<kroma-chat mode="kitchen" chat-title="Asistente Kroma" avatar="K"></kroma-chat>
-```
-
-```ts
-import type { ChatMode, KromaChat } from "./components/chat";
-
-const chat = document.querySelector<KromaChat>("kroma-chat");
-const mode: ChatMode = "kitchen";
-if (chat) chat.mode = mode;
-```
-
-Changing the development `mode` rebuilds the transcript. Kitchen Mode loads its catalog asynchronously from the optional `kitchen/` module, leaves the composer visible but disabled, presents the virtual keyboard's alphabetic, shifted, numeric, and composer examples, and suppresses host action, send, quantity and form-submit events. QuickReplies and ChoiceList may still show a local selected state without adding user messages. It does not run the host's commerce journey or call services. Kitchen Mode and the guided/free-text composer mode are independent; the Cheatsheet's extended capture page remains the visual-inspection mode for the complete conversation history.
-
-The Cheatsheet's `/chat/` page provides the mode selector, clear/dark theme controls and responsive width/density controls. Its normal mode keeps the existing mock commerce journey; Kitchen Mode presents every example in order in that same `<kroma-chat>` instance.
+Kitchen is exclusively part of the Cheatsheet, not a KromaChat API or package mode. The `/chat/` page creates a normal public `<kroma-chat>` instance, disables its composer with `setComposerDisabled(true)`, and feeds typed examples from `src/cheatsheet/chat/kitchen/`. The page uses separate instances for the commercial journey and Kitchen, and keeps their state/orchestration independent. Demo fixture modules are not imported by the public package entry.
 
 ### Catalog organization
 

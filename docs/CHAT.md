@@ -275,15 +275,9 @@ No se debe suponer disponibilidad de APIs de voz; el host puede seguir utilizand
 
 ## Kitchen Mode
 
-Kitchen Mode es un catálogo estático de ejemplos, no un flujo de comercio ejecutable:
+Kitchen es un catálogo estático del cheatsheet, no una API ni un modo de KromaChat. La aplicación de laboratorio crea una instancia estándar del componente público, deshabilita el composer mediante `setComposerDisabled(true)` y añade mensajes tipados desde su propio módulo. Acciones de los ejemplos no se conectan al journey comercial; la orquestación y los fixtures viven exclusivamente en `src/cheatsheet/chat/kitchen/` y son cargados por el cheatsheet, no por `@kroma/ui-component-library/chat`. Cambiar entre el recorrido comercial y Kitchen alterna dos instancias consumidoras independientes.
 
-```html
-<kroma-chat mode="kitchen" chat-title="Catálogo de componentes" avatar="K"></kroma-chat>
-```
-
-El modo carga ejemplos del catálogo interno (ficticios), deshabilita composer y suprime eventos host de send/action/quantity/form-submit. No llama servicios ni actualiza carrito. El historial real del journey comercial se muestra en `mode="default"`; cambiar `mode` reconstruye la conversación, por lo que la aplicación no debe usarlo como mecanismo de persistencia.
-
-Para inspeccionar todos los controles en el sitio, visita las páginas de chat del cheatsheet. La lista secuencial completa se mantiene en `src/components/chat/kitchen/kitchen.catalog.ts`; los contratos reales se definen en `core/chat.types.ts`.
+Para inspeccionar todos los controles en el sitio, visita `/chat/`. La lista secuencial completa se mantiene en `src/cheatsheet/chat/kitchen/kitchen.catalog.ts`; los contratos reales se definen en `src/components/chat/core/chat.types.ts`. El paquete distribuible excluye Kitchen y sus recursos de demostración.
 
 ## Limitaciones y responsabilidades del host
 

@@ -1,4 +1,4 @@
-import type { ChatMessage } from "../core/chat.types";
+import type { ChatMessage } from "../../../components/chat/core/chat.types";
 import { kitchenCartItems, kitchenCategories, kitchenChoices, kitchenJourneyItems, kitchenProducts, kitchenQuickReplies, kitchenSubtotal, kitchenVariants } from "./kitchen.fixtures";
 
 const sampleOrder = {

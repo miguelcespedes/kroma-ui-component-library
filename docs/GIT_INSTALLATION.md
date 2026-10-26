@@ -1,6 +1,6 @@
 # Instalación de KromaChat desde Git
 
-El repositorio es privado y el paquete conserva `private: true`; KromaChat se distribuye desde Git, no desde npm Registry. Para instalarlo, cada desarrollador/CI debe tener una clave SSH autorizada para leer `miguelcespedes/kroma-ui-component-library` y tener configurado GitHub como host SSH. El build GitHub Pages sigue siendo independiente. El paquete incluye KromaChat, declaraciones TypeScript, CSS, Inter Variable, imágenes de Kitchen Mode y los temas Dracula y Kroma Entrepreneur. `simple-keyboard` se incorpora al bundle; no hace falta instalar Bootstrap.
+El repositorio es privado y el paquete conserva `private: true`; KromaChat se distribuye desde Git, no desde npm Registry. Para instalarlo, cada desarrollador/CI debe tener una clave SSH autorizada para leer `miguelcespedes/kroma-ui-component-library` y tener configurado GitHub como host SSH. El build GitHub Pages sigue siendo independiente. El paquete incluye KromaChat, declaraciones TypeScript, CSS, Inter Variable y los temas Dracula y Kroma Entrepreneur. Kitchen, sus fixtures y sus imágenes se quedan en el Cheatsheet/laboratorio y no se distribuyen. `simple-keyboard` se incorpora al bundle; no hace falta instalar Bootstrap.
 
 Para entender los mensajes y controles, consulta [el inventario completo de KromaChat](CHAT.md). La guía de [componentes](COMPONENTS.md) resume la API pública del paquete y [temas](THEMES.md) explica las marcas incluidas y el contrato para crear otra.
 

@@ -8,7 +8,6 @@ import type {
   ChatMessage,
   ChatMessageAuthor,
   ChatOption,
-  ChatMode,
 } from "./core/chat.types";
 import type {
   ChatActionDetail,
@@ -32,7 +31,6 @@ export type {
   ChatLink,
   ChatMessage,
   ChatMessageAuthor,
-  ChatMode,
   ChatMoney,
   ChatOption,
   ChatOptionsMessage,
@@ -96,21 +94,6 @@ export class KromaChat extends HTMLElement {
   private header: ChatHeader | null = null;
   private messageList: ChatMessageList | null = null;
   private composer: ChatComposer | null = null;
-  private modeRevision = 0;
-
-  static get observedAttributes() {
-    return ["mode"];
-  }
-
-  get mode(): ChatMode {
-    return this.getAttribute("mode") === "kitchen" ? "kitchen" : "default";
-  }
-
-  set mode(mode: ChatMode) {
-    if (this.mode === mode) return;
-    this.setAttribute("mode", mode);
-  }
-
   get interactionMode(): ChatInteractionMode {
     return this.composer?.mode || this.interactionModeValue;
   }
@@ -121,21 +104,8 @@ export class KromaChat extends HTMLElement {
     this.composer?.setInteractionMode(mode);
   }
 
-  attributeChangedCallback(name: string, previous: string | null, current: string | null) {
-    if (name === "mode" && previous !== current && this.initialized) this.reinitializeForMode();
-  }
-
   connectedCallback() {
     if (this.initialized) return;
-    if (this.mode === "kitchen") {
-      this.history = [];
-      this.selectedOptions.clear();
-      this.disabledOptions.clear();
-      this.consumedActions.clear();
-      this.typing = { active: false, label: "" };
-      this.status = null;
-      this.error = null;
-    }
     this.initialized = true;
     this.classList.add("kroma-chat");
     const title = this.getAttribute("chat-title") || "Assistant";
@@ -151,11 +121,10 @@ export class KromaChat extends HTMLElement {
       this.autoReadEnabled = enabled;
       if (!enabled) this.messageList?.stopSpeech();
     });
-    header.setSpeechToggleVisible(this.mode !== "kitchen");
     const messageList = new ChatMessageList({
       createMessageId: () => this.createMessageId(),
       consumedActions: this.consumedActions,
-      interactive: this.mode !== "kitchen",
+      interactive: true,
       addUserMessage: (text) => this.addMessage({ author: "user", type: "text", text }),
       focusComposer: () => this.composer?.focus(),
       onAction: (detail, userMessage) => this.emitAction(detail, userMessage),
@@ -169,9 +138,8 @@ export class KromaChat extends HTMLElement {
       id: `kroma-chat-input-${this.instanceId}`,
       inputLabel: this.getAttribute("input-label") || "Write a message",
       placeholder: this.getAttribute("placeholder") || "Message…",
-      disabled: this.composerDisabled || this.mode === "kitchen",
-      showKeyboardShowcase: this.mode === "kitchen",
-      interactionMode: this.mode === "kitchen" ? "guided" : this.interactionModeValue,
+      disabled: this.composerDisabled,
+      interactionMode: this.interactionModeValue,
       onInteractionModeChange: (mode) => { this.interactionModeValue = mode; },
       onSend: (message) => this.sendMessage(message),
     });
@@ -185,17 +153,15 @@ export class KromaChat extends HTMLElement {
       composer.element,
       ...(composer.keyboardDock ? [composer.keyboardDock] : []),
     );
-    if (this.headerActions.length && this.mode !== "kitchen") this.setHeaderActions(this.headerActions);
+    if (this.headerActions.length) this.setHeaderActions(this.headerActions);
     if (this.error) composer.setError(this.error);
     this.history.forEach(({ id, message }) => messageList.addMessage(message, id));
     this.selectedOptions.forEach((optionId, messageId) => messageList.restoreOptionSelection(messageId, optionId));
     this.disabledOptions.forEach((disabled, messageId) => messageList.setOptionsDisabled(messageId, disabled));
     if (this.typing.active) messageList.setTyping(true, this.typing.label, this.typing.messageId);
-    if (this.mode === "kitchen") this.loadKitchenConversation();
   }
 
   disconnectedCallback() {
-    this.modeRevision++;
     this.messageList?.destroy();
     this.composer?.destroy();
     this.messageList = null;
@@ -208,13 +174,13 @@ export class KromaChat extends HTMLElement {
   addMessage(message: ChatMessage): string {
     const id = message.id || this.createMessageId();
     const normalized = { ...message, id } as ChatMessage;
-    if (normalized.type === "typing" && this.mode !== "kitchen") {
+    if (normalized.type === "typing") {
       this.setTyping(true, normalized.label, id);
       return id;
     }
     this.history.push({ id, message: normalized });
     this.messageList?.addMessage(normalized, id);
-    if (this.mode !== "kitchen" && this.autoReadEnabled && normalized.author === "assistant") {
+    if (this.autoReadEnabled && normalized.author === "assistant") {
       const speakableText = getChatMessageSpeechText(normalized);
       if (speakableText) this.messageList?.speakAutomatically(id, speakableText);
     }
@@ -233,7 +199,7 @@ export class KromaChat extends HTMLElement {
 
   setHeaderActions(actions: ChatHeaderAction[]) {
     this.headerActions = [...actions];
-    this.header?.setActions(this.mode === "kitchen" ? [] : this.headerActions, (action) => this.emitAction({
+    this.header?.setActions(this.headerActions, (action) => this.emitAction({
       messageId: "header",
       control: "header",
       actionId: action.id,
@@ -244,7 +210,7 @@ export class KromaChat extends HTMLElement {
 
   setComposerDisabled(disabled: boolean) {
     this.composerDisabled = disabled;
-    this.composer?.setDisabled(disabled || this.mode === "kitchen");
+    this.composer?.setDisabled(disabled);
   }
 
   setOptionsDisabled(messageId: string, disabled: boolean) {
@@ -267,26 +233,22 @@ export class KromaChat extends HTMLElement {
   }
 
   private sendMessage(message: string) {
-    if (this.mode === "kitchen") return;
     this.addMessage({ id: this.createMessageId(), author: "user", type: "text", text: message });
     this.setError(null);
     emitKromaChatEvent(this, CHAT_EVENTS.send, { message, source: "composer" });
   }
 
   private emitOptionSelect(detail: ChatOptionSelectEventDetail) {
-    if (this.mode === "kitchen") return;
     this.speakSelectionAcknowledgement(detail.messageId, detail.label);
     this.selectedOptions.set(detail.messageId, detail.optionId);
     emitKromaChatEvent(this, CHAT_EVENTS.optionSelect, detail);
   }
 
   private emitRichAction(detail: ChatRichActionDetail, _action: ChatAction, _userMessage?: string) {
-    if (this.mode === "kitchen") return;
     emitKromaChatEvent(this, CHAT_EVENTS.richAction, detail);
   }
 
   private emitAction(detail: ChatActionDetail, _userMessage?: string) {
-    if (this.mode === "kitchen") return;
     if (detail.control === "journey-menu") this.speakSelectionAcknowledgement(detail.messageId, detail.label);
     emitKromaChatEvent(this, CHAT_EVENTS.action, detail);
   }
@@ -297,42 +259,13 @@ export class KromaChat extends HTMLElement {
   }
 
   private emitQuantityChange(detail: ChatQuantityChangeDetail) {
-    if (this.mode === "kitchen") return;
     emitKromaChatEvent(this, CHAT_EVENTS.quantityChange, detail);
   }
 
   private emitFormSubmit(detail: ChatFormSubmitDetail) {
-    if (this.mode === "kitchen") return;
     emitKromaChatEvent(this, CHAT_EVENTS.formSubmit, detail);
   }
 
-  private reinitializeForMode() {
-    this.modeRevision++;
-    this.messageList?.destroy();
-    this.composer?.destroy();
-    this.header = null;
-    this.messageList = null;
-    this.composer = null;
-    this.history = [];
-    this.selectedOptions.clear();
-    this.disabledOptions.clear();
-    this.consumedActions.clear();
-    this.typing = { active: false, label: "" };
-    this.status = null;
-    this.error = null;
-    this.initialized = false;
-    this.connectedCallback();
-  }
-
-  private loadKitchenConversation() {
-    const revision = ++this.modeRevision;
-    void import("./kitchen/kitchen.messages").then(({ createKitchenMessages }) => {
-      if (!this.isConnected || this.mode !== "kitchen" || revision !== this.modeRevision) return;
-      createKitchenMessages().forEach((message) => this.addMessage(message));
-    }).catch((error: unknown) => {
-      console.error("[kroma-chat] Kitchen Mode examples could not be loaded.", error);
-    });
-  }
 }
 
 

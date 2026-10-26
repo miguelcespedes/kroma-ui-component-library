@@ -156,28 +156,6 @@
 .kroma-chat__key-preview[data-visible="true"] { opacity: 1; transform: none; }
 .kroma-chat__key-preview[hidden] { display: none; }
 
-.kroma-chat__keyboard-showcase {
-  display: grid;
-  max-height: 14rem;
-  min-width: 0;
-  gap: var(--kroma-chat-spacing-control);
-  overflow-y: auto;
-  padding-block: var(--kroma-chat-spacing-control);
-  border-top: 1px solid var(--kroma-chat-border-subtle);
-  overscroll-behavior: contain;
-}
-
-.kroma-chat__keyboard-showcase-title { margin: 0; color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-body-small); font-weight: var(--kroma-chat-weight-semibold); }
-.kroma-chat__keyboard-showcase-composers { display: grid; min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--kroma-chat-spacing-control); }
-.kroma-chat__keyboard-showcase-sample,
-.kroma-chat__keyboard-showcase-composer { display: grid; min-width: 0; gap: var(--kroma-chat-spacing-tight); }
-.kroma-chat__keyboard-showcase-label { color: var(--kroma-chat-text-secondary); font-size: var(--kroma-chat-typography-caption); }
-.kroma-chat__keyboard-showcase-layouts { display: flex; min-width: 0; flex-wrap: wrap; gap: var(--kroma-chat-spacing-tight); }
-.kroma-chat__keyboard-showcase-layout,
-.kroma-chat__keyboard-showcase-toggle { min-height: 2rem; padding: var(--kroma-chat-spacing-tight) var(--kroma-chat-spacing-control); border: 1px solid var(--kroma-chat-border-subtle); border-radius: var(--kroma-chat-radius-control); background: var(--kroma-chat-surface); color: var(--kroma-chat-text-primary); font: inherit; font-size: var(--kroma-chat-typography-body-small); }
-.kroma-chat__keyboard-showcase-layout[aria-pressed="true"] { border-color: var(--kroma-chat-border-selected); background: var(--kroma-chat-surface-selected); }
-.kroma-chat__virtual-display--sample { min-height: 2.5rem; max-height: 3rem; padding-inline: var(--kroma-chat-spacing-control); border: 1px solid var(--kroma-chat-border-subtle); border-radius: var(--kroma-chat-radius-input); background: var(--kroma-chat-surface); font-size: var(--kroma-chat-typography-body-small); }
-
 @container kroma-chat (max-width: 24rem) {
   .kroma-chat .hg-theme-default {
     padding-block-start: .3125rem;
